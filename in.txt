@@ -1,9 +1,7 @@
-//Hola
-Adios
-/*
-asd
-asd
-asd
-*/
-Hello
-//Jaja
+##Hola
+/#
+#/
+##Jaja
+if (a=b) then
+  write(hola)
+endif
