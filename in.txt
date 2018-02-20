@@ -2,6 +2,31 @@
 /#
 #/
 ##Jaja
-if (a=b) then
+if(a==b)then
   write(hola)
 endif
+
+for(a=0;a<10;a++)begin
+  bool nuevo9:=45
+  char f:='a'
+  f:='a'
+  num q:=b
+end
+
+for(a=0;a<10;a++)begin
+  bool nuevo9
+  char f
+  num q
+end
+
+select(a)begin
+  option 5:
+    write(hiii)
+  break
+  option a:
+    char f
+  break
+  option 'a':
+    char f
+  break
+end
