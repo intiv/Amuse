@@ -59,9 +59,8 @@ select = "select"
 option = "option"
 break = "break"
 selectContinue = "("{id}")"{endLine}?{begin}{endLine}
-optionContinue1 = {option}" "({digit}*|"'"{letra}"'"|"'"{digit}"'")":"{endLine}?{Expression}*{endLine}{break}
-optionContinue = {endLine}?{Expression}*{endLine}{break}
-
+optionContinue = {espacio}*{option}" "({digit}*|"'"{letra}"'"|"'"{digit}"'")":"{endLine}?
+finOption = {break}{endLine}
 //While
 while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{endLine}?
 
@@ -102,9 +101,10 @@ while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{
 }
 
 <SELECT> {
-  {selectContinue} {System.out.print("Select bien estructurado");}
-  {optionContinue1} {System.out.print("Option1 bien estructurado");}
-  {optionContinue} {System.out.print("Option bien estructurado");}
+  {selectContinue} {System.out.println("Select bien estructurado");}
+  {optionContinue} {System.out.println("\tOption bien estructurado");}
+  {Expression}  {System.out.println("\t\tExpression");}
+  {finOption} {System.out.println("\tFinal de Un Option");}
   {end} {yybegin(YYINITIAL);}
   . {}
 }

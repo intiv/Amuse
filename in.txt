@@ -33,8 +33,10 @@ select(a)begin
   option 5:
     write(hiii)
   break
-  option a:
+  option 'b':
     char f
+    char y
+    m:=5
   break
   option 'a':
     char f
