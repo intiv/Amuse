@@ -1,10 +1,20 @@
 ##Hola
 /#
+asdas
+asd
 #/
 ##Jaja
+
 if(a==b)then
   write(hola)
+else
+  write(adios)
 endif
+
+while(a<10)
+begin
+  a++
+end
 
 for(a=0;a<10;a++)begin
   bool nuevo9:=45
