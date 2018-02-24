@@ -42,3 +42,14 @@ select(a)begin
     char f
   break
 end
+
+bool Hola(){
+  write(hola)
+  return true
+  Hola()
+}
+
+
+num calc(){
+  a := 5+5
+}

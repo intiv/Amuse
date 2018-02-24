@@ -7,6 +7,13 @@
 %column
 %standalone
 
+%{
+  String functionType = "";
+  boolean Ret = false;
+  boolean recursive = false;
+  String functionID = "";
+%}
+
 //Basic
 digit = [0-9]
 letra = [a-zA-Z]
@@ -32,6 +39,7 @@ bool = "bool"
 num = "num"
 char = "char"
 array = ({bool}|{num}|{char})"["{digit}*"]"{id}
+type = {bool}|{num}|{char}|{array}
 
 //Operations
 Increment = {id}"++"
@@ -59,25 +67,38 @@ select = "select"
 option = "option"
 break = "break"
 selectContinue = "("{id}")"{endLine}?{begin}{endLine}
-optionContinue = {espacio}*{option}" "({digit}*|"'"{letra}"'"|"'"{digit}"'")":"{endLine}?
-finOption = {break}{endLine}
+optionContinue1 = {option}" "({digit}*|"'"{letra}"'"|"'"{digit}"'")":"{endLine}?{Expression}*{endLine}{break}
+optionContinue = {endLine}?{Expression}*{endLine}{break}
+
 //While
 while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{endLine}?
 
+//Function
+//Con retorno
+function = {type}" "{id}"("({parameter}", "?)*")"{espacio}*"{"
+return = "return "({id}|{digit}+|"true"|"false")
+parameter = {type}" "{id}
+functionCall = {id}"("({parameter}", "?)*")"
 
 %state IF
 %state FOR
 %state SELECT
 %state WHILE
+%state FUNCTION
 
 %%
 
 <YYINITIAL> {
   {Comment} {}
   {startIf} {System.out.println("if: "); yybegin(IF);}
-  {for} {System.out.print("Ciclo for: \n");yybegin(FOR);}
-  {select} {System.out.print("Condicion select: \n");yybegin(SELECT);}
+  {for} {System.out.print("Ciclo for: \n"); yybegin(FOR);}
+  {select} {System.out.print("Condicion select: \n"); yybegin(SELECT);}
   {while} {System.out.println("While: "); yybegin(WHILE);}
+  {function}  { String tipoID = yytext().substring(0, yytext().indexOf("("));
+                functionType = tipoID.substring(0, tipoID.indexOf(" "));
+                functionID = tipoID.substring(tipoID.indexOf(" ")+1, tipoID.length());
+                System.out.println("Tipo: "+functionType+", ID: "+functionID+".");
+                yybegin(FUNCTION);}
   /* {endLine} {System.out.println();} */
 }
 
@@ -101,10 +122,10 @@ while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{
 }
 
 <SELECT> {
-  {selectContinue} {System.out.println("Select bien estructurado");}
-  {optionContinue} {System.out.println("\tOption bien estructurado");}
-  {Expression}  {System.out.println("\t\tExpression");}
-  {finOption} {System.out.println("\tFinal de Un Option");}
+  {selectContinue} {System.out.print("Select bien estructurado");}
+  {optionContinue1} {System.out.print("Option1 bien estructurado");}
+  {optionContinue} {System.out.print("Option bien estructurado");}
+  {endLine} {}
   {end} {yybegin(YYINITIAL);}
   . {}
 }
@@ -113,6 +134,33 @@ while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{
   {Expression}  {System.out.println("\tExpression en while: "+yytext());}
   {endLine} {}
   {end} {yybegin(YYINITIAL);}
+  . {}
+}
+
+<FUNCTION> {
+  {Expression}  {System.out.println("\tExpression en function: "+yytext());}
+  {functionCall}  {
+    if(yytext().substring(0, yytext().indexOf("(")).equals(functionID)){ recursive = true;}
+    /* System.out.println("Llamado linea " + yyline+": "+yytext().substring(0, yytext().indexOf("("))+"."); */
+  }
+  {return}  {Ret = true;}
+  "}" { System.out.println("Fin de funcion");
+        if(Ret){
+          System.out.println("La funcion retorna");
+        }else{
+          System.out.println("Error: La funcion no retorna");
+        }
+        if(recursive){
+          System.out.println("La funcion "+functionID+" es recursiva");
+        }else{
+          System.out.println("La funcion "+functionID+" NO es recursiva");
+
+        }
+        Ret = false;
+        recursive = false;
+        yybegin(YYINITIAL);
+      }
+  {endLine} {}
   . {}
 }
 /* <COMMENT> {
