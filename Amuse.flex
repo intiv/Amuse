@@ -39,16 +39,16 @@ type = {bool}|{num}|{char}|{array}
 
 //Operators
 opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
-operador = "+" | "-" | "*" | "/" | "^"
+operador = "+" | "-" | "*" | "/" | "^" | "(" | ")"
 Asig = ":="
 id = {letra}({letra}*{digit}*)*
-A = {A} "+" {T}
+/* A = {A} "+" {T}
 A = {A} "-" {T}
 A = {T}
 T = {T} "*" {F}
 T = {T} "/" {F}
 T = {F}
-F = "("{F}")"
+F = "("{F}")" */
 Not = "!"
 Or = "||"
 And = "&&"
@@ -61,6 +61,7 @@ Decrement = {id}"--"
 Print = "write("({id} | {sentence})")"
 Asignacion = ({id}|{newVar}){Asig}(({id}|{digit}*|"'"{letra}"'"|"'"{digit}"'"){operador}?)*
 newVar = ({bool}|{num}|{char})" "{id}
+Asignacion = {array}"{""}"
 
 //If
 endIf = "endif"
@@ -89,14 +90,12 @@ while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{
 
 //Function
 //Con retorno
-function = {type}" "{id}"("({parameter}", "?)*")"{espacio}*"{"
+function = ({type}|{void})" "({id}|{main})"("({parameter}", "?)*")"{espacio}*"{"
 return = "return "({id}|{digit}+|"true"|"false")
 parameter = {type}" "{id}
 functionCall = {id}"("({parameter}", "?)*")"
 
 //Sin retorno
-function = {void}" "{main}"("({parameter}", "?)*")"{espacio}*"{"
-function = {void}" "{id}"("({parameter}", "?)*")"{espacio}*"{"
 parameter = {type}" "{id}
 functionCall = {void}"("({parameter}", "?)*")"
 
