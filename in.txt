@@ -5,7 +5,7 @@ asd
 #/
 ##Jaja
 
-if(a==b)then
+if(a==b||b!=a)then
   write(hola)
 else
   write(adios)
@@ -18,7 +18,8 @@ end
 
 for(a=0;a<10;a++)begin
   bool nuevo9:=45
-  char f:='a'
+  char f:='a'+'a'
+  num q:=b+1+3+8
   f:='a'
   num q:=b
 end
@@ -47,6 +48,14 @@ bool Hola(){
   write(hola)
   return true
   Hola()
+}
+
+void Hola(){
+  write(como estas)
+}
+
+void Main(){
+  write(heey)
 }
 
 

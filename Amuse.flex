@@ -22,17 +22,13 @@ endLine = \r|\n|\r\n
 sentence = {letra}*{endLine}?
 Expression = ({Asignacion} | {Increment} | {Decrement} | {Print} | {newVar}){endLine}
 
-//Operators
-opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
-Asig = ":="
-id = {letra}({letra}*{digit}*)*
-Condicion = {id}{opRel}({id}|{digit}*)"|"?
-
 //Palabras reservadas
 begin = "begin"
 end = "end"
 if = "if"
 then = "then"
+void = "void"
+main = "Main"
 
 //    Tipos
 bool = "bool"
@@ -41,11 +37,29 @@ char = "char"
 array = ({bool}|{num}|{char})"["{digit}*"]"{id}
 type = {bool}|{num}|{char}|{array}
 
+//Operators
+opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
+operador = "+" | "-" | "*" | "/" | "^"
+Asig = ":="
+id = {letra}({letra}*{digit}*)*
+A = {A} "+" {T}
+A = {A} "-" {T}
+A = {T}
+T = {T} "*" {F}
+T = {T} "/" {F}
+T = {F}
+F = "("{F}")"
+Not = "!"
+Or = "||"
+And = "&&"
+Condicion = ({Not}?{id}{opRel}{Not}?({id}|{digit}*)({Or}|{And})?)*
+
+
 //Operations
 Increment = {id}"++"
 Decrement = {id}"--"
 Print = "write("({id} | {sentence})")"
-Asignacion = ({id}|{newVar}){Asig}({id}|{digit}*|"'"{letra}"'"|"'"{digit}"'")
+Asignacion = ({id}|{newVar}){Asig}(({id}|{digit}*|"'"{letra}"'"|"'"{digit}"'"){operador}?)*
 newVar = ({bool}|{num}|{char})" "{id}
 
 //If
@@ -80,11 +94,21 @@ return = "return "({id}|{digit}+|"true"|"false")
 parameter = {type}" "{id}
 functionCall = {id}"("({parameter}", "?)*")"
 
+//Sin retorno
+function = {void}" "{main}"("({parameter}", "?)*")"{espacio}*"{"
+function = {void}" "{id}"("({parameter}", "?)*")"{espacio}*"{"
+parameter = {type}" "{id}
+functionCall = {void}"("({parameter}", "?)*")"
+
+//Main
+
+
 %state IF
 %state FOR
 %state SELECT
 %state WHILE
 %state FUNCTION
+%state FUNCTIONV
 
 %%
 
@@ -98,7 +122,10 @@ functionCall = {id}"("({parameter}", "?)*")"
                 functionType = tipoID.substring(0, tipoID.indexOf(" "));
                 functionID = tipoID.substring(tipoID.indexOf(" ")+1, tipoID.length());
                 System.out.println("Tipo: "+functionType+", ID: "+functionID+".");
-                yybegin(FUNCTION);}
+                if(functionType.equals("void")){
+                  yybegin(FUNCTIONV);
+                }else{
+                  yybegin(FUNCTION);}}
   /* {endLine} {System.out.println();} */
 }
 
@@ -140,7 +167,8 @@ functionCall = {id}"("({parameter}", "?)*")"
 <FUNCTION> {
   {Expression}  {System.out.println("\tExpression en function: "+yytext());}
   {functionCall}  {
-    if(yytext().substring(0, yytext().indexOf("(")).equals(functionID)){ recursive = true;}
+    if(yytext().substring(0, yytext().indexOf("(")).equals(functionID))
+    { recursive = true;}else{recursive = false;}
     /* System.out.println("Llamado linea " + yyline+": "+yytext().substring(0, yytext().indexOf("("))+"."); */
   }
   {return}  {Ret = true;}
@@ -155,6 +183,31 @@ functionCall = {id}"("({parameter}", "?)*")"
         }else{
           System.out.println("La funcion "+functionID+" NO es recursiva");
 
+        }
+        Ret = false;
+        recursive = false;
+        yybegin(YYINITIAL);
+      }
+  {endLine} {}
+  . {}
+}
+
+<FUNCTIONV> {
+  {Expression}  {System.out.println("\tExpression en function: "+yytext());}
+  {functionCall}  {
+    if(yytext().substring(0, yytext().indexOf("(")).equals(functionID))
+    { recursive = true;}else{recursive = false;}
+  }
+  {main} {System.out.println("Esta es la main function: ");}
+  {return}  {Ret = true;}
+  "}" { System.out.println("Fin de funcion");
+        if(Ret){
+          System.out.println("Error: La funcion retorna");
+        }
+        if(recursive){
+          System.out.println("La funcion "+functionID+" es recursiva");
+        }else{
+          System.out.println("La funcion "+functionID+" NO es recursiva");
         }
         Ret = false;
         recursive = false;
