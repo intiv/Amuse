@@ -6,40 +6,34 @@ asd
 ##Jaja
 
 if(a==b||b!=a)then
-  write(hola)
+  write("hola")
 else
   write(adios)
 endif
 
 while(a<10)
 begin
-  a++
+
 end
 
-for(a=0;a<10;a++)begin
+for(a:=0;a<10;a++)begin
   bool nuevo9:=45
-  char f:='a'+'a'
+  char f:="a"+"a"
   num q:=b+1+3+8
-  f:='a'
+  f:="a"
   num q:=b
 end
 
-for(a=0;a<10;a++)begin
-  bool nuevo9
-  char f
-  num q
-end
 
 select(a)begin
   option 5:
     write(hiii)
   break
-  option 'b':
+  option "b":
     char f
-    char y
     m:=5
   break
-  option 'a':
+  option "a":
     char f
   break
 end
@@ -51,11 +45,11 @@ bool Hola(){
 }
 
 void Hola(){
-  write(como estas)
+  write("como estas")
 }
 
 void Main(){
-  write(heey)
+  write("heey")
 }
 
 

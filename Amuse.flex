@@ -8,10 +8,8 @@
 %standalone
 
 %{
-  String functionType = "";
-  boolean Ret = false;
-  boolean recursive = false;
-  String functionID = "";
+  StringBuffer string = new StringBuffer();
+  StringBuffer character = new StringBuffer();
 %}
 
 //Basic
@@ -19,203 +17,98 @@ digit = [0-9]
 letra = [a-zA-Z]
 espacio= "\t"|" "
 endLine = \r|\n|\r\n
-sentence = {letra}*{endLine}?
-Expression = ({Asignacion} | {Increment} | {Decrement} | {Print} | {newVar}){endLine}
-
+number = {digit}+
 //Palabras reservadas
+
+if = "if"
+else = "else"
+elseif = "elseif"
+endIf = "endif"
+while = "while"
+then = "then"
 begin = "begin"
 end = "end"
-if = "if"
-then = "then"
 void = "void"
 main = "Main"
+write = "write"
+for = "for"
+select = "select"
+option = "option"
+break = "break"
+return = "return"
 
 //    Tipos
 bool = "bool"
 num = "num"
 char = "char"
-array = ({bool}|{num}|{char})"["{digit}*"]"{id}
-type = {bool}|{num}|{char}|{array}
+array = ({bool}|{num}|{char})"[]"
+tipo = {bool}|{num}|{char}|{array}
 
 //Operators
+parIzq = "("
+parDer = ")"
+not = "!"
+or = "||"
+and = "&&"
 opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
-operador = "+" | "-" | "*" | "/" | "^" | "(" | ")"
-Asig = ":="
-id = {letra}({letra}*{digit}*)*
-/* A = {A} "+" {T}
-A = {A} "-" {T}
-A = {T}
-T = {T} "*" {F}
-T = {T} "/" {F}
-T = {F}
-F = "("{F}")" */
-Not = "!"
-Or = "||"
-And = "&&"
-Condicion = ({Not}?{id}{opRel}{Not}?({id}|{digit}*)({Or}|{And})?)*
-
-
-//Operations
-Increment = {id}"++"
-Decrement = {id}"--"
-Print = "write("({id} | {sentence})")"
-Asignacion = ({id}|{newVar}){Asig}(({id}|{digit}*|"'"{letra}"'"|"'"{digit}"'"){operador}?)*
-newVar = ({bool}|{num}|{char})" "{id}
-Asignacion = {array}"{""}"
-
-//If
-endIf = "endif"
-startIf = {if}"("{espacio}*{Condicion}{espacio}*")"{endLine}*{then}
-else = "else"
+operador = "+" | "-" | "*" | "/" | "^" | {parIzq} | {parDer}
+opComp = {not}|{or}|{and}
+asig = ":="
 
 //Comments
-commentLine = "##"{sentence}
-multiComment = "/#"{sentence}*"#/"{endLine}?
+commentLine = "##"({letra}|{digit}|{espacio})*
+multiComment = "/#"({letra}|{digit}|{espacio}|{endLine})*"#/"
 Comment = {commentLine} | {multiComment}
 
-//For
-for = "for"
-forContinue = "("{id}|{Asignacion}";"{Condicion}";"{Increment}|{Decrement}")"{endLine}?{begin}
 
-//Switch
-select = "select"
-option = "option"
-break = "break"
-selectContinue = "("{id}")"{endLine}?{begin}{endLine}
-optionContinue1 = {option}" "({digit}*|"'"{letra}"'"|"'"{digit}"'")":"{endLine}?{Expression}*{endLine}{break}
-optionContinue = {endLine}?{Expression}*{endLine}{break}
+id = {letra}({letra}|{digit})*
 
-//While
-while = "while("{espacio}*{Condicion}{espacio}*")"({espacio}|{endLine})*{begin}{endLine}?
-
-//Function
-//Con retorno
-function = ({type}|{void})" "({id}|{main})"("({parameter}", "?)*")"{espacio}*"{"
-return = "return "({id}|{digit}+|"true"|"false")
-parameter = {type}" "{id}
-functionCall = {id}"("({parameter}", "?)*")"
-
-//Sin retorno
-parameter = {type}" "{id}
-functionCall = {void}"("({parameter}", "?)*")"
-
-//Main
-
-
-%state IF
-%state FOR
-%state SELECT
-%state WHILE
-%state FUNCTION
-%state FUNCTIONV
+%state STRING
+/* %state CHARACTER */
 
 %%
 
 <YYINITIAL> {
   {Comment} {}
-  {startIf} {System.out.println("if: "); yybegin(IF);}
-  {for} {System.out.print("Ciclo for: \n"); yybegin(FOR);}
-  {select} {System.out.print("Condicion select: \n"); yybegin(SELECT);}
-  {while} {System.out.println("While: "); yybegin(WHILE);}
-  {function}  { String tipoID = yytext().substring(0, yytext().indexOf("("));
-                functionType = tipoID.substring(0, tipoID.indexOf(" "));
-                functionID = tipoID.substring(tipoID.indexOf(" ")+1, tipoID.length());
-                System.out.println("Tipo: "+functionType+", ID: "+functionID+".");
-                if(functionType.equals("void")){
-                  yybegin(FUNCTIONV);
-                }else{
-                  yybegin(FUNCTION);}}
-  /* {endLine} {System.out.println();} */
-}
-
-
-<IF> {
-  {endIf} {yybegin(YYINITIAL);}
-  {else}  {System.out.println("encontro else");}
-  {Print} {System.out.println("\t"+yytext().substring(yytext().indexOf("(")+1, yytext().indexOf(")")));}
-  {Expression} {System.out.print("\tExpression en if: " + yytext());}
-  {Comment} {}
-  . {}
-}
-
-<FOR> {
-  {forContinue} {System.out.print("For bien estructurado");}
-  {Asignacion} {System.out.println("Asignacion -> "+yytext());}
-  {newVar} {System.out.println("newVar -> "+yytext());}
+  {espacio} {}
   {endLine} {}
-  {end} {yybegin(YYINITIAL);}
-  . {}
+  {write} {System.out.println("<WRITE, "+yyline+">");}
+  {tipo}  {System.out.println("<TIPO, "+yytext()+", "+yyline+">");}
+  {if}  {System.out.println("<IF, "+yyline+">");}
+  {else}  {System.out.println("<ELSE, "+yyline+">");}
+  {elseif}  {System.out.println("<ELSEIF, "+yyline+">");}
+  {endIf} {System.out.println("<ENDIF, "+yyline+">");}
+  {while} {System.out.println("<WHILE, "+yyline+">");}
+  {then}  {System.out.println("<THEN, "+yyline+">");}
+  {begin} {System.out.println("<BEGIN, "+yyline+">");}
+  {end} {System.out.println("<END, "+yyline+">");}
+  {for} {System.out.println("<FOR, "+yyline+">");}
+  {select}  {System.out.println("<SELECT, "+yyline+">");}
+  {option}  {System.out.println("<OPTION, "+yyline+">");}
+  {break} {System.out.println("<BREAK, "+yyline+">");}
+  {return}  {System.out.println("<RETURN, "+yyline+">");}
+  {opRel}  {System.out.println("<OPREL, "+yytext()+", "+yyline+">");}
+  {opComp}  {System.out.println("<OPCOMP, "+yytext()+", "+yyline+">");}
+  {operador}  {System.out.println("<OPERADOR, "+yytext()+", "+yyline+">");}
+  {asig}  {System.out.println("<ASIG, "+yyline+">");}
+  ":" {System.out.println("<COLUMN, "+yyline+">");}
+  {void}  {System.out.println("<VOID, "+yyline+">");}
+  {main}  {System.out.println("<MAIN, "+yyline+">");}
+  {id}  {System.out.println("<ID, "+yytext()+", "+yyline+">");}
+  {number}  {System.out.println("<NUMBER, "+yytext()+", "+yyline+">");}
+  "}" {System.out.println("<CLOSEBRACES, "+yyline+">");}
+  "{" {System.out.println("<OPENBRACES, "+yyline+">");}
+  ";" {System.out.println("<PCOMA, "+yyline+">");}
+  \"  {string.setLength(0); yybegin(STRING);}
+  /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }
 
-<SELECT> {
-  {selectContinue} {System.out.print("Select bien estructurado");}
-  {optionContinue1} {System.out.print("Option1 bien estructurado");}
-  {optionContinue} {System.out.print("Option bien estructurado");}
-  {endLine} {}
-  {end} {yybegin(YYINITIAL);}
-  . {}
+<STRING> {
+  \"  {System.out.println("<STRING, "+string+", "+yyline+">"); yybegin(YYINITIAL);}
+  [^\n\r\"\\]+ {string.append(yytext());}
 }
-
-<WHILE> {
-  {Expression}  {System.out.println("\tExpression en while: "+yytext());}
-  {endLine} {}
-  {end} {yybegin(YYINITIAL);}
-  . {}
-}
-
-<FUNCTION> {
-  {Expression}  {System.out.println("\tExpression en function: "+yytext());}
-  {functionCall}  {
-    if(yytext().substring(0, yytext().indexOf("(")).equals(functionID))
-    { recursive = true;}else{recursive = false;}
-    /* System.out.println("Llamado linea " + yyline+": "+yytext().substring(0, yytext().indexOf("("))+"."); */
-  }
-  {return}  {Ret = true;}
-  "}" { System.out.println("Fin de funcion");
-        if(Ret){
-          System.out.println("La funcion retorna");
-        }else{
-          System.out.println("Error: La funcion no retorna");
-        }
-        if(recursive){
-          System.out.println("La funcion "+functionID+" es recursiva");
-        }else{
-          System.out.println("La funcion "+functionID+" NO es recursiva");
-
-        }
-        Ret = false;
-        recursive = false;
-        yybegin(YYINITIAL);
-      }
-  {endLine} {}
-  . {}
-}
-
-<FUNCTIONV> {
-  {Expression}  {System.out.println("\tExpression en function: "+yytext());}
-  {functionCall}  {
-    if(yytext().substring(0, yytext().indexOf("(")).equals(functionID))
-    { recursive = true;}else{recursive = false;}
-  }
-  {main} {System.out.println("Esta es la main function: ");}
-  {return}  {Ret = true;}
-  "}" { System.out.println("Fin de funcion");
-        if(Ret){
-          System.out.println("Error: La funcion retorna");
-        }
-        if(recursive){
-          System.out.println("La funcion "+functionID+" es recursiva");
-        }else{
-          System.out.println("La funcion "+functionID+" NO es recursiva");
-        }
-        Ret = false;
-        recursive = false;
-        yybegin(YYINITIAL);
-      }
-  {endLine} {}
-  . {}
-}
-/* <COMMENT> {
-  {letra} {}
-  {endLine} {yybegin(YYINITIAL);}
+/*
+<CHARACTER> {
+  \'  {System.out.println("<CHARACTER, "+string+", "+yyline+">"); yybegin(YYINITIAL);}
+  [^\n\r\"\\]+  {string.append(yytext());}
 } */
