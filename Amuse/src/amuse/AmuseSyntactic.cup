@@ -1,0 +1,22 @@
+package amuse;
+import java_cup.runtime.*;
+
+parser code
+{:
+:}
+
+action code
+{:
+:}
+
+terminal String if, else, elseif, endif, begin, boolean, id, number, parIzq, parDer, cbClose, cbOpen;
+
+non terminal START, EXP, ELSIF;
+
+start with START;
+
+START ::= EXP;
+
+EXP ::= if parIzq boolean parDer begin EXP ELSIF endif;
+
+ELSIF ::= elseif EXP else EXP;
