@@ -9,7 +9,7 @@ action code
 {:
 :}
 
-terminal String if, else, elseif, endif, begin, boolean, id, number, parIzq, parDer, cbClose, cbOpen;
+terminal String ifstart, elseclause, elseif, endif, begin, booleano, id, number, parIzq, parDer, cbClose, cbOpen;
 
 non terminal START, EXP, ELSIF;
 
@@ -17,6 +17,6 @@ start with START;
 
 START ::= EXP;
 
-EXP ::= if parIzq boolean parDer begin EXP ELSIF endif;
+EXP ::= ifstart parIzq booleano parDer begin EXP ELSIF endif;
 
-ELSIF ::= elseif EXP else EXP;
+ELSIF ::= elseif EXP elseclause EXP;

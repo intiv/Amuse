@@ -14,6 +14,11 @@ import java_cup.runtime.Symbol;
 %public
 
 //Basic
+
+%{
+    StringBuffer string = new StringBuffer();
+%}
+
 digit = [0-9]
 letra = [a-zA-Z]
 espacio= "\t"|" "
@@ -75,13 +80,13 @@ id = {letra}({letra}|{digit})*
   {endLine} {}
   {write} {System.out.println("<WRITE, "+yyline+">");}
   {tipo}  {System.out.println("<TIPO, "+yytext()+", "+yyline+">");}
-  {if}  {return new Symbol(Amuse.if, yychar, yyline);}
-  {else}  {return new Symbol(Amuse.else, yychar, yyline);}
+  {if}  {return new Symbol(Amuse.ifstart, yychar, yyline);}
+  {else}  {return new Symbol(Amuse.elseclause, yychar, yyline);}
   {elseif}  {return new Symbol(Amuse.elseif, yychar, yyline);}
   {endIf} {return new Symbol(Amuse.endif, yychar, yyline);}
   {while} {System.out.println("<WHILE, "+yyline+">");}
   {then}  {System.out.println("<THEN, "+yyline+">");}
-  {begin} {return new Symbol(Amuse.begin, yychar, yyline);}
+  {begin} {return new Symbol(Amuse.Begin, yychar, yyline);}
   {end} {System.out.println("<END, "+yyline+">");}
   {for} {System.out.println("<FOR, "+yyline+">");}
   {select}  {System.out.println("<SELECT, "+yyline+">");}
@@ -98,10 +103,10 @@ id = {letra}({letra}|{digit})*
   {void}  {System.out.println("<VOID, "+yyline+">");}
   {main}  {System.out.println("<MAIN, "+yyline+">");}
   {id}  {return new Symbol(Amuse.id, yychar, yyline);}
-  {boolean}   {return new Symbol(Amuse.boolean, yychar, yyline);}
+  {boolean}   {return new Symbol(Amuse.booleano, yychar, yyline);}
   {number}  {return new Symbol(Amuse.number, yychar, yyline);}
   "}" {return new Symbol(Amuse.cbClose, yychar, yyline);}
-  "{" {return new Symbol(Amuse.cvOpen, yychar, yyline);}
+  "{" {return new Symbol(Amuse.cbOpen, yychar, yyline);}
   ";" {System.out.println("<PCOMA, "+yyline+">");}
   \"  {string.setLength(0); yybegin(STRING);}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
