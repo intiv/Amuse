@@ -5,7 +5,6 @@ import java_cup.runtime.Symbol;
 %cupsym Amuse
 %class scanner
 %unicode
-%int
 %line
 %column
 %char
@@ -86,7 +85,7 @@ id = {letra}({letra}|{digit})*
   {endIf} {return new Symbol(Amuse.endif, yychar, yyline);}
   {while} {System.out.println("<WHILE, "+yyline+">");}
   {then}  {System.out.println("<THEN, "+yyline+">");}
-  {begin} {return new Symbol(Amuse.Begin, yychar, yyline);}
+  {begin} {return new Symbol(Amuse.begin, yychar, yyline);}
   {end} {System.out.println("<END, "+yyline+">");}
   {for} {System.out.println("<FOR, "+yyline+">");}
   {select}  {System.out.println("<SELECT, "+yyline+">");}

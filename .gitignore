@@ -1,4 +1,4 @@
-*.java
 *.class
 *.java~
 /Amuse/nbproject/private/
+/Amuse/build/
