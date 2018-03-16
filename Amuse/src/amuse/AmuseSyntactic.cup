@@ -17,6 +17,6 @@ start with START;
 
 START ::= EXP;
 
-EXP ::= ifstart {: System.out.println("if"); :} parIzq number parDer {: System.out.println("Condicion"); :} begin EXP ELSIF endif {: System.out.println("No murio");:} | number;
+EXP ::= ifstart {: System.out.println("if"); :} parIzq number parDer {: System.out.println("Condicion"); :} begin EXP ELSIF endif {: System.out.println("No murio");:} | number | ;
 
-ELSIF ::= elseif EXP elseclause EXP;
+ELSIF ::= elseif parIzq number parDer EXP elseclause EXP;

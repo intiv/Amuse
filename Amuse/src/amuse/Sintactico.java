@@ -31,9 +31,9 @@ public class Sintactico extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\007\000\002\002\004\000\002\002\003\000\002\005" +
+    "\000\010\000\002\002\004\000\002\002\003\000\002\005" +
     "\002\000\002\006\002\000\002\003\014\000\002\003\003" +
-    "\000\002\004\006" });
+    "\000\002\003\002\000\002\004\011" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -41,16 +41,18 @@ public class Sintactico extends java_cup.runtime.lr_parser {
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\023\000\006\004\006\013\005\001\002\000\004\002" +
-    "\000\001\002\000\012\002\ufffc\005\ufffc\006\ufffc\007\ufffc" +
-    "\001\002\000\004\014\uffff\001\002\000\004\002\010\001" +
-    "\002\000\004\002\001\001\002\000\004\014\012\001\002" +
-    "\000\004\013\013\001\002\000\004\015\014\001\002\000" +
-    "\004\010\ufffe\001\002\000\004\010\016\001\002\000\006" +
-    "\004\006\013\005\001\002\000\004\006\021\001\002\000" +
-    "\004\007\025\001\002\000\006\004\006\013\005\001\002" +
-    "\000\004\005\023\001\002\000\006\004\006\013\005\001" +
-    "\002\000\004\007\ufffb\001\002\000\012\002\ufffd\005\ufffd" +
+    "\000\026\000\010\002\ufffb\004\006\013\005\001\002\000" +
+    "\004\002\000\001\002\000\012\002\ufffc\005\ufffc\006\ufffc" +
+    "\007\ufffc\001\002\000\004\014\uffff\001\002\000\004\002" +
+    "\010\001\002\000\004\002\001\001\002\000\004\014\012" +
+    "\001\002\000\004\013\013\001\002\000\004\015\014\001" +
+    "\002\000\004\010\ufffe\001\002\000\004\010\016\001\002" +
+    "\000\010\004\006\006\ufffb\013\005\001\002\000\004\006" +
+    "\021\001\002\000\004\007\030\001\002\000\004\014\022" +
+    "\001\002\000\004\013\023\001\002\000\004\015\024\001" +
+    "\002\000\010\004\006\005\ufffb\013\005\001\002\000\004" +
+    "\005\026\001\002\000\010\004\006\007\ufffb\013\005\001" +
+    "\002\000\004\007\ufffa\001\002\000\012\002\ufffd\005\ufffd" +
     "\006\ufffd\007\ufffd\001\002" });
 
   /** Access to parse-action table. */
@@ -59,14 +61,15 @@ public class Sintactico extends java_cup.runtime.lr_parser {
   /** <code>reduce_goto</code> table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\023\000\006\002\006\003\003\001\001\000\002\001" +
+    "\000\026\000\006\002\006\003\003\001\001\000\002\001" +
     "\001\000\002\001\001\000\004\005\010\001\001\000\002" +
     "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
     "\001\000\002\001\001\000\004\006\014\001\001\000\002" +
     "\001\001\000\004\003\016\001\001\000\004\004\017\001" +
-    "\001\000\002\001\001\000\004\003\021\001\001\000\002" +
-    "\001\001\000\004\003\023\001\001\000\002\001\001\000" +
-    "\002\001\001" });
+    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\004\003\024\001\001\000\002\001" +
+    "\001\000\004\003\026\001\001\000\002\001\001\000\002" +
+    "\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
   public short[][] reduce_table() {return _reduce_table;}
@@ -196,11 +199,20 @@ class CUP$Sintactico$actions {
           return CUP$Sintactico$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 6: // ELSIF ::= elseif EXP elseclause EXP 
+          case 6: // EXP ::= 
             {
               Object RESULT =null;
 
-              CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("ELSIF",2, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-3)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
+              CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("EXP",1, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
+            }
+          return CUP$Sintactico$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 7: // ELSIF ::= elseif parIzq number parDer EXP elseclause EXP 
+            {
+              Object RESULT =null;
+
+              CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("ELSIF",2, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-6)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
 

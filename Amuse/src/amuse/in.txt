@@ -1,8 +1,8 @@
 if (5)
 begin
-8
-elseif
-5
+
+elseif (10)
+
 else
 10
 endif

@@ -23,17 +23,34 @@ public class AmuseMain {
      */
     public static void main(String[] args) {
         try{
-        File file = new File("./src/amuse/in.txt");
-        FileReader fr = new FileReader(file);
-        scanner lex = new scanner(fr);
-        Sintactico sint = new Sintactico(lex);
-        Symbol simbolo = sint.parse();
-        System.out.println(simbolo);
-        }catch(IOException ioex){
-            ioex.printStackTrace();
+            buildParser();
+            File file = new File("./src/amuse/in.txt");
+            FileReader fr = new FileReader(file);
+            scanner lex = new scanner(fr);
+            Sintactico sint = new Sintactico(lex);
+            Symbol simbolo = sint.parse();
+            System.out.println(simbolo);
         } catch (Exception ex) {
             Logger.getLogger(AmuseMain.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    private static void buildParser() {
+       String params[] = new String[7];
+
+       params[0] = "-destdir";
+       params[1] = "src/amuse/";
+       params[2] = "-parser";
+       params[3] = "Sintactico";
+       params[4] = "-symbols";
+       params[5] = "Amuse";
+       
+       params[6] = "src/amuse/AmuseSyntactic.cup";
+       try {
+           java_cup.Main.main(params);
+       } catch (Exception ex) {
+           Logger.getLogger(Amuse.class.getName()).log(Level.SEVERE, null, ex);
+       }
+   }
     
 }
