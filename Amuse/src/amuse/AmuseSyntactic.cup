@@ -9,14 +9,18 @@ action code
 {:
 :}
 
-terminal String ifstart, elseclause, elseif, endif, begin, booleano, id, number, parIzq, parDer, cbClose, cbOpen;
+terminal String ifstart, ifthen, elseclause, elseif, endif, begin, booleano, id, number, voidType, 
+                parIzq, parDer, cbClose, cbOpen, opRel, opComp, MainProgram;
 
 non terminal START, EXP, ELSIF;
 
 start with START;
 
-START ::= EXP;
+START ::= MainProgram parIzq {: System.out.println("Entro a main");:} parDer cbOpen EXP cbClose;
 
-EXP ::= ifstart {: System.out.println("if"); :} parIzq number parDer {: System.out.println("Condicion"); :} begin EXP ELSIF endif {: System.out.println("No murio");:} | number | ;
+EXP ::= ifstart {: System.out.println("if"); :} parIzq number parDer {: System.out.println("Condicion"); :} ifthen EXP ELSIF endif {: System.out.println("No murio");:} EXP
+        | number:numero {: System.out.println("Number: "+numero);:} EXP
+        | id:ident {: System.out.println("ID: "+ident);:} EXP
+        | ;
 
 ELSIF ::= elseif parIzq number parDer EXP elseclause EXP;

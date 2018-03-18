@@ -47,7 +47,6 @@ bool = "bool"
 num = "num"
 char = "char"
 array = ({bool}|{num}|{char})"[]"
-tipo = {bool}|{num}|{char}|{array}
 
 //Operators
 parIzq = "("
@@ -78,8 +77,8 @@ id = {letra}({letra}|{digit})*
   {espacio} {}
   {endLine} {}
   {write} {System.out.println("<WRITE, "+yyline+">");}
-  {tipo}  {System.out.println("<TIPO, "+yytext()+", "+yyline+">");}
   {if}  {return new Symbol(Amuse.ifstart, yychar, yyline);}
+  {then} {return new Symbol(Amuse.ifthen, yychar, yyline);}
   {else}  {return new Symbol(Amuse.elseclause, yychar, yyline);}
   {elseif}  {return new Symbol(Amuse.elseif, yychar, yyline);}
   {endIf} {return new Symbol(Amuse.endif, yychar, yyline);}
@@ -92,18 +91,18 @@ id = {letra}({letra}|{digit})*
   {option}  {System.out.println("<OPTION, "+yyline+">");}
   {break} {System.out.println("<BREAK, "+yyline+">");}
   {return}  {System.out.println("<RETURN, "+yyline+">");}
-  {opRel}  {System.out.println("<OPREL, "+yytext()+", "+yyline+">");}
-  {opComp}  {System.out.println("<OPCOMP, "+yytext()+", "+yyline+">");}
+  {opRel}  {return new Symbol(Amuse.opRel, yychar, yyline, yytext());}
+  {opComp}  {return new Symbol(Amuse.opComp, yychar, yyline, yytext());}
   {operador}  {System.out.println("<OPERADOR, "+yytext()+", "+yyline+">");}
   {parIzq}  {return new Symbol(Amuse.parIzq, yychar, yyline);}
   {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
   {asig}  {System.out.println("<ASIG, "+yyline+">");}
   ":" {System.out.println("<COLUMN, "+yyline+">");}
-  {void}  {System.out.println("<VOID, "+yyline+">");}
-  {main}  {System.out.println("<MAIN, "+yyline+">");}
-  {id}  {return new Symbol(Amuse.id, yychar, yyline);}
-  {boolean}   {return new Symbol(Amuse.booleano, yychar, yyline);}
-  {number}  {return new Symbol(Amuse.number, yychar, yyline);}
+  {void}  {return new Symbol(Amuse.voidType, yychar, yyline);}
+  {main}  {return new Symbol(Amuse.MainProgram, yychar, yyline);}
+  {id}  {return new Symbol(Amuse.id, yychar, yyline, yytext());}
+  {boolean}   {return new Symbol(Amuse.booleano, yychar, yyline, yytext());}
+  {number}  {return new Symbol(Amuse.number, yychar, yyline, yytext());}
   "}" {return new Symbol(Amuse.cbClose, yychar, yyline);}
   "{" {return new Symbol(Amuse.cbOpen, yychar, yyline);}
   ";" {System.out.println("<PCOMA, "+yyline+">");}

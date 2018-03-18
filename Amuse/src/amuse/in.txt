@@ -1,8 +1,9 @@
-if (5)
-begin
+Main(){
+    if (5) then
 
-elseif (10)
-
-else
-10
-endif
+    elseif (10)
+        50
+    else
+        10
+    endif
+}
