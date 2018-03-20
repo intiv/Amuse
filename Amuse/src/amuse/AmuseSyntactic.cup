@@ -10,17 +10,26 @@ action code
 :}
 
 terminal String ifstart, ifthen, elseclause, elseif, endif, begin, booleano, id, number, voidType, 
-                parIzq, parDer, cbClose, cbOpen, opRel, opComp, MainProgram;
+                parIzq, parDer, cbClose, cbOpen, opRel, opArit, opOr, opAnd, opNot, MainProgram;
 
-non terminal START, EXP, ELSIF;
+non terminal START, EXP;
+non terminal ELSIF, ELSE;
+non terminal COND, COND2, COND3, COND4;
 
 start with START;
 
 START ::= MainProgram parIzq {: System.out.println("Entro a main");:} parDer cbOpen EXP cbClose;
 
-EXP ::= ifstart {: System.out.println("if"); :} parIzq number parDer {: System.out.println("Condicion"); :} ifthen EXP ELSIF endif {: System.out.println("No murio");:} EXP
+EXP ::= ifstart {: System.out.println("if"); :} parIzq COND parDer ifthen EXP ELSIF endif {: System.out.println("No murio");:} EXP
         | number:numero {: System.out.println("Number: "+numero);:} EXP
         | id:ident {: System.out.println("ID: "+ident);:} EXP
         | ;
 
-ELSIF ::= elseif parIzq number parDer EXP elseclause EXP;
+ELSIF ::= elseif parIzq COND parDer ifthen EXP ELSIF | ELSE;
+ELSE ::= elseclause ifthen EXP | ;
+
+COND ::= opNot {: System.out.print("Condicion negada");:} COND2 | {:System.out.print("Condicion normal");:} COND2 ;
+COND2 ::= id opRel COND3 | number opRel COND3;
+COND3 ::= id COND4 | number COND4;
+COND4 ::= opOr {:System.out.print(", operador: OR ");:} COND | {:System.out.print(", operador: AND ");:} opAnd COND | {:System.out.println();:} ;
+

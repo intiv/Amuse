@@ -55,8 +55,7 @@ not = "!"
 or = "||"
 and = "&&"
 opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
-operador = "+" | "-" | "*" | "/" | "^" 
-opComp = {not}|{or}|{and}
+opArit = "+" | "-" | "*" | "/" | "^" 
 asig = ":="
 
 //Comments
@@ -83,7 +82,6 @@ id = {letra}({letra}|{digit})*
   {elseif}  {return new Symbol(Amuse.elseif, yychar, yyline);}
   {endIf} {return new Symbol(Amuse.endif, yychar, yyline);}
   {while} {System.out.println("<WHILE, "+yyline+">");}
-  {then}  {System.out.println("<THEN, "+yyline+">");}
   {begin} {return new Symbol(Amuse.begin, yychar, yyline);}
   {end} {System.out.println("<END, "+yyline+">");}
   {for} {System.out.println("<FOR, "+yyline+">");}
@@ -92,8 +90,10 @@ id = {letra}({letra}|{digit})*
   {break} {System.out.println("<BREAK, "+yyline+">");}
   {return}  {System.out.println("<RETURN, "+yyline+">");}
   {opRel}  {return new Symbol(Amuse.opRel, yychar, yyline, yytext());}
-  {opComp}  {return new Symbol(Amuse.opComp, yychar, yyline, yytext());}
-  {operador}  {System.out.println("<OPERADOR, "+yytext()+", "+yyline+">");}
+  {not} {return new Symbol(Amuse.opNot, yychar, yyline);}
+  {and} {return new Symbol(Amuse.opAnd, yychar, yyline);}
+  {or}  {return new Symbol(Amuse.opOr, yychar, yyline);}
+  {opArit}  {return new Symbol(Amuse.opArit, yychar, yyline, yytext());}
   {parIzq}  {return new Symbol(Amuse.parIzq, yychar, yyline);}
   {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
   {asig}  {System.out.println("<ASIG, "+yyline+">");}

@@ -59,17 +59,17 @@ public class scanner implements java_cup.runtime.Scanner {
     "\2\0\1\1\1\2\2\3\1\0\3\2\1\0\10\2"+
     "\1\4\1\5\1\6\2\0\1\7\1\0\2\10\1\11"+
     "\1\0\1\12\1\13\1\14\1\15\1\16\1\17\2\20"+
-    "\4\2\1\0\12\2\1\7\1\6\1\0\1\21\1\3"+
-    "\1\22\1\2\1\0\1\2\1\23\1\0\1\2\1\0"+
-    "\1\2\1\0\4\2\1\0\2\2\1\0\2\2\2\0"+
-    "\2\24\1\0\1\2\1\0\1\2\1\0\1\2\1\0"+
-    "\1\2\1\25\1\0\2\2\2\26\1\0\1\2\2\27"+
-    "\1\2\1\30\1\0\1\2\2\31\1\0\1\2\2\32"+
-    "\2\33\2\34\2\35\1\0\2\2\2\36\2\37\2\40"+
-    "\1\41";
+    "\4\2\1\0\12\2\1\7\1\21\1\22\1\0\1\23"+
+    "\1\3\1\24\1\2\1\0\1\2\1\25\1\0\1\2"+
+    "\1\0\1\2\1\0\4\2\1\0\2\2\1\0\2\2"+
+    "\2\0\2\26\1\0\1\2\1\0\1\2\1\0\1\2"+
+    "\1\0\1\2\1\27\1\0\2\2\2\30\1\0\1\2"+
+    "\2\31\1\2\1\32\1\0\1\2\2\33\1\0\1\2"+
+    "\2\34\2\35\2\36\2\37\1\0\2\2\2\40\2\41"+
+    "\2\42\1\43";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[126];
+    int [] result = new int[127];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -100,19 +100,19 @@ public class scanner implements java_cup.runtime.Scanner {
     "\0\u036a\0\u036a\0\270\0\u03f4\0\u0422\0\u0450\0\270\0\270"+
     "\0\270\0\270\0\u047e\0\270\0\270\0\212\0\u04ac\0\u04da"+
     "\0\u0508\0\u0536\0\u0564\0\u0592\0\u05c0\0\u05ee\0\u061c\0\u064a"+
-    "\0\u0678\0\u06a6\0\u06d4\0\u0702\0\u0730\0\270\0\270\0\u075e"+
-    "\0\270\0\u078c\0\212\0\u07ba\0\u07e8\0\u0816\0\u0844\0\u0872"+
-    "\0\u08a0\0\u08ce\0\u08fc\0\u092a\0\u0958\0\u0986\0\u09b4\0\u09e2"+
-    "\0\u0a10\0\u0a3e\0\u0a6c\0\u0a9a\0\u0ac8\0\u0af6\0\u0b24\0\u0b52"+
-    "\0\u0b80\0\u0bae\0\u0bdc\0\u0c0a\0\u0c38\0\u0c66\0\u0c94\0\u0cc2"+
-    "\0\u0cf0\0\u0d1e\0\212\0\u0d4c\0\u0d7a\0\u0da8\0\270\0\212"+
-    "\0\u0dd6\0\u0e04\0\270\0\212\0\u0e32\0\270\0\u0e60\0\u0e8e"+
-    "\0\270\0\212\0\u0ebc\0\u0eea\0\270\0\212\0\270\0\212"+
-    "\0\270\0\212\0\270\0\212\0\u0f18\0\u0f46\0\u0f74\0\270"+
-    "\0\212\0\270\0\212\0\270\0\212\0\212";
+    "\0\u0678\0\u06a6\0\u06d4\0\u0702\0\u0730\0\270\0\270\0\270"+
+    "\0\u075e\0\270\0\u078c\0\212\0\u07ba\0\u07e8\0\u0816\0\u0844"+
+    "\0\u0872\0\u08a0\0\u08ce\0\u08fc\0\u092a\0\u0958\0\u0986\0\u09b4"+
+    "\0\u09e2\0\u0a10\0\u0a3e\0\u0a6c\0\u0a9a\0\u0ac8\0\u0af6\0\u0b24"+
+    "\0\u0b52\0\u0b80\0\u0bae\0\u0bdc\0\u0c0a\0\u0c38\0\u0c66\0\u0c94"+
+    "\0\u0cc2\0\u0cf0\0\u0d1e\0\212\0\u0d4c\0\u0d7a\0\u0da8\0\270"+
+    "\0\212\0\u0dd6\0\u0e04\0\270\0\212\0\u0e32\0\270\0\u0e60"+
+    "\0\u0e8e\0\270\0\212\0\u0ebc\0\u0eea\0\270\0\212\0\270"+
+    "\0\212\0\270\0\212\0\270\0\212\0\u0f18\0\u0f46\0\u0f74"+
+    "\0\270\0\212\0\270\0\212\0\270\0\212\0\212";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[126];
+    int [] result = new int[127];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -158,63 +158,63 @@ public class scanner implements java_cup.runtime.Scanner {
     "\2\4\4\0\4\4\1\0\13\4\1\64\3\4\1\0"+
     "\2\4\21\0\2\4\4\0\2\4\1\65\1\4\1\0"+
     "\17\4\1\0\2\4\64\0\1\66\52\0\1\67\56\0"+
-    "\1\67\63\0\1\70\51\0\1\71\61\0\1\72\5\0"+
+    "\1\70\63\0\1\71\51\0\1\72\61\0\1\73\5\0"+
     "\4\43\2\0\46\43\3\0\2\4\4\0\4\4\1\0"+
-    "\14\4\1\73\2\4\1\0\2\4\21\0\2\4\4\0"+
-    "\3\4\1\74\1\0\17\4\1\0\2\4\21\0\2\4"+
-    "\4\0\4\4\1\75\1\76\16\4\1\0\2\4\21\0"+
-    "\2\4\4\0\4\4\1\0\2\4\1\77\14\4\1\0"+
-    "\2\4\32\0\1\100\44\0\2\4\4\0\3\4\1\101"+
-    "\1\0\17\4\1\0\2\4\21\0\2\4\3\0\1\102"+
-    "\1\103\3\4\1\0\17\4\1\0\2\4\21\0\2\4"+
-    "\3\0\1\104\1\105\3\4\1\0\17\4\1\0\2\4"+
-    "\21\0\2\4\4\0\2\4\1\106\1\4\1\0\17\4"+
+    "\14\4\1\74\2\4\1\0\2\4\21\0\2\4\4\0"+
+    "\3\4\1\75\1\0\17\4\1\0\2\4\21\0\2\4"+
+    "\4\0\4\4\1\76\1\77\16\4\1\0\2\4\21\0"+
+    "\2\4\4\0\4\4\1\0\2\4\1\100\14\4\1\0"+
+    "\2\4\32\0\1\101\44\0\2\4\4\0\3\4\1\102"+
+    "\1\0\17\4\1\0\2\4\21\0\2\4\3\0\1\103"+
+    "\1\104\3\4\1\0\17\4\1\0\2\4\21\0\2\4"+
+    "\3\0\1\105\1\106\3\4\1\0\17\4\1\0\2\4"+
+    "\21\0\2\4\4\0\2\4\1\107\1\4\1\0\17\4"+
     "\1\0\2\4\21\0\2\4\4\0\4\4\1\0\7\4"+
-    "\1\107\7\4\1\0\2\4\21\0\2\4\4\0\2\4"+
-    "\1\110\1\4\1\0\17\4\1\0\2\4\21\0\2\4"+
-    "\3\0\1\111\1\112\3\4\1\0\17\4\1\0\2\4"+
-    "\21\0\2\4\4\0\4\4\1\0\5\4\1\113\11\4"+
-    "\1\0\2\4\21\0\2\4\3\0\1\114\1\115\3\4"+
+    "\1\110\7\4\1\0\2\4\21\0\2\4\4\0\2\4"+
+    "\1\111\1\4\1\0\17\4\1\0\2\4\21\0\2\4"+
+    "\3\0\1\112\1\113\3\4\1\0\17\4\1\0\2\4"+
+    "\21\0\2\4\4\0\4\4\1\0\5\4\1\114\11\4"+
+    "\1\0\2\4\21\0\2\4\3\0\1\115\1\116\3\4"+
     "\1\0\17\4\1\0\2\4\21\0\2\4\4\0\4\4"+
-    "\1\0\5\4\1\116\11\4\1\0\2\4\21\0\5\70"+
-    "\1\0\4\70\1\0\17\70\1\0\2\70\12\0\1\117"+
-    "\6\0\3\72\3\0\4\72\1\0\17\72\1\0\2\72"+
-    "\21\0\2\4\4\0\4\4\1\120\17\4\1\0\2\4"+
-    "\31\0\1\121\45\0\2\4\4\0\2\4\1\122\1\4"+
-    "\1\0\17\4\1\0\2\4\21\0\2\4\3\0\1\123"+
-    "\1\124\3\4\1\0\17\4\1\0\2\4\31\0\1\125"+
-    "\45\0\2\4\4\0\2\4\1\126\1\4\1\0\17\4"+
-    "\1\0\2\4\32\0\1\127\44\0\2\4\4\0\3\4"+
-    "\1\130\1\0\17\4\1\0\2\4\41\0\1\131\35\0"+
-    "\2\4\4\0\4\4\1\0\5\4\1\132\11\4\1\0"+
-    "\2\4\21\0\2\4\4\0\4\4\1\0\1\4\1\133"+
-    "\15\4\1\0\2\4\21\0\2\4\3\0\1\134\1\135"+
+    "\1\0\5\4\1\117\11\4\1\0\2\4\21\0\5\71"+
+    "\1\0\4\71\1\0\17\71\1\0\2\71\12\0\1\120"+
+    "\6\0\3\73\3\0\4\73\1\0\17\73\1\0\2\73"+
+    "\21\0\2\4\4\0\4\4\1\121\17\4\1\0\2\4"+
+    "\31\0\1\122\45\0\2\4\4\0\2\4\1\123\1\4"+
+    "\1\0\17\4\1\0\2\4\21\0\2\4\3\0\1\124"+
+    "\1\125\3\4\1\0\17\4\1\0\2\4\31\0\1\126"+
+    "\45\0\2\4\4\0\2\4\1\127\1\4\1\0\17\4"+
+    "\1\0\2\4\32\0\1\130\44\0\2\4\4\0\3\4"+
+    "\1\131\1\0\17\4\1\0\2\4\41\0\1\132\35\0"+
+    "\2\4\4\0\4\4\1\0\5\4\1\133\11\4\1\0"+
+    "\2\4\21\0\2\4\4\0\4\4\1\0\1\4\1\134"+
+    "\15\4\1\0\2\4\21\0\2\4\3\0\1\135\1\136"+
     "\3\4\1\0\17\4\1\0\2\4\21\0\2\4\4\0"+
-    "\4\4\1\0\13\4\1\136\3\4\1\0\2\4\36\0"+
-    "\1\137\40\0\2\4\4\0\4\4\1\0\2\4\1\140"+
-    "\14\4\1\0\2\4\21\0\2\4\3\0\1\141\1\142"+
-    "\3\4\1\0\17\4\1\0\2\4\35\0\1\143\41\0"+
-    "\2\4\4\0\4\4\1\0\1\4\1\144\15\4\1\0"+
+    "\4\4\1\0\13\4\1\137\3\4\1\0\2\4\36\0"+
+    "\1\140\40\0\2\4\4\0\4\4\1\0\2\4\1\141"+
+    "\14\4\1\0\2\4\21\0\2\4\3\0\1\142\1\143"+
+    "\3\4\1\0\17\4\1\0\2\4\35\0\1\144\41\0"+
+    "\2\4\4\0\4\4\1\0\1\4\1\145\15\4\1\0"+
     "\2\4\21\0\2\4\4\0\4\4\1\0\17\4\1\0"+
-    "\1\4\1\145\66\0\1\5\20\0\1\146\52\0\2\147"+
-    "\47\0\2\4\3\0\1\147\1\150\3\4\1\0\17\4"+
-    "\1\0\2\4\30\0\1\151\46\0\2\4\4\0\1\4"+
-    "\1\152\2\4\1\0\17\4\1\0\2\4\51\0\1\153"+
-    "\25\0\2\4\4\0\4\4\1\0\15\4\1\154\1\4"+
-    "\1\0\2\4\31\0\1\155\45\0\2\4\4\0\2\4"+
-    "\1\156\1\4\1\0\17\4\1\0\2\4\31\0\1\157"+
-    "\45\0\2\4\4\0\2\4\1\160\1\4\1\0\17\4"+
-    "\1\0\2\4\35\0\1\161\41\0\2\4\4\0\4\4"+
-    "\1\0\1\4\1\162\15\4\1\0\2\4\21\0\2\4"+
-    "\4\0\4\4\1\0\17\4\1\163\1\164\1\4\45\0"+
-    "\1\165\31\0\2\4\4\0\4\4\1\0\11\4\1\166"+
+    "\1\4\1\146\66\0\1\5\20\0\1\147\52\0\2\150"+
+    "\47\0\2\4\3\0\1\150\1\151\3\4\1\0\17\4"+
+    "\1\0\2\4\30\0\1\152\46\0\2\4\4\0\1\4"+
+    "\1\153\2\4\1\0\17\4\1\0\2\4\51\0\1\154"+
+    "\25\0\2\4\4\0\4\4\1\0\15\4\1\155\1\4"+
+    "\1\0\2\4\31\0\1\156\45\0\2\4\4\0\2\4"+
+    "\1\157\1\4\1\0\17\4\1\0\2\4\31\0\1\160"+
+    "\45\0\2\4\4\0\2\4\1\161\1\4\1\0\17\4"+
+    "\1\0\2\4\35\0\1\162\41\0\2\4\4\0\4\4"+
+    "\1\0\1\4\1\163\15\4\1\0\2\4\21\0\2\4"+
+    "\4\0\4\4\1\0\17\4\1\164\1\165\1\4\45\0"+
+    "\1\166\31\0\2\4\4\0\4\4\1\0\11\4\1\167"+
     "\5\4\1\0\2\4\21\0\2\4\4\0\4\4\1\0"+
-    "\14\4\1\167\2\4\1\0\2\4\30\0\1\170\46\0"+
-    "\2\4\4\0\1\4\1\171\2\4\1\0\17\4\1\0"+
-    "\2\4\41\0\1\172\35\0\2\4\4\0\4\4\1\0"+
-    "\5\4\1\173\11\4\1\0\2\4\35\0\1\174\41\0"+
-    "\2\4\4\0\4\4\1\0\1\4\1\175\15\4\1\0"+
-    "\2\4\21\0\2\4\4\0\4\4\1\0\1\4\1\176"+
+    "\14\4\1\170\2\4\1\0\2\4\30\0\1\171\46\0"+
+    "\2\4\4\0\1\4\1\172\2\4\1\0\17\4\1\0"+
+    "\2\4\41\0\1\173\35\0\2\4\4\0\4\4\1\0"+
+    "\5\4\1\174\11\4\1\0\2\4\35\0\1\175\41\0"+
+    "\2\4\4\0\4\4\1\0\1\4\1\176\15\4\1\0"+
+    "\2\4\21\0\2\4\4\0\4\4\1\0\1\4\1\177"+
     "\15\4\1\0\2\4\20\0";
 
   private static int [] zzUnpackTrans() {
@@ -258,7 +258,7 @@ public class scanner implements java_cup.runtime.Scanner {
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\2\0\2\1\1\11\1\1\1\0\3\1\1\0\10\1"+
     "\2\11\1\1\2\0\1\1\1\0\1\11\2\1\1\0"+
-    "\4\11\1\1\2\11\5\1\1\0\12\1\2\11\1\0"+
+    "\4\11\1\1\2\11\5\1\1\0\12\1\3\11\1\0"+
     "\1\11\3\1\1\0\2\1\1\0\1\1\1\0\1\1"+
     "\1\0\4\1\1\0\2\1\1\0\2\1\2\0\2\1"+
     "\1\0\1\1\1\0\1\1\1\0\1\1\1\0\2\1"+
@@ -268,7 +268,7 @@ public class scanner implements java_cup.runtime.Scanner {
     "\2\1\1\11\1\1\1\11\1\1\1\11\2\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[126];
+    int [] result = new int[127];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -735,135 +735,143 @@ public class scanner implements java_cup.runtime.Scanner {
           case 1: 
             { return new Symbol(Amuse.number, yychar, yyline, yytext());
             }
-          case 34: break;
+          case 36: break;
           case 2: 
             { return new Symbol(Amuse.id, yychar, yyline, yytext());
             }
-          case 35: break;
+          case 37: break;
           case 3: 
             { 
             }
-          case 36: break;
+          case 38: break;
           case 4: 
             { return new Symbol(Amuse.parIzq, yychar, yyline);
             }
-          case 37: break;
+          case 39: break;
           case 5: 
             { return new Symbol(Amuse.parDer, yychar, yyline);
             }
-          case 38: break;
+          case 40: break;
           case 6: 
-            { return new Symbol(Amuse.opComp, yychar, yyline, yytext());
+            { return new Symbol(Amuse.opNot, yychar, yyline);
             }
-          case 39: break;
+          case 41: break;
           case 7: 
             { return new Symbol(Amuse.opRel, yychar, yyline, yytext());
             }
-          case 40: break;
+          case 42: break;
           case 8: 
-            { System.out.println("<OPERADOR, "+yytext()+", "+yyline+">");
+            { return new Symbol(Amuse.opArit, yychar, yyline, yytext());
             }
-          case 41: break;
+          case 43: break;
           case 9: 
             { System.out.println("<COLUMN, "+yyline+">");
             }
-          case 42: break;
+          case 44: break;
           case 10: 
             { return new Symbol(Amuse.cbClose, yychar, yyline);
             }
-          case 43: break;
+          case 45: break;
           case 11: 
             { return new Symbol(Amuse.cbOpen, yychar, yyline);
             }
-          case 44: break;
+          case 46: break;
           case 12: 
             { System.out.println("<PCOMA, "+yyline+">");
             }
-          case 45: break;
+          case 47: break;
           case 13: 
             { string.setLength(0); yybegin(STRING);
             }
-          case 46: break;
+          case 48: break;
           case 14: 
             { string.append(yytext());
             }
-          case 47: break;
+          case 49: break;
           case 15: 
             { System.out.println("<STRING, "+string+", "+yyline+">"); yybegin(YYINITIAL);
             }
-          case 48: break;
+          case 50: break;
           case 16: 
             { return new Symbol(Amuse.ifstart, yychar, yyline);
             }
-          case 49: break;
-          case 17: 
-            { System.out.println("<ASIG, "+yyline+">");
-            }
-          case 50: break;
-          case 18: 
-            { System.out.println("<FOR, "+yyline+">");
-            }
           case 51: break;
-          case 19: 
-            { System.out.println("<END, "+yyline+">");
+          case 17: 
+            { return new Symbol(Amuse.opOr, yychar, yyline);
             }
           case 52: break;
-          case 20: 
-            { return new Symbol(Amuse.elseclause, yychar, yyline);
+          case 18: 
+            { return new Symbol(Amuse.opAnd, yychar, yyline);
             }
           case 53: break;
-          case 21: 
-            { return new Symbol(Amuse.ifthen, yychar, yyline);
+          case 19: 
+            { System.out.println("<ASIG, "+yyline+">");
             }
           case 54: break;
-          case 22: 
-            { return new Symbol(Amuse.voidType, yychar, yyline);
+          case 20: 
+            { System.out.println("<FOR, "+yyline+">");
             }
           case 55: break;
-          case 23: 
-            { return new Symbol(Amuse.MainProgram, yychar, yyline);
+          case 21: 
+            { System.out.println("<END, "+yyline+">");
             }
           case 56: break;
-          case 24: 
-            { return new Symbol(Amuse.booleano, yychar, yyline, yytext());
+          case 22: 
+            { return new Symbol(Amuse.elseclause, yychar, yyline);
             }
           case 57: break;
-          case 25: 
-            { return new Symbol(Amuse.endif, yychar, yyline);
+          case 23: 
+            { return new Symbol(Amuse.ifthen, yychar, yyline);
             }
           case 58: break;
-          case 26: 
-            { System.out.println("<WHILE, "+yyline+">");
+          case 24: 
+            { return new Symbol(Amuse.voidType, yychar, yyline);
             }
           case 59: break;
-          case 27: 
-            { System.out.println("<WRITE, "+yyline+">");
+          case 25: 
+            { return new Symbol(Amuse.MainProgram, yychar, yyline);
             }
           case 60: break;
-          case 28: 
-            { return new Symbol(Amuse.begin, yychar, yyline);
+          case 26: 
+            { return new Symbol(Amuse.booleano, yychar, yyline, yytext());
             }
           case 61: break;
-          case 29: 
-            { System.out.println("<BREAK, "+yyline+">");
+          case 27: 
+            { return new Symbol(Amuse.endif, yychar, yyline);
             }
           case 62: break;
-          case 30: 
-            { return new Symbol(Amuse.elseif, yychar, yyline);
+          case 28: 
+            { System.out.println("<WHILE, "+yyline+">");
             }
           case 63: break;
-          case 31: 
-            { System.out.println("<SELECT, "+yyline+">");
+          case 29: 
+            { System.out.println("<WRITE, "+yyline+">");
             }
           case 64: break;
-          case 32: 
-            { System.out.println("<OPTION, "+yyline+">");
+          case 30: 
+            { return new Symbol(Amuse.begin, yychar, yyline);
             }
           case 65: break;
-          case 33: 
-            { System.out.println("<RETURN, "+yyline+">");
+          case 31: 
+            { System.out.println("<BREAK, "+yyline+">");
             }
           case 66: break;
+          case 32: 
+            { return new Symbol(Amuse.elseif, yychar, yyline);
+            }
+          case 67: break;
+          case 33: 
+            { System.out.println("<SELECT, "+yyline+">");
+            }
+          case 68: break;
+          case 34: 
+            { System.out.println("<OPTION, "+yyline+">");
+            }
+          case 69: break;
+          case 35: 
+            { System.out.println("<RETURN, "+yyline+">");
+            }
+          case 70: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }
