@@ -18,4 +18,12 @@ Main(){
     if(z <= 3) then
         2
     endif
+
+    while(hola < 10)
+        if(y == 2) then
+            while(y==2)
+                4
+            end
+        endif
+    end
 }

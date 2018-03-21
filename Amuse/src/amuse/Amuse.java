@@ -13,6 +13,7 @@ public class Amuse {
   public static final int number = 10;
   public static final int MainProgram = 21;
   public static final int parDer = 13;
+  public static final int end = 22;
   public static final int cbOpen = 15;
   public static final int booleano = 8;
   public static final int opAnd = 19;
@@ -27,6 +28,7 @@ public class Amuse {
   public static final int error = 1;
   public static final int voidType = 11;
   public static final int opArit = 17;
+  public static final int whilestart = 23;
   public static final int cbClose = 14;
   public static final int begin = 7;
   public static final int opOr = 18;
@@ -52,7 +54,9 @@ public class Amuse {
   "opOr",
   "opAnd",
   "opNot",
-  "MainProgram"
+  "MainProgram",
+  "end",
+  "whilestart"
   };
 }
 

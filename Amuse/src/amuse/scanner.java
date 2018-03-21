@@ -813,7 +813,7 @@ public class scanner implements java_cup.runtime.Scanner {
             }
           case 55: break;
           case 21: 
-            { System.out.println("<END, "+yyline+">");
+            { return new Symbol(Amuse.end, yychar, yyline);
             }
           case 56: break;
           case 22: 
@@ -841,7 +841,7 @@ public class scanner implements java_cup.runtime.Scanner {
             }
           case 62: break;
           case 28: 
-            { System.out.println("<WHILE, "+yyline+">");
+            { return new Symbol(Amuse.whilestart, yychar, yyline);
             }
           case 63: break;
           case 29: 

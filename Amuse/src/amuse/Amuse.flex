@@ -81,9 +81,9 @@ id = {letra}({letra}|{digit})*
   {else}  {return new Symbol(Amuse.elseclause, yychar, yyline);}
   {elseif}  {return new Symbol(Amuse.elseif, yychar, yyline);}
   {endIf} {return new Symbol(Amuse.endif, yychar, yyline);}
-  {while} {System.out.println("<WHILE, "+yyline+">");}
+  {while} {return new Symbol(Amuse.whilestart, yychar, yyline);}
   {begin} {return new Symbol(Amuse.begin, yychar, yyline);}
-  {end} {System.out.println("<END, "+yyline+">");}
+  {end} {return new Symbol(Amuse.end, yychar, yyline);}
   {for} {System.out.println("<FOR, "+yyline+">");}
   {select}  {System.out.println("<SELECT, "+yyline+">");}
   {option}  {System.out.println("<OPTION, "+yyline+">");}

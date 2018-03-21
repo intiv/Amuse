@@ -11,22 +11,28 @@ action code
 
 terminal String ifstart, ifthen, elseclause, elseif, endif, begin, booleano, id, number, voidType, 
                 parIzq, parDer, cbClose, cbOpen, opRel, opArit, opOr, opAnd, opNot, MainProgram;
+terminal String end, whilestart;
 
 non terminal START, EXP;
-non terminal ELSIF, ELSE;
+non terminal IF, ELSIF, ELSE;
+non terminal WHILE;
 non terminal COND, COND2, COND3, COND4;
 
 start with START;
 
 START ::= MainProgram parIzq {: System.out.println("Entro a main");:} parDer cbOpen EXP cbClose;
 
-EXP ::= ifstart {: System.out.println("if"); :} parIzq COND parDer ifthen EXP ELSIF endif {: System.out.println("No murio");:} EXP
+EXP ::= IF EXP
+        | WHILE EXP
         | number:numero {: System.out.println("Number: "+numero);:} EXP
         | id:ident {: System.out.println("ID: "+ident);:} EXP
         | ;
 
+IF ::= ifstart {: System.out.println("if"); :} parIzq COND parDer ifthen EXP ELSIF endif {: System.out.println("No murio");:}; 
 ELSIF ::= elseif parIzq COND parDer ifthen EXP ELSIF | ELSE;
 ELSE ::= elseclause ifthen EXP | ;
+
+WHILE ::= whilestart parIzq COND parDer {:System.out.println("Condicion while");:} EXP end {: System.out.println("fin wile"); :};
 
 COND ::= opNot {: System.out.print("Condicion negada");:} COND2 | {:System.out.print("Condicion normal");:} COND2 ;
 COND2 ::= id opRel COND3 | number opRel COND3;
