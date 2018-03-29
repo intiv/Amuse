@@ -9,14 +9,49 @@ action code
 {:
 :}
 
-terminal String ifstart, ifthen, elseclause, elseif, endif, begin, booleano, id, number, voidType, 
-                parIzq, parDer, cbClose, cbOpen, opRel, opArit, opOr, opAnd, opNot, MainProgram;
-terminal String end, whilestart;
+/**************
+ * Terminales *
+ **************/
 
+//If
+terminal String ifstart, ifthen, elseclause, elseif, endif;
+
+//Estructura 
+terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma;
+
+//Tipos
+terminal String booleano, id, number, voidType;
+
+//Operadores
+terminal String opRel, opArit, opOr, opAnd, opNot;
+
+//Valores
+terminal String bool, num, character;
+
+//While                
+terminal String whilestart;
+
+
+/*****************
+ * No Terminales *
+ *****************/
+
+//Inicial y Expresion
 non terminal START, EXP;
+
+//If
 non terminal IF, ELSIF, ELSE;
+
+//While
 non terminal WHILE;
+
+//Condiciones multipes, negadas o normales
 non terminal COND, COND2, COND3, COND4;
+
+//Funcion con retorno
+non terminal RETFUNC, RETFUNC2, RETFUNCBODY, RETVAL;
+
+non terminal ARGS, ARGS2, TIPO;
 
 start with START;
 
@@ -24,18 +59,38 @@ START ::= MainProgram parIzq {: System.out.println("Entro a main");:} parDer cbO
 
 EXP ::= IF EXP
         | WHILE EXP
-        | number:numero {: System.out.println("Number: "+numero);:} EXP
-        | id:ident {: System.out.println("ID: "+ident);:} EXP
+        | RETFUNC EXP
         | ;
 
 IF ::= ifstart {: System.out.println("if"); :} parIzq COND parDer ifthen EXP ELSIF endif {: System.out.println("No murio");:}; 
-ELSIF ::= elseif parIzq COND parDer ifthen EXP ELSIF | ELSE;
-ELSE ::= elseclause ifthen EXP | ;
+ELSIF ::= elseif parIzq COND parDer ifthen EXP ELSIF 
+        | ELSE;
+ELSE ::= elseclause ifthen EXP 
+        | ;
 
-WHILE ::= whilestart parIzq COND parDer {:System.out.println("Condicion while");:} EXP end {: System.out.println("fin wile"); :};
+WHILE ::= whilestart parIzq COND parDer {:System.out.println("Condicion while");:} EXP end {: System.out.println("fin while"); :};
 
-COND ::= opNot {: System.out.print("Condicion negada");:} COND2 | {:System.out.print("Condicion normal");:} COND2 ;
+COND ::= opNot {: System.out.print("Condicion negada");:} COND2 
+        | {:System.out.print("Condicion normal");:} COND2 ;
 COND2 ::= id opRel COND3 | number opRel COND3;
 COND3 ::= id COND4 | number COND4;
-COND4 ::= opOr {:System.out.print(", operador: OR ");:} COND | {:System.out.print(", operador: AND ");:} opAnd COND | {:System.out.println();:} ;
+COND4 ::= opOr {:System.out.print(", operador: OR ");:} COND 
+        |  opAnd {:System.out.print(", operador: AND ");:} COND 
+        | {:System.out.println();:} ;
 
+
+
+RETFUNC ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;
+RETFUNC2 ::= id parIzq ARGS {:System.out.println("Argumentos fin");:} parDer {:System.out.println("Fin parentesis function");:} 
+        cbOpen {: System.out.println("FUNCTION HEADER "); :} RETFUNCBODY {:System.out.println("END FUNCTION BODY");:} cbClose;
+RETFUNCBODY ::= EXP ret {:System.out.println("RETURN");:} RETVAL;
+RETVAL ::= id:val {: System.out.println("return id: "+val); :} 
+        | number:val {: System.out.println("return num: "+val); :} 
+        | booleano:val {: System.out.println("return boolean: "+val); :};
+
+ARGS ::= TIPO id {: System.out.println("Argumento"); :} ARGS2 
+        | ;
+ARGS2 ::=  coma ARGS 
+        | ;
+
+TIPO ::= bool | num | character;

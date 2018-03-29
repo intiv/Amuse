@@ -8,30 +8,35 @@ package amuse;
 /** CUP generated class containing symbol constants. */
 public class Amuse {
   /* terminals */
+  public static final int character = 27;
   public static final int elseclause = 4;
-  public static final int parIzq = 12;
-  public static final int number = 10;
-  public static final int MainProgram = 21;
-  public static final int parDer = 13;
-  public static final int end = 22;
-  public static final int cbOpen = 15;
-  public static final int booleano = 8;
-  public static final int opAnd = 19;
+  public static final int number = 18;
+  public static final int parIzq = 10;
+  public static final int MainProgram = 7;
+  public static final int parDer = 11;
+  public static final int end = 9;
+  public static final int coma = 15;
+  public static final int cbOpen = 12;
+  public static final int booleano = 16;
+  public static final int num = 26;
+  public static final int opAnd = 23;
   public static final int ifstart = 2;
+  public static final int bool = 25;
   public static final int elseif = 5;
   public static final int EOF = 0;
   public static final int endif = 6;
-  public static final int id = 9;
-  public static final int opRel = 16;
-  public static final int opNot = 20;
+  public static final int opRel = 20;
+  public static final int id = 17;
+  public static final int opNot = 24;
   public static final int ifthen = 3;
+  public static final int voidType = 19;
   public static final int error = 1;
-  public static final int voidType = 11;
-  public static final int opArit = 17;
-  public static final int whilestart = 23;
-  public static final int cbClose = 14;
-  public static final int begin = 7;
-  public static final int opOr = 18;
+  public static final int opArit = 21;
+  public static final int whilestart = 28;
+  public static final int cbClose = 13;
+  public static final int begin = 8;
+  public static final int opOr = 22;
+  public static final int ret = 14;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -40,22 +45,27 @@ public class Amuse {
   "elseclause",
   "elseif",
   "endif",
+  "MainProgram",
   "begin",
+  "end",
+  "parIzq",
+  "parDer",
+  "cbOpen",
+  "cbClose",
+  "ret",
+  "coma",
   "booleano",
   "id",
   "number",
   "voidType",
-  "parIzq",
-  "parDer",
-  "cbClose",
-  "cbOpen",
   "opRel",
   "opArit",
   "opOr",
   "opAnd",
   "opNot",
-  "MainProgram",
-  "end",
+  "bool",
+  "num",
+  "character",
   "whilestart"
   };
 }

@@ -1,29 +1,22 @@
 Main(){
-    if (!5 < 5 || x == 10) then
-        30
-    elseif (x > 11 && x <20) then
-        50
-    elseif (x < 3 && 4<5) then
-        3
-    else then
-        10
-    endif
 
-    if(y == 6) then
-        6
-    else then
-        4
-    endif
-        
-    if(z <= 3) then
-        2
-    endif
-
+    
     while(hola < 10)
         if(y == 2) then
             while(y==2)
-                4
+                
             end
         endif
     end
+    bool hola(){
+        if(a>5) then
+        endif
+        return hola
+    }
+
+    num adios(num first, bool simon, char neles){
+        while(asd == 3)
+        end
+        return 1
+    }
 }

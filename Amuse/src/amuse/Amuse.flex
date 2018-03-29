@@ -57,6 +57,7 @@ and = "&&"
 opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
 opArit = "+" | "-" | "*" | "/" | "^" 
 asig = ":="
+coma = ","
 
 //Comments
 commentLine = "##"({letra}|{digit}|{espacio})*
@@ -88,7 +89,7 @@ id = {letra}({letra}|{digit})*
   {select}  {System.out.println("<SELECT, "+yyline+">");}
   {option}  {System.out.println("<OPTION, "+yyline+">");}
   {break} {System.out.println("<BREAK, "+yyline+">");}
-  {return}  {System.out.println("<RETURN, "+yyline+">");}
+  {return}  {return new Symbol(Amuse.ret, yychar, yyline);}
   {opRel}  {return new Symbol(Amuse.opRel, yychar, yyline, yytext());}
   {not} {return new Symbol(Amuse.opNot, yychar, yyline);}
   {and} {return new Symbol(Amuse.opAnd, yychar, yyline);}
@@ -97,12 +98,19 @@ id = {letra}({letra}|{digit})*
   {parIzq}  {return new Symbol(Amuse.parIzq, yychar, yyline);}
   {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
   {asig}  {System.out.println("<ASIG, "+yyline+">");}
+  {coma}  {return new Symbol(Amuse.coma, yychar, yyline);}
   ":" {System.out.println("<COLUMN, "+yyline+">");}
   {void}  {return new Symbol(Amuse.voidType, yychar, yyline);}
   {main}  {return new Symbol(Amuse.MainProgram, yychar, yyline);}
-  {id}  {return new Symbol(Amuse.id, yychar, yyline, yytext());}
+  //tipos
+  {bool}  {return new Symbol(Amuse.bool, yychar, yyline);}
+  {num} {return new Symbol(Amuse.num, yychar, yyline);}
+  {char}  {return new Symbol(Amuse.character, yychar, yyline);}
   {boolean}   {return new Symbol(Amuse.booleano, yychar, yyline, yytext());}
   {number}  {return new Symbol(Amuse.number, yychar, yyline, yytext());}
+  {id}  {return new Symbol(Amuse.id, yychar, yyline, yytext());}
+  
+  
   "}" {return new Symbol(Amuse.cbClose, yychar, yyline);}
   "{" {return new Symbol(Amuse.cbOpen, yychar, yyline);}
   ";" {System.out.println("<PCOMA, "+yyline+">");}
