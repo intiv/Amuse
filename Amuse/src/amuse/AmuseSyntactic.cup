@@ -23,7 +23,7 @@ terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, c
 terminal String booleano, id, number, voidType;
 
 //Operadores
-terminal String opRel, opArit, opOr, opAnd, opNot;
+terminal String opRel, opArit, opOr, opAnd, opNot, opAsig;
 
 //Valores
 terminal String bool, num, character;
@@ -51,18 +51,27 @@ non terminal COND, COND2, COND3, COND4;
 //Funcion con retorno
 non terminal RETFUNC, RETFUNC2, RETFUNCBODY, RETVAL;
 
-non terminal ARGS, ARGS2, TIPO;
+non terminal ARGS, ARGS2, ASIG;
+
+non terminal String VALS, TIPO;
 
 start with START;
 
-START ::= MainProgram parIzq {: System.out.println("Entro a main");:} parDer cbOpen EXP cbClose;
+START ::= MainProgram parIzq parDer {: System.out.println("Entro a main");:} cbOpen EXP cbClose;
 
 EXP ::= IF EXP
         | WHILE EXP
         | RETFUNC EXP
+        | ASIG EXP
         | ;
 
-IF ::= ifstart {: System.out.println("if"); :} parIzq COND parDer ifthen EXP ELSIF endif {: System.out.println("No murio");:}; 
+
+ASIG ::= id:i TIPO:t opAsig VALS:v {: System.out.println("Asignacion: Tipo "+t+", id: "+i+", valor: "+v); :};
+
+IF ::= ifstart parIzq COND parDer ifthen EXP ELSIF endif {: System.out.println("No murio"); :}
+        | ifstart parIzq COND parDer ifthen error:err {: System.out.println("Error en if en linea "+(errright+1)+" y columna "+errleft); :} endif;
+
+
 ELSIF ::= elseif parIzq COND parDer ifthen EXP ELSIF 
         | ELSE;
 ELSE ::= elseclause ifthen EXP 
@@ -84,13 +93,13 @@ RETFUNC ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;
 RETFUNC2 ::= id parIzq ARGS {:System.out.println("Argumentos fin");:} parDer {:System.out.println("Fin parentesis function");:} 
         cbOpen {: System.out.println("FUNCTION HEADER "); :} RETFUNCBODY {:System.out.println("END FUNCTION BODY");:} cbClose;
 RETFUNCBODY ::= EXP ret {:System.out.println("RETURN");:} RETVAL;
-RETVAL ::= id:val {: System.out.println("return id: "+val); :} 
-        | number:val {: System.out.println("return num: "+val); :} 
-        | booleano:val {: System.out.println("return boolean: "+val); :};
+RETVAL ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
 
 ARGS ::= TIPO id {: System.out.println("Argumento"); :} ARGS2 
         | ;
 ARGS2 ::=  coma ARGS 
         | ;
 
-TIPO ::= bool | num | character;
+TIPO ::= bool:val {: RESULT = "bool"; :}| num:val {: RESULT = "num"; :}| character:val {: RESULT = "char"; :};
+
+VALS ::= id:val {: RESULT = val; :}| number:val {: RESULT = val; :} | booleano:val {: RESULT = val; :};

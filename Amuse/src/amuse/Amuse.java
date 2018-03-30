@@ -8,7 +8,7 @@ package amuse;
 /** CUP generated class containing symbol constants. */
 public class Amuse {
   /* terminals */
-  public static final int character = 27;
+  public static final int character = 28;
   public static final int elseclause = 4;
   public static final int number = 18;
   public static final int parIzq = 10;
@@ -18,11 +18,12 @@ public class Amuse {
   public static final int coma = 15;
   public static final int cbOpen = 12;
   public static final int booleano = 16;
-  public static final int num = 26;
+  public static final int num = 27;
   public static final int opAnd = 23;
   public static final int ifstart = 2;
-  public static final int bool = 25;
+  public static final int bool = 26;
   public static final int elseif = 5;
+  public static final int opAsig = 25;
   public static final int EOF = 0;
   public static final int endif = 6;
   public static final int opRel = 20;
@@ -32,7 +33,7 @@ public class Amuse {
   public static final int voidType = 19;
   public static final int error = 1;
   public static final int opArit = 21;
-  public static final int whilestart = 28;
+  public static final int whilestart = 29;
   public static final int cbClose = 13;
   public static final int begin = 8;
   public static final int opOr = 22;
@@ -63,6 +64,7 @@ public class Amuse {
   "opOr",
   "opAnd",
   "opNot",
+  "opAsig",
   "bool",
   "num",
   "character",

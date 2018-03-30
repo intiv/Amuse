@@ -97,7 +97,7 @@ id = {letra}({letra}|{digit})*
   {opArit}  {return new Symbol(Amuse.opArit, yychar, yyline, yytext());}
   {parIzq}  {return new Symbol(Amuse.parIzq, yychar, yyline);}
   {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
-  {asig}  {System.out.println("<ASIG, "+yyline+">");}
+  {asig}  {return new Symbol(Amuse.opAsig, yychar, yyline);}
   {coma}  {return new Symbol(Amuse.coma, yychar, yyline);}
   ":" {System.out.println("<COLUMN, "+yyline+">");}
   {void}  {return new Symbol(Amuse.voidType, yychar, yyline);}

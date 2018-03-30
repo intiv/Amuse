@@ -35,7 +35,7 @@ public class AmuseMain {
         }
     }
     
-    private static void buildParser() {
+    synchronized private static void buildParser() {
        String params[] = new String[7];
 
        params[0] = "-destdir";

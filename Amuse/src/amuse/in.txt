@@ -3,13 +3,14 @@ Main(){
     
     while(hola < 10)
         if(y == 2) then
-            while(y==2)
-                
-            end
+            holiwis bool := 5
+            simon
         endif
     end
+
     bool hola(){
         if(a>5) then
+            adiowis
         endif
         return hola
     }
