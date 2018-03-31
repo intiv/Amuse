@@ -1,23 +1,25 @@
 Main(){
-
+    
     
     while(hola < 10)
         if(y == 2) then
             holiwis bool := 5
-            simon
+            bool simon := true
         endif
     end
 
-    bool hola(){
+    
+}
+
+bool hola(){
         if(a>5) then
             adiowis
         endif
         return hola
     }
 
-    num adios(num first, bool simon, char neles){
-        while(asd == 3)
-        end
-        return 1
-    }
+num adios(num first, bool simon, char neles){
+    while(asd == 3)
+    end
+    return 1
 }

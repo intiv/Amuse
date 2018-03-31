@@ -60,8 +60,8 @@ asig = ":="
 coma = ","
 
 //Comments
-commentLine = "##"({letra}|{digit}|{espacio})*
-multiComment = "/#"({letra}|{digit}|{espacio}|{endLine})*"#/"
+commentLine = "##"( [^*] | \*+ [^/*] )*
+multiComment = "/#"[^*]~"#/" | "/#" "#"+ "/"
 Comment = {commentLine} | {multiComment}
 
 
@@ -73,7 +73,7 @@ id = {letra}({letra}|{digit})*
 %%
 
 <YYINITIAL> {
-  {Comment} {}
+  {Comment} {return new Symbol(Amuse.comment, yychar, yyline);}
   {espacio} {}
   {endLine} {}
   {write} {System.out.println("<WRITE, "+yyline+">");}

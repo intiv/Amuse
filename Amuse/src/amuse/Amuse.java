@@ -9,6 +9,7 @@ package amuse;
 public class Amuse {
   /* terminals */
   public static final int character = 28;
+  public static final int comment = 30;
   public static final int elseclause = 4;
   public static final int number = 18;
   public static final int parIzq = 10;
@@ -68,7 +69,8 @@ public class Amuse {
   "bool",
   "num",
   "character",
-  "whilestart"
+  "whilestart",
+  "comment"
   };
 }
 
