@@ -1,12 +1,13 @@
 Main(){
     
-    
     while(hola < 10)
         if(y == 2) then
             holiwis bool := 5
             bool simon := true
         endif
     end
+
+    
 
     
 }
@@ -18,8 +19,28 @@ bool hola(){
         return hola
     }
 
+bool hola2(){
+    for(holiwis num := 5;asd < 10 ;asd > 10)
+        
+    end
+    return asd
+}
+
 num adios(num first, bool simon, char neles){
-    while(asd == 3)
+    select(juany)
+        option 33:
+            holiwis num := 5
+        break
+        option 45:
+            holiwis num := 9
+        break
+        option 95:
+            holiwis num := 5
+        break
     end
     return 1
+}
+
+void hello(num first, bool simon, char neles){
+    quepexis num := 7
 }

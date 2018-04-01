@@ -1,0 +1,20 @@
+import java_cup.runtime.*;
+
+terminal Integer ZERO, ONE;
+terminal PERIOD;
+
+non terminal Integer B;
+non terminal BinStr L;
+non terminal S;
+
+start with S;
+
+S ::= L:l1 PERIOD L:l2      {:System.out.println((l1.val()*1.0+(l2.val()*1.0/Math.pow(2,l2.prof()))));:}
+    | L:l                   {:System.out.println(l.val());:}
+    ;
+L ::= L:l B:b               {:RESULT = new BinStr(l.val()*2+b.intValue(),l.prof()+1);:}
+    | B:b                   {:RESULT = new BinStr(b.intValue(),1);:}
+    ;
+B ::= ZERO:b                {:RESULT = b;:}
+    | ONE:b                 {:RESULT = b;:}
+    ;

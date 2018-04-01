@@ -85,10 +85,10 @@ id = {letra}({letra}|{digit})*
   {while} {return new Symbol(Amuse.whilestart, yychar, yyline);}
   {begin} {return new Symbol(Amuse.begin, yychar, yyline);}
   {end} {return new Symbol(Amuse.end, yychar, yyline);}
-  {for} {System.out.println("<FOR, "+yyline+">");}
-  {select}  {System.out.println("<SELECT, "+yyline+">");}
-  {option}  {System.out.println("<OPTION, "+yyline+">");}
-  {break} {System.out.println("<BREAK, "+yyline+">");}
+  {for} {return new Symbol(Amuse.forstart, yychar, yyline);}
+  {select}  {return new Symbol(Amuse.selectstart, yychar, yyline);}
+  {option}  {return new Symbol(Amuse.options, yychar, yyline);}
+  {break} {return new Symbol(Amuse.breaks, yychar, yyline);}
   {return}  {return new Symbol(Amuse.ret, yychar, yyline);}
   {opRel}  {return new Symbol(Amuse.opRel, yychar, yyline, yytext());}
   {not} {return new Symbol(Amuse.opNot, yychar, yyline);}
@@ -99,7 +99,7 @@ id = {letra}({letra}|{digit})*
   {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
   {asig}  {return new Symbol(Amuse.opAsig, yychar, yyline);}
   {coma}  {return new Symbol(Amuse.coma, yychar, yyline);}
-  ":" {System.out.println("<COLUMN, "+yyline+">");}
+  ":" {return new Symbol(Amuse.colon, yychar, yyline);}
   {void}  {return new Symbol(Amuse.voidType, yychar, yyline);}
   {main}  {return new Symbol(Amuse.MainProgram, yychar, yyline);}
   //tipos
@@ -113,7 +113,7 @@ id = {letra}({letra}|{digit})*
   
   "}" {return new Symbol(Amuse.cbClose, yychar, yyline);}
   "{" {return new Symbol(Amuse.cbOpen, yychar, yyline);}
-  ";" {System.out.println("<PCOMA, "+yyline+">");}
+  ";" {return new Symbol(Amuse.pcoma, yychar, yyline);}
   \"  {string.setLength(0); yybegin(STRING);}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }

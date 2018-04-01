@@ -3,8 +3,7 @@ import java_cup.runtime.*;
 import java.util.LinkedList;
 import java.util.List;
 
-parser code
-{:
+parser code {:
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
@@ -36,7 +35,7 @@ parser code
 	        LinkedList<String> list = new LinkedList<String>();
 	        for (Integer expected : ids)
 		        list.add(symbl_name_from_id(expected));
-                System.err.println("Se esperaba cualquiera de estas: "+list);
+                System.err.println("Se esperaba: "+list);
 	}
         
 :}
@@ -53,7 +52,7 @@ action code
 terminal String ifstart, ifthen, elseclause, elseif, endif;
 
 //Estructura 
-terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma;
+terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma;
 
 //Tipos
 terminal String booleano, id, number, voidType;
@@ -66,6 +65,12 @@ terminal String bool, num, character;
 
 //While                
 terminal String whilestart;
+
+//For                
+terminal String forstart;
+
+//Select             
+terminal String selectstart, breaks, options, colon;
 
 terminal String comment;
 
@@ -83,11 +88,20 @@ non terminal IF, ELSIF, ELSE;
 //While
 non terminal WHILE;
 
+//For
+non terminal FOR;
+
+//Select
+non terminal SELECT, OPT;
+
 //Condiciones multipes, negadas o normales
 non terminal COND, COND2, COND3, COND4;
 
 //Funcion con retorno
 non terminal FUNC, RETFUNC, RETFUNC2, RETFUNCBODY, RETVAL;
+
+//Funcion void
+non terminal VOIDFUNC, VOIDFUNC2;
 
 non terminal ARGS, ARGS2, ASIG;
 
@@ -103,11 +117,14 @@ EXP ::= IF EXP
         | ASIG EXP
         | error  EXP
         | comment EXP
+        | FOR EXP
+        | SELECT EXP
         | ;
 
 //No terminal que maneja todas las funciones despues del main
 FUNC ::= RETFUNC FUNC
-        | error FUNC
+        | VOIDFUNC FUNC
+        | error FUNC 
         | ;
 
 //Asignacion
@@ -124,6 +141,28 @@ ELSE ::= elseclause ifthen {: System.out.println("\tElse"); :} EXP
 //While
 WHILE ::= {: System.out.println("Inicio WHILE"); :} whilestart parIzq COND parDer {:System.out.println("\tCondicion while");:} EXP end {: System.out.println("fin while"); :};
 
+//For
+FOR ::= {: System.out.println("Inicio FOR"); :}
+        forstart parIzq ASIG pcoma COND 
+        {:System.out.println("\tCondicion for");:}
+        pcoma COND parDer 
+        {:System.out.println("\tCondicion for");:}
+        EXP 
+        end {: System.out.println("fin for"); :};
+
+//Select
+SELECT ::= {: System.out.println("Inicio Select"); :}
+        selectstart parIzq id:i parDer
+        {:System.out.println("\tVariable:"+i);:}
+        OPT
+        end 
+        {: System.out.println("fin select"); :};
+
+OPT ::= options VALS:v colon EXP breaks OPT
+        {: System.out.println("\t\tOpcion-valor: "+v); :}
+        | options VALS:v colon EXP breaks
+        {: System.out.println("\t\tOpcion-valor: "+v); :};
+        
 //Condiciones negadas, normales, con OR o AND
 COND ::= opNot COND2 
         |  COND2 ;
@@ -140,6 +179,11 @@ RETFUNC2 ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
         cbOpen {: System.out.println("\tFUNCTION HEADER "); :} RETFUNCBODY cbClose {: System.out.println("FIN FUNCTION");:};
 RETFUNCBODY ::= EXP ret {:System.out.print("\tRETURN - ");:} RETVAL;
 RETVAL ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
+
+//Funcion void
+VOIDFUNC ::= voidType {:System.out.println("VOID FUNCTION START");:} VOIDFUNC2;
+VOIDFUNC2 ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
+        cbOpen {: System.out.println("\tFUNCTION HEADER "); :} EXP cbClose {: System.out.println("FIN FUNCTION");:};
 
 
 //Argumentos para funciones
