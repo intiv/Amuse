@@ -109,91 +109,109 @@ non terminal String VALS, TIPO;
 
 start with START;
 
-START ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: System.out.println("Fin main"); :} FUNC;
+START           ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: System.out.println("Fin main"); :} FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-EXP ::= IF EXP
-        | WHILE EXP
-        | ASIG EXP
-        | error  EXP
-        | comment EXP
-        | FOR EXP
-        | SELECT EXP
-        | ;
+EXP             ::= IF EXP
+                | WHILE EXP
+                | ASIG EXP
+                | error  EXP
+                | comment EXP
+                | FOR EXP
+                | SELECT EXP
+                | ;
 
 //No terminal que maneja todas las funciones despues del main
-FUNC ::= RETFUNC FUNC
-        | VOIDFUNC FUNC
-        | error FUNC 
-        | ;
+FUNC            ::= RETFUNC FUNC
+                | VOIDFUNC FUNC
+                | error FUNC 
+                | ;
 
-//Asignacion
-ASIG ::= id:i TIPO:t opAsig VALS:v {: System.out.println("\tAsignacion: Tipo "+t+", id: "+i+", valor: "+v); :};
+//Asignacion / Inicializacion
+ASIG            ::= id:i TIPO:t opAsig VALS:v 
+                {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
+                |id:i opAsig VALS:v
+                {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :};
 
 //If
-IF ::= {: System.out.println("Inicio IF"); :} ifstart parIzq COND parDer {: System.out.println("\tCondicion if"); :} ifthen EXP ELSIF endif {: System.out.println("Fin if"); :};
-
-ELSIF ::= elseif parIzq COND parDer {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF 
-        | ELSE;
-ELSE ::= elseclause ifthen {: System.out.println("\tElse"); :} EXP 
-        | ;
+IF              ::= {: System.out.println("Inicio IF"); :} 
+                ifstart parIzq COND parDer 
+                {: System.out.println("\tCondicion if"); :} 
+                ifthen EXP ELSIF endif 
+                {: System.out.println("Fin if"); :};
+ELSIF           ::= elseif parIzq COND parDer 
+                {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF 
+                | ELSE;
+ELSE            ::= elseclause ifthen 
+                {: System.out.println("\tElse"); :} EXP 
+                | ;
 
 //While
-WHILE ::= {: System.out.println("Inicio WHILE"); :} whilestart parIzq COND parDer {:System.out.println("\tCondicion while");:} EXP end {: System.out.println("fin while"); :};
+WHILE           ::= {: System.out.println("Inicio WHILE"); :} 
+                whilestart parIzq COND parDer 
+                {:System.out.println("\tCondicion while");:} 
+                EXP end {: System.out.println("fin while"); :};
 
 //For
-FOR ::= {: System.out.println("Inicio FOR"); :}
-        forstart parIzq ASIG pcoma COND 
-        {:System.out.println("\tCondicion for");:}
-        pcoma COND parDer 
-        {:System.out.println("\tCondicion for");:}
-        EXP 
-        end {: System.out.println("fin for"); :};
+FOR             ::= {: System.out.println("Inicio FOR"); :}
+                forstart parIzq ASIG pcoma COND 
+                {:System.out.println("\tCondicion for");:}
+                pcoma COND parDer 
+                {:System.out.println("\tCondicion for");:}
+                EXP 
+                end {: System.out.println("fin for"); :};
 
 //Select
-SELECT ::= {: System.out.println("Inicio Select"); :}
-        selectstart parIzq id:i parDer
-        {:System.out.println("\tVariable:"+i);:}
-        OPT
-        end 
-        {: System.out.println("fin select"); :};
+SELECT          ::= {: System.out.println("Inicio Select"); :}
+                selectstart parIzq id:i parDer
+                {:System.out.println("\tVariable:"+i);:}
+                OPT
+                end 
+                {: System.out.println("fin select"); :};
 
-OPT ::= options VALS:v colon EXP breaks OPT
-        {: System.out.println("\t\tOpcion-valor: "+v); :}
-        | options VALS:v colon EXP breaks
-        {: System.out.println("\t\tOpcion-valor: "+v); :};
+OPT             ::= options VALS:v colon EXP breaks OPT
+                {: System.out.println("\t\tOpcion-valor: "+v); :}
+                | options VALS:v colon EXP breaks
+                {: System.out.println("\t\tOpcion-valor: "+v); :};
         
 //Condiciones negadas, normales, con OR o AND
-COND ::= opNot COND2 
-        |  COND2 ;
-COND2 ::= id opRel COND3 | number opRel COND3;
-COND3 ::= id COND4 | number COND4;
-COND4 ::= opOr COND 
-        | opAnd COND 
-        | ;
+COND            ::= opNot COND2 
+                |  COND2 ;
+COND2           ::= id opRel COND3 
+                | number opRel COND3;
+COND3           ::= id COND4 
+                | number COND4;
+COND4           ::= opOr COND 
+                | opAnd COND 
+                | ;
 
 
 //Funcion con retorno
-RETFUNC ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;
-RETFUNC2 ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
+RETFUNC         ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;
+RETFUNC2        ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
         cbOpen {: System.out.println("\tFUNCTION HEADER "); :} RETFUNCBODY cbClose {: System.out.println("FIN FUNCTION");:};
-RETFUNCBODY ::= EXP ret {:System.out.print("\tRETURN - ");:} RETVAL;
-RETVAL ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
+RETFUNCBODY     ::= EXP ret {:System.out.print("\tRETURN - ");:} RETVAL;
+RETVAL          ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
 
 //Funcion void
-VOIDFUNC ::= voidType {:System.out.println("VOID FUNCTION START");:} VOIDFUNC2;
-VOIDFUNC2 ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
+VOIDFUNC        ::= voidType {:System.out.println("VOID FUNCTION START");:} VOIDFUNC2;
+VOIDFUNC2       ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
         cbOpen {: System.out.println("\tFUNCTION HEADER "); :} EXP cbClose {: System.out.println("FIN FUNCTION");:};
 
 
 //Argumentos para funciones
-ARGS ::= TIPO id ARGS2 
-        | ;
-ARGS2 ::=  coma ARGS 
-        | ;
+ARGS            ::= TIPO id ARGS2 
+                | ;
+ARGS2           ::=  coma ARGS 
+                | ;
 
 //Tipos, falta array
-TIPO ::= bool:val {: RESULT = "bool"; :}| num:val {: RESULT = "num"; :}| character:val {: RESULT = "char"; :};
+TIPO            ::= bool:val {: RESULT = "bool"; :}
+                | num:val {: RESULT = "num"; :}
+                | character:val {: RESULT = "char"; :};
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
-VALS ::= id:val {: RESULT = val; :}| number:val {: RESULT = val; :} | booleano:val {: RESULT = val; :};
+VALS            ::= id:val {: RESULT = val; :}
+                | number:val {: RESULT = val; :} 
+                | booleano:val {: RESULT = val; :};
+                //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;

@@ -42,5 +42,6 @@ num adios(num first, bool simon, char neles){
 }
 
 void hello(num first, bool simon, char neles){
-    quepexis num := 7
+    quepexis := 5
+    conalexis := 4
 }
