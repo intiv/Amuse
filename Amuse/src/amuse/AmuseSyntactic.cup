@@ -10,9 +10,9 @@ parser code {:
                         Symbol s=((Symbol)info);
 
                         if(s.left>=0){
-                                m.append("en linea "+(s.right+1));
+                                m.append("en linea "+(s.right));
                         if(s.right>=0)
-                                m.append(", columna "+(s.left+1));
+                                m.append(", columna "+(s.left));
                         }
                 }
                 m.append(": "+message);
@@ -133,7 +133,7 @@ EXP             ::= IF EXP
                 | comment EXP
                 | FOR EXP
                 | SELECT EXP
-                | S
+                | S EXP
                 | ;
 
 //No terminal que maneja todas las funciones despues del main
@@ -208,50 +208,16 @@ COND4           ::= opOr COND
                 | ;
 
 // //Expresion Aritmetica
-S ::= E:e {: System.out.println("El valor de E: "+e.intValue()); :}
-      ;
+S ::= E:e {: System.out.println("El valor de E: "+e.intValue()); :};
 E ::= E:e opSuma T:t {: RESULT= new Integer(e.intValue()+t.intValue()); :}
       | E:e opResta T:t {: RESULT = new Integer(e.intValue()-t.intValue()); :}
-      | T:t{:RESULT = t;:}
-      ;
+      | T:t{:RESULT = t;:};
 T  ::= T:t opMult F:f {: RESULT = new Integer(t.intValue() * f.intValue());:}
       | T:t opDiv F:f {: RESULT = new Integer(t.intValue() / f.intValue());:}
-      | F:f {:RESULT=f;:}
-      ;
+      | F:f {:RESULT=f;:};
 F ::= number:n {:RESULT = new Integer(n);:}
-      |parIzq E:e parDer {:RESULT = e;}
-      ;
+      |parIzq E:e parDer {:RESULT = e;:};
 
-// EXP_ARIT        ::= EXP_ARIT EXPRresp
-//                 |
-//                  EXPRresp;
-// EXPRresp         ::= EXPS:e
-//                 {: System.out.println(" Op =  " + e); :};  
-
-// EXPS            ::= EXPS:e opSuma FACT:f
-//                 {:RESULT = new Integer(e.intValue() + f.intValue());:}
-//                 |
-//                 EXPS:e opResta FACT:f
-//                 {:RESULT = new Integer(e.intValue() - f.intValue());:}
-//                 |
-//                 FACT:n
-//                 {:RESULT = n; :}
-//                 ;
-
-// FACT            ::= FACT:f opMult TERM:e
-//                 {: RESULT = new Integer(f.intValue() * e.intValue()); :}
-//                 |
-//                 FACT:f opDiv TERM:e
-//                 {: RESULT = new Integer(f.intValue() / e.intValue()); :}
-//                 |
-//                 TERM:t
-//                 {:RESULT = t;:};
-
-// TERM            ::=  parIzq expr:e parDer
-//                 {: RESULT = e; :}
-//                 |
-//                 num:e
-//                 {: RESULT = e; }; 
 
 //Funcion con retorno
 RETFUNC         ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;

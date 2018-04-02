@@ -3,21 +3,18 @@ Main(){
     while(hola < 10)
         if(y == 2) then
             holiwis bool := 5
-            bool simon := true
+            simon bool := true
         endif
     end
-
-    
-
-    
+    5+2*8
 }
 
 bool hola(){
-        if(a>5) then
-            adiowis
-        endif
-        return hola
-    }
+    if(a>5) then
+        adiowis
+    endif
+    return hola
+}
 
 bool hola2(){
     for(holiwis num := 5;asd < 10 ;asd > 10)
