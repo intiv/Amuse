@@ -52,7 +52,7 @@ action code
 terminal String ifstart, ifthen, elseclause, elseif, endif;
 
 //Estructura 
-terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma;
+terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma, openBrk, closeBrk;
 
 //Tipos
 terminal String booleano, id, voidType;
@@ -105,7 +105,7 @@ non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
-non terminal ARGS, ARGS2, ASIG;
+non terminal ARGS, ARGS2, ASIG, ARRVAL, ARRVAL2;
 
 non terminal String VALS, TIPO;
 
@@ -155,7 +155,17 @@ ASIG            ::= id:i TIPO:t opAsig VALS:v
                 {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
                 |
                 id:i opAsig VALS:v
+                {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :}
+                |
+                id:i TIPO:t BRKS opAsig VALS:v 
+                {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
+                |
+                id:i BRKS opAsig VALS:v
                 {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :};
+
+BRKS            ::= openBrk number:n {:RESULT = new Integer(n);:} closeBrk
+                |
+                openBrk closeBrk;
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
@@ -272,6 +282,13 @@ VALS            ::= id:val {: RESULT = val; :}
                 booleano:val {: RESULT = val; :}
                 |
                 S:val {: RESULT = val.intValue() + ""; :}
-                
+                |
+                cbOpen ARRVAL cbClose
                 ;
+
+//Valores para array
+ARRVAL            ::= S ARRVAL2 
+                | ;
+ARRVAL2           ::=  coma S ARRVAL2
+                | ;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;

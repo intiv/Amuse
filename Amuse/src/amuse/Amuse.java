@@ -49,6 +49,8 @@ public class Amuse {
   public static final int opResta = 27;
   public static final int num = 32;
   public static final int number = 30;
+  public static final int openBrk = 41;
+  public static final int closeBrk = 42;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -90,7 +92,9 @@ public class Amuse {
   "breaks",
   "options",
   "colon",
-  "comment"
+  "comment",
+  "openBrk",
+  "closeBrk"
   };
 }
 

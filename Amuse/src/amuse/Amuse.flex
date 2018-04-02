@@ -46,7 +46,7 @@ boolean = "false" | "true"
 bool = "bool"
 num = "num"
 char = "char"
-array = ({bool}|{num}|{char})"[]"
+array = ({bool}|{num}|{char})
 
 //Operators
 parIzq = "("
@@ -115,7 +115,8 @@ id = {letra}({letra}|{digit})*
   {number}  {return new Symbol(Amuse.number, yychar, yyline, yytext());}
   {id}  {return new Symbol(Amuse.id, yychar, yyline, yytext());}
   
-  
+  "[" {return new Symbol(Amuse.openBrk, yychar, yyline);} 
+  "]" {return new Symbol(Amuse.closeBrk, yychar, yyline);}
   "}" {return new Symbol(Amuse.cbClose, yychar, yyline);}
   "{" {return new Symbol(Amuse.cbOpen, yychar, yyline);}
   ";" {return new Symbol(Amuse.pcoma, yychar, yyline);}
