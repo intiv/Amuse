@@ -100,8 +100,8 @@ non terminal SELECT, OPT;
 non terminal COND, COND2, COND3, COND4;
 
 //Funcion con retorno
-non terminal FUNC, RETFUNC, RETFUNC2, RETFUNCBODY, RETVAL;
-
+non terminal FUNC, RETFUNC, RETFUNC2, RETVAL;
+non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
@@ -110,8 +110,10 @@ non terminal ARGS, ARGS2, ASIG;
 non terminal String VALS, TIPO;
 
 non terminal Integer E,T,F;
-non terminal S;
+non terminal Integer S;
 
+non terminal FunctionCall FCALL;
+non terminal FCALLARGS, FCALLARGS2;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
 // non terminal Integer EXPS, FACT, TERM;
@@ -126,15 +128,21 @@ start with START;
 START           ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: System.out.println("Fin main"); :} FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-EXP             ::= IF EXP
-                | WHILE EXP
-                | ASIG EXP
-                | error  EXP
-                | comment EXP
-                | FOR EXP
-                | SELECT EXP
-                | S EXP
+EXP             ::= IF EXP:exp {: RESULT = exp; :}
+                | WHILE EXP:exp {: RESULT = exp; :}
+                | ASIG EXP:exp {: RESULT = exp; :}
+                | error  EXP:exp {: RESULT = exp; :}
+                | comment EXP:exp {: RESULT = exp; :}
+                | FOR EXP:exp {: RESULT = exp; :}
+                | SELECT EXP:exp {: RESULT = exp; :}
+                | S EXP:exp {: RESULT = exp; :}
+                | FCALL:val EXP {:RESULT = (FunctionCall)val; System.out.println("RESULT FCALL EXP: "+RESULT); :}
                 | ;
+
+FCALL ::= id:call {: RESULT = new FunctionCall(call); System.out.println("Llamado a funcion: "+call); System.out.println("Result: "+RESULT.call);:} parIzq FCALLARGS parDer;
+
+FCALLARGS ::= VALS:arg FCALLARGS2 | ;
+FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
 
 //No terminal que maneja todas las funciones despues del main
 FUNC            ::= RETFUNC FUNC
@@ -208,22 +216,35 @@ COND4           ::= opOr COND
                 | ;
 
 // //Expresion Aritmetica
-S ::= E:e {: System.out.println("El valor de E: "+e.intValue()); :};
-E ::= E:e opSuma T:t {: RESULT= new Integer(e.intValue()+t.intValue()); :}
-      | E:e opResta T:t {: RESULT = new Integer(e.intValue()-t.intValue()); :}
-      | T:t{:RESULT = t;:};
-T  ::= T:t opMult F:f {: RESULT = new Integer(t.intValue() * f.intValue());:}
-      | T:t opDiv F:f {: RESULT = new Integer(t.intValue() / f.intValue());:}
-      | F:f {:RESULT=f;:};
-F ::= number:n {:RESULT = new Integer(n);:}
-      |parIzq E:e parDer {:RESULT = e;:};
+S               ::= E:e {: RESULT = e;:};
+E               ::= E:e opSuma T:t {: RESULT= new Integer(e.intValue()+t.intValue()); :}
+                | 
+                E:e opResta T:t {: RESULT = new Integer(e.intValue()-t.intValue()); :}
+                | 
+                T:t{:RESULT = t;:};
+T               ::= T:t opMult F:f {: RESULT = new Integer(t.intValue() * f.intValue());:}
+                | 
+                T:t opDiv F:f {: RESULT = new Integer(t.intValue() / f.intValue());:}
+                | 
+                F:f {:RESULT=f;:};
+F               ::= number:n {:RESULT = new Integer(n);:}
+                |
+                parIzq E:e parDer {:RESULT = e;:};
 
 
 //Funcion con retorno
 RETFUNC         ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;
-RETFUNC2        ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
-                cbOpen {: System.out.println("\tFUNCTION HEADER "); :} RETFUNCBODY cbClose {: System.out.println("FIN FUNCTION");:};
-RETFUNCBODY     ::= EXP ret {:System.out.print("\tRETURN - ");:} RETVAL;
+RETFUNC2        ::= id:val parIzq ARGS {:System.out.println("\tArgumentos");:} parDer 
+                cbOpen {: System.out.println("\tFUNCTION HEADER "); :} RETFUNCBODY:bodyval  cbClose 
+                {:
+                        if(!bodyval.equals("")){
+                                if(bodyval.equals(val)){
+                                        System.out.println("La funcion es recursiva");
+                                }
+                        } 
+                        System.out.println("FIN FUNCTION");
+                :};
+RETFUNCBODY     ::= EXP:exp {: if(exp != null){ RESULT =((FunctionCall)exp).call+""; System.out.println(); }else{ RESULT = ""; }  :} ret {:System.out.print("\tRETURN - ");:} RETVAL;
 RETVAL          ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
 
 //Funcion void
@@ -235,7 +256,7 @@ VOIDFUNC2       ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDe
 //Argumentos para funciones
 ARGS            ::= TIPO id ARGS2 
                 | ;
-ARGS2           ::=  coma ARGS 
+ARGS2           ::=  coma TIPO id ARGS2
                 | ;
 
 //Tipos, falta array
@@ -248,7 +269,9 @@ TIPO            ::= bool:val {: RESULT = "bool"; :}
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::= id:val {: RESULT = val; :}
                 | 
-                number:val {: RESULT = val; :} 
-                | 
-                booleano:val {: RESULT = val; :};
+                booleano:val {: RESULT = val; :}
+                |
+                S:val {: RESULT = val.intValue() + ""; :}
+                
+                ;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;

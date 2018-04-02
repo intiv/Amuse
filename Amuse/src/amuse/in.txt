@@ -1,5 +1,8 @@
 Main(){
-    4+5*6
+    asd num := 4+5*6
+    hola()
+    adios(5)
+    jaja(1,2,3)
     while(hola < 10)
         if(y == 2) then
             holiwis bool := 5
@@ -18,7 +21,7 @@ bool hola(){
 
 bool hola2(){
     for(holiwis num := 5;asd < 10 ;asd > 10)
-        
+        hola2()
     end
     return asd
 }
