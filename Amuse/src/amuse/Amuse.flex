@@ -55,7 +55,6 @@ not = "!"
 or = "||"
 and = "&&"
 opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
-opArit = "+" | "-" | "*" | "/" | "^" 
 asig = ":="
 coma = ","
 
@@ -94,14 +93,20 @@ id = {letra}({letra}|{digit})*
   {not} {return new Symbol(Amuse.opNot, yychar, yyline);}
   {and} {return new Symbol(Amuse.opAnd, yychar, yyline);}
   {or}  {return new Symbol(Amuse.opOr, yychar, yyline);}
-  {opArit}  {return new Symbol(Amuse.opArit, yychar, yyline, yytext());}
   {parIzq}  {return new Symbol(Amuse.parIzq, yychar, yyline);}
   {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
-  {asig}  {return new Symbol(Amuse.opAsig, yychar, yyline);}
   {coma}  {return new Symbol(Amuse.coma, yychar, yyline);}
   ":" {return new Symbol(Amuse.colon, yychar, yyline);}
   {void}  {return new Symbol(Amuse.voidType, yychar, yyline);}
   {main}  {return new Symbol(Amuse.MainProgram, yychar, yyline);}
+
+  //Operadores
+  "+" {return new Symbol(Amuse.opSuma, yychar, yyline);}
+  "-" {return new Symbol(Amuse.opResta, yychar, yyline);}
+  "*" {return new Symbol(Amuse.opMult, yychar, yyline);}
+  "/" {return new Symbol(Amuse.opDiv, yychar, yyline);}
+  {asig}  {return new Symbol(Amuse.opAsig, yychar, yyline);}
+
   //tipos
   {bool}  {return new Symbol(Amuse.bool, yychar, yyline);}
   {num} {return new Symbol(Amuse.num, yychar, yyline);}
