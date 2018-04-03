@@ -67,6 +67,7 @@ Comment = {commentLine} | {multiComment}
 id = {letra}({letra}|{digit})*
 
 %state CHARACTER 
+%state STRING 
 
 %%
 
@@ -74,7 +75,7 @@ id = {letra}({letra}|{digit})*
   {Comment} {return new Symbol(Amuse.comment, yyline, yycolumn);}
   {espacio} {}
   {endLine} {}
-  {write} {System.out.println("<WRITE, "+yyline+">");}
+  {write} {return new Symbol(Amuse.write, yyline, yycolumn);}
   {if}  {return new Symbol(Amuse.ifstart, yyline, yycolumn);}
   {then} {return new Symbol(Amuse.ifthen, yyline, yycolumn);}
   {else}  {return new Symbol(Amuse.elseclause, yyline, yycolumn);}
@@ -120,6 +121,7 @@ id = {letra}({letra}|{digit})*
   "{" {return new Symbol(Amuse.cbOpen, yyline, yycolumn);}
   ";" {return new Symbol(Amuse.pcoma, yyline, yycolumn);}
   "\'"  {charac = null; yybegin(CHARACTER);}
+  "\""  {stringTxt = null; yybegin(STRING);}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }
 
@@ -132,4 +134,9 @@ id = {letra}({letra}|{digit})*
       charac = new Character(yytext().charAt(0));
     }
   }
+} 
+
+<STRING> {
+  "\""          {yybegin(YYINITIAL); return new Symbol(Amuse.strings, yyline, yycolumn, stringTxt); }
+  [^\r\"\\]     {stringTxt = yytext();}
 } 

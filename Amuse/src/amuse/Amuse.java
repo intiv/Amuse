@@ -52,6 +52,8 @@ public class Amuse {
   public static final int opResta = 30;
   public static final int num = 35;
   public static final int number = 33;
+  public static final int write = 44;
+  public static final int strings = 45;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -96,7 +98,9 @@ public class Amuse {
   "breaks",
   "options",
   "colon",
-  "comment"
+  "comment",
+  "write",
+  "strings"
   };
 }
 

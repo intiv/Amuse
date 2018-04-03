@@ -65,8 +65,11 @@ terminal String opRel, opArit, opOr, opAnd, opNot, opAsig;
 terminal opSuma, opResta, opMult, opDiv;
 terminal String number;
 
+//Write                
+terminal String strings, write;
+
 //Valores
-terminal String bool, num, charval;
+terminal String bool, num, charval, strings;
 
 //While                
 terminal String whilestart;
@@ -95,6 +98,9 @@ non terminal WHILE;
 
 //For
 non terminal FOR;
+
+//Write
+non terminal WRITE;
 
 //Select
 non terminal SELECT, OPT;
@@ -140,7 +146,7 @@ EXP             ::= IF EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
                 | S EXP:exp {: RESULT = exp; :}
                 | FCALL:val {: calls.add(val);:} EXP 
-                | ;
+                | WRITE;
 
 FCALL ::= id:call {: RESULT = call; System.out.println("Llamado a funcion: "+call);:} parIzq FCALLARGS parDer;
 
@@ -170,6 +176,9 @@ BRKS            ::= openBrk number:n {:RESULT = new Integer(n);:} closeBrk
                 |
                 openBrk closeBrk;
 
+//Write
+
+WRITE 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
                 ifstart parIzq COND parDer 
