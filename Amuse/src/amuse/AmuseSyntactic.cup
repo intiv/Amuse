@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 parser code {:
+        public String arrayValue="";
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
@@ -105,7 +106,7 @@ non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
-non terminal ARGS, ARGS2, ASIG, ARRVAL, ARRVAL2;
+non terminal ARGS, ARGS2, ASIG, ARRVAL, ARRVAL2, BRKS;
 
 non terminal String VALS, TIPO;
 
@@ -283,12 +284,12 @@ VALS            ::= id:val {: RESULT = val; :}
                 |
                 S:val {: RESULT = val.intValue() + ""; :}
                 |
-                cbOpen ARRVAL cbClose
+                cbOpen ARRVAL{:RESULT = arrayValue;arrayValue="";:} cbClose
                 ;
 
 //Valores para array
-ARRVAL            ::= S ARRVAL2 
+ARRVAL            ::= S:val {: arrayValue = val + ""; :} ARRVAL2 
                 | ;
-ARRVAL2           ::=  coma S ARRVAL2
+ARRVAL2           ::=  coma S:val {: arrayValue = ", " + val; :} ARRVAL2
                 | ;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;

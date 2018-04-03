@@ -46,7 +46,6 @@ boolean = "false" | "true"
 bool = "bool"
 num = "num"
 char = "char"
-array = ({bool}|{num}|{char})
 
 //Operators
 parIzq = "("
