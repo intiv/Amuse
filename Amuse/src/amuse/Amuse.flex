@@ -16,6 +16,7 @@ import java_cup.runtime.Symbol;
 
 %{
     StringBuffer string = new StringBuffer();
+    Character charac = null;
 %}
 
 digit = [0-9]
@@ -65,8 +66,7 @@ Comment = {commentLine} | {multiComment}
 
 id = {letra}({letra}|{digit})*
 
-%state STRING
-/* %state CHARACTER */
+%state CHARACTER 
 
 %%
 
@@ -119,11 +119,17 @@ id = {letra}({letra}|{digit})*
   "}" {return new Symbol(Amuse.cbClose, yyline, yycolumn);}
   "{" {return new Symbol(Amuse.cbOpen, yyline, yycolumn);}
   ";" {return new Symbol(Amuse.pcoma, yyline, yycolumn);}
+  "\'"  {charac = null; yybegin(CHARACTER);}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }
 
-/*
 <CHARACTER> {
-  \'  {System.out.println("<CHARACTER, "+string+", "+yyline+">"); yybegin(YYINITIAL);}
-  [^\n\r\"\\]+  {string.append(yytext());}
-} */
+  "\'"  {yybegin(YYINITIAL); return new Symbol(Amuse.charval, yyline, yycolumn, charac.charValue()+""); }
+  [^\n\r\"\\]  {
+    if(charac != null){
+        System.err.println("Error: Caracter solo puede tener length 1");
+    }else{
+      charac = new Character(yytext().charAt(0));
+    }
+  }
+} 

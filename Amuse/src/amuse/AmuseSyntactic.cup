@@ -58,7 +58,7 @@ terminal String ifstart, ifthen, elseclause, elseif, endif;
 terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma, openBrk, closeBrk;
 
 //Tipos
-terminal String booleano, id, voidType;
+terminal String booleano, id, voidType, character;
 
 //Operadores
 terminal String opRel, opArit, opOr, opAnd, opNot, opAsig;
@@ -66,7 +66,7 @@ terminal opSuma, opResta, opMult, opDiv;
 terminal String number;
 
 //Valores
-terminal String bool, num, character;
+terminal String bool, num, charval;
 
 //While                
 terminal String whilestart;
@@ -300,6 +300,8 @@ TIPO            ::= bool:val {: RESULT = "bool"; :}
 VALS            ::= id:val {: RESULT = val; :}
                 | 
                 booleano:val {: RESULT = val; :}
+                |
+                charval:ch {: RESULT = ch; :}
                 |
                 S:val {: RESULT = val.intValue() + ""; :}
                 |
