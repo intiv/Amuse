@@ -28,6 +28,7 @@ bool hola2(){
     for(holiwis num := 5;asd < 10 ;asd > 10)
         hola2()
     end
+    yes
     return asd
 }
 
