@@ -72,53 +72,53 @@ id = {letra}({letra}|{digit})*
 %%
 
 <YYINITIAL> {
-  {Comment} {return new Symbol(Amuse.comment, yychar, yyline);}
+  {Comment} {return new Symbol(Amuse.comment, yyline, yycolumn);}
   {espacio} {}
   {endLine} {}
   {write} {System.out.println("<WRITE, "+yyline+">");}
-  {if}  {return new Symbol(Amuse.ifstart, yychar, yyline);}
-  {then} {return new Symbol(Amuse.ifthen, yychar, yyline);}
-  {else}  {return new Symbol(Amuse.elseclause, yychar, yyline);}
-  {elseif}  {return new Symbol(Amuse.elseif, yychar, yyline);}
-  {endIf} {return new Symbol(Amuse.endif, yychar, yyline);}
-  {while} {return new Symbol(Amuse.whilestart, yychar, yyline);}
-  {begin} {return new Symbol(Amuse.begin, yychar, yyline);}
-  {end} {return new Symbol(Amuse.end, yychar, yyline);}
-  {for} {return new Symbol(Amuse.forstart, yychar, yyline);}
-  {select}  {return new Symbol(Amuse.selectstart, yychar, yyline);}
-  {option}  {return new Symbol(Amuse.options, yychar, yyline);}
-  {break} {return new Symbol(Amuse.breaks, yychar, yyline);}
-  {return}  {return new Symbol(Amuse.ret, yychar, yyline);}
-  {opRel}  {return new Symbol(Amuse.opRel, yychar, yyline, yytext());}
-  {not} {return new Symbol(Amuse.opNot, yychar, yyline);}
-  {and} {return new Symbol(Amuse.opAnd, yychar, yyline);}
-  {or}  {return new Symbol(Amuse.opOr, yychar, yyline);}
-  {parIzq}  {return new Symbol(Amuse.parIzq, yychar, yyline);}
-  {parDer}  {return new Symbol(Amuse.parDer, yychar, yyline);}
-  {coma}  {return new Symbol(Amuse.coma, yychar, yyline);}
-  ":" {return new Symbol(Amuse.colon, yychar, yyline);}
-  {void}  {return new Symbol(Amuse.voidType, yychar, yyline);}
-  {main}  {return new Symbol(Amuse.MainProgram, yychar, yyline);}
+  {if}  {return new Symbol(Amuse.ifstart, yyline, yycolumn);}
+  {then} {return new Symbol(Amuse.ifthen, yyline, yycolumn);}
+  {else}  {return new Symbol(Amuse.elseclause, yyline, yycolumn);}
+  {elseif}  {return new Symbol(Amuse.elseif, yyline, yycolumn);}
+  {endIf} {return new Symbol(Amuse.endif, yyline, yycolumn);}
+  {while} {return new Symbol(Amuse.whilestart, yyline, yycolumn);}
+  {begin} {return new Symbol(Amuse.begin, yyline, yycolumn);}
+  {end} {return new Symbol(Amuse.end, yyline, yycolumn);}
+  {for} {return new Symbol(Amuse.forstart, yyline, yycolumn);}
+  {select}  {return new Symbol(Amuse.selectstart, yyline, yycolumn);}
+  {option}  {return new Symbol(Amuse.options, yyline, yycolumn);}
+  {break} {return new Symbol(Amuse.breaks, yyline, yycolumn);}
+  {return}  {return new Symbol(Amuse.ret, yyline, yycolumn);}
+  {opRel}  {return new Symbol(Amuse.opRel, yyline, yycolumn, yytext());}
+  {not} {return new Symbol(Amuse.opNot, yyline, yycolumn);}
+  {and} {return new Symbol(Amuse.opAnd, yyline, yycolumn);}
+  {or}  {return new Symbol(Amuse.opOr, yyline, yycolumn);}
+  {parIzq}  {return new Symbol(Amuse.parIzq, yyline, yycolumn);}
+  {parDer}  {return new Symbol(Amuse.parDer, yyline, yycolumn);}
+  {coma}  {return new Symbol(Amuse.coma, yyline, yycolumn);}
+  ":" {return new Symbol(Amuse.colon, yyline, yycolumn);}
+  {void}  {return new Symbol(Amuse.voidType, yyline, yycolumn);}
+  {main}  {return new Symbol(Amuse.MainProgram, yyline, yycolumn);}
 
   //Operadores
-  "+" {return new Symbol(Amuse.opSuma, yychar, yyline);}
-  "-" {return new Symbol(Amuse.opResta, yychar, yyline);}
-  "*" {return new Symbol(Amuse.opMult, yychar, yyline);}
-  "/" {return new Symbol(Amuse.opDiv, yychar, yyline);}
-  {asig}  {return new Symbol(Amuse.opAsig, yychar, yyline);}
+  "+" {return new Symbol(Amuse.opSuma, yyline, yycolumn);}
+  "-" {return new Symbol(Amuse.opResta, yyline, yycolumn);}
+  "*" {return new Symbol(Amuse.opMult, yyline, yycolumn);}
+  "/" {return new Symbol(Amuse.opDiv, yyline, yycolumn);}
+  {asig}  {return new Symbol(Amuse.opAsig, yyline, yycolumn);}
 
   //tipos
-  {bool}  {return new Symbol(Amuse.bool, yychar, yyline);}
-  {num} {return new Symbol(Amuse.num, yychar, yyline);}
-  {char}  {return new Symbol(Amuse.character, yychar, yyline);}
-  {boolean}   {return new Symbol(Amuse.booleano, yychar, yyline, yytext());}
-  {number}  {return new Symbol(Amuse.number, yychar, yyline, yytext());}
-  {id}  {return new Symbol(Amuse.id, yychar, yyline, yytext());}
+  {bool}  {return new Symbol(Amuse.bool, yyline, yycolumn);}
+  {num} {return new Symbol(Amuse.num, yyline, yycolumn);}
+  {char}  {return new Symbol(Amuse.character, yyline, yycolumn);}
+  {boolean}   {return new Symbol(Amuse.booleano, yyline, yycolumn, yytext());}
+  {number}  {return new Symbol(Amuse.number, yyline, yycolumn, yytext());}
+  {id}  {return new Symbol(Amuse.id, yyline, yycolumn, yytext());}
   
   
-  "}" {return new Symbol(Amuse.cbClose, yychar, yyline);}
-  "{" {return new Symbol(Amuse.cbOpen, yychar, yyline);}
-  ";" {return new Symbol(Amuse.pcoma, yychar, yyline);}
+  "}" {return new Symbol(Amuse.cbClose, yyline, yycolumn);}
+  "{" {return new Symbol(Amuse.cbOpen, yyline, yycolumn);}
+  ";" {return new Symbol(Amuse.pcoma, yyline, yycolumn);}
   \"  {string.setLength(0); yybegin(STRING);}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }

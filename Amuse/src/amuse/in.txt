@@ -13,15 +13,12 @@ Main(){
 }
 
 bool hola(){
-    if(a>5) then
-        adiowis
-    endif
+    adiowis
     return hola
 }
 
 bool hola2(){
     for(holiwis num := 5;asd < 10 ;asd > 10)
-        hola2()
     end
     return asd
 }
@@ -31,9 +28,6 @@ num adios(num first, bool simon, char neles){
         option 33:
             holiwis num := 5
         break
-        option 45:
-            holiwis num := 9
-        break
         option 95:
             holiwis num := 5
         break
@@ -42,6 +36,13 @@ num adios(num first, bool simon, char neles){
 }
 
 void hello(num first, bool simon, char neles){
+    neles()
     quepexis := 5
     conalexis := 4
+}
+
+void vamosAVerDijoMiTio(){
+    gerardo := 10+5
+    vamosAVerDijoMiTio()
+    fabricio := 4+9
 }
