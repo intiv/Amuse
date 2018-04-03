@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 parser code {:
+        public String arrayValue="";
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
@@ -52,7 +53,7 @@ action code
 terminal String ifstart, ifthen, elseclause, elseif, endif;
 
 //Estructura 
-terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma;
+terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma, openBrk, closeBrk;
 
 //Tipos
 terminal String booleano, id, voidType;
@@ -105,7 +106,7 @@ non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
-non terminal ARGS, ARGS2, ASIG;
+non terminal ARGS, ARGS2, ASIG, ARRVAL, ARRVAL2, BRKS;
 
 non terminal String VALS, TIPO;
 
@@ -155,7 +156,17 @@ ASIG            ::= id:i TIPO:t opAsig VALS:v
                 {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
                 |
                 id:i opAsig VALS:v
+                {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :}
+                |
+                id:i TIPO:t BRKS opAsig VALS:v 
+                {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
+                |
+                id:i BRKS opAsig VALS:v
                 {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :};
+
+BRKS            ::= openBrk number:n {:RESULT = new Integer(n);:} closeBrk
+                |
+                openBrk closeBrk;
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
@@ -272,6 +283,13 @@ VALS            ::= id:val {: RESULT = val; :}
                 booleano:val {: RESULT = val; :}
                 |
                 S:val {: RESULT = val.intValue() + ""; :}
-                
+                |
+                cbOpen ARRVAL{:RESULT = arrayValue;arrayValue="";:} cbClose
                 ;
+
+//Valores para array
+ARRVAL            ::= S:val {: arrayValue = val + ""; :} ARRVAL2 
+                | ;
+ARRVAL2           ::=  coma S:val {: arrayValue = ", " + val; :} ARRVAL2
+                | ;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;

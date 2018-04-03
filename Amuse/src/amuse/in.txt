@@ -3,6 +3,11 @@ Main(){
     hola()
     adios(5)
     jaja(1,2,3)
+    
+    holiwis num [] := {2,5,6,5}
+
+    
+
     while(hola < 10)
         if(y == 2) then
             holiwis bool := 5
