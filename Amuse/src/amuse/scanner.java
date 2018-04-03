@@ -750,11 +750,11 @@ public class scanner implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { return new Symbol(Amuse.number, yychar, yyline, yytext());
+            { return new Symbol(Amuse.number, yyline, yycolumn, yytext());
             }
           case 44: break;
           case 2: 
-            { return new Symbol(Amuse.id, yychar, yyline, yytext());
+            { return new Symbol(Amuse.id, yyline, yycolumn, yytext());
             }
           case 45: break;
           case 3: 
@@ -762,55 +762,55 @@ public class scanner implements java_cup.runtime.Scanner {
             }
           case 46: break;
           case 4: 
-            { return new Symbol(Amuse.parIzq, yychar, yyline);
+            { return new Symbol(Amuse.parIzq, yyline, yycolumn);
             }
           case 47: break;
           case 5: 
-            { return new Symbol(Amuse.parDer, yychar, yyline);
+            { return new Symbol(Amuse.parDer, yyline, yycolumn);
             }
           case 48: break;
           case 6: 
-            { return new Symbol(Amuse.opNot, yychar, yyline);
+            { return new Symbol(Amuse.opNot, yyline, yycolumn);
             }
           case 49: break;
           case 7: 
-            { return new Symbol(Amuse.opRel, yychar, yyline, yytext());
+            { return new Symbol(Amuse.opRel, yyline, yycolumn, yytext());
             }
           case 50: break;
           case 8: 
-            { return new Symbol(Amuse.colon, yychar, yyline);
+            { return new Symbol(Amuse.colon, yyline, yycolumn);
             }
           case 51: break;
           case 9: 
-            { return new Symbol(Amuse.coma, yychar, yyline);
+            { return new Symbol(Amuse.coma, yyline, yycolumn);
             }
           case 52: break;
           case 10: 
-            { return new Symbol(Amuse.opMult, yychar, yyline);
+            { return new Symbol(Amuse.opMult, yyline, yycolumn);
             }
           case 53: break;
           case 11: 
-            { return new Symbol(Amuse.opDiv, yychar, yyline);
+            { return new Symbol(Amuse.opDiv, yyline, yycolumn);
             }
           case 54: break;
           case 12: 
-            { return new Symbol(Amuse.opSuma, yychar, yyline);
+            { return new Symbol(Amuse.opSuma, yyline, yycolumn);
             }
           case 55: break;
           case 13: 
-            { return new Symbol(Amuse.opResta, yychar, yyline);
+            { return new Symbol(Amuse.opResta, yyline, yycolumn);
             }
           case 56: break;
           case 14: 
-            { return new Symbol(Amuse.cbClose, yychar, yyline);
+            { return new Symbol(Amuse.cbClose, yyline, yycolumn);
             }
           case 57: break;
           case 15: 
-            { return new Symbol(Amuse.cbOpen, yychar, yyline);
+            { return new Symbol(Amuse.cbOpen, yyline, yycolumn);
             }
           case 58: break;
           case 16: 
-            { return new Symbol(Amuse.pcoma, yychar, yyline);
+            { return new Symbol(Amuse.pcoma, yyline, yycolumn);
             }
           case 59: break;
           case 17: 
@@ -826,71 +826,71 @@ public class scanner implements java_cup.runtime.Scanner {
             }
           case 62: break;
           case 20: 
-            { return new Symbol(Amuse.ifstart, yychar, yyline);
+            { return new Symbol(Amuse.ifstart, yyline, yycolumn);
             }
           case 63: break;
           case 21: 
-            { return new Symbol(Amuse.opOr, yychar, yyline);
+            { return new Symbol(Amuse.opOr, yyline, yycolumn);
             }
           case 64: break;
           case 22: 
-            { return new Symbol(Amuse.opAnd, yychar, yyline);
+            { return new Symbol(Amuse.opAnd, yyline, yycolumn);
             }
           case 65: break;
           case 23: 
-            { return new Symbol(Amuse.opAsig, yychar, yyline);
+            { return new Symbol(Amuse.opAsig, yyline, yycolumn);
             }
           case 66: break;
           case 24: 
-            { return new Symbol(Amuse.comment, yychar, yyline);
+            { return new Symbol(Amuse.comment, yyline, yycolumn);
             }
           case 67: break;
           case 25: 
-            { return new Symbol(Amuse.forstart, yychar, yyline);
+            { return new Symbol(Amuse.forstart, yyline, yycolumn);
             }
           case 68: break;
           case 26: 
-            { return new Symbol(Amuse.end, yychar, yyline);
+            { return new Symbol(Amuse.end, yyline, yycolumn);
             }
           case 69: break;
           case 27: 
-            { return new Symbol(Amuse.num, yychar, yyline);
+            { return new Symbol(Amuse.num, yyline, yycolumn);
             }
           case 70: break;
           case 28: 
-            { return new Symbol(Amuse.elseclause, yychar, yyline);
+            { return new Symbol(Amuse.elseclause, yyline, yycolumn);
             }
           case 71: break;
           case 29: 
-            { return new Symbol(Amuse.ifthen, yychar, yyline);
+            { return new Symbol(Amuse.ifthen, yyline, yycolumn);
             }
           case 72: break;
           case 30: 
-            { return new Symbol(Amuse.booleano, yychar, yyline, yytext());
+            { return new Symbol(Amuse.booleano, yyline, yycolumn, yytext());
             }
           case 73: break;
           case 31: 
-            { return new Symbol(Amuse.bool, yychar, yyline);
+            { return new Symbol(Amuse.bool, yyline, yycolumn);
             }
           case 74: break;
           case 32: 
-            { return new Symbol(Amuse.voidType, yychar, yyline);
+            { return new Symbol(Amuse.voidType, yyline, yycolumn);
             }
           case 75: break;
           case 33: 
-            { return new Symbol(Amuse.MainProgram, yychar, yyline);
+            { return new Symbol(Amuse.MainProgram, yyline, yycolumn);
             }
           case 76: break;
           case 34: 
-            { return new Symbol(Amuse.character, yychar, yyline);
+            { return new Symbol(Amuse.character, yyline, yycolumn);
             }
           case 77: break;
           case 35: 
-            { return new Symbol(Amuse.endif, yychar, yyline);
+            { return new Symbol(Amuse.endif, yyline, yycolumn);
             }
           case 78: break;
           case 36: 
-            { return new Symbol(Amuse.whilestart, yychar, yyline);
+            { return new Symbol(Amuse.whilestart, yyline, yycolumn);
             }
           case 79: break;
           case 37: 
@@ -898,27 +898,27 @@ public class scanner implements java_cup.runtime.Scanner {
             }
           case 80: break;
           case 38: 
-            { return new Symbol(Amuse.begin, yychar, yyline);
+            { return new Symbol(Amuse.begin, yyline, yycolumn);
             }
           case 81: break;
           case 39: 
-            { return new Symbol(Amuse.breaks, yychar, yyline);
+            { return new Symbol(Amuse.breaks, yyline, yycolumn);
             }
           case 82: break;
           case 40: 
-            { return new Symbol(Amuse.elseif, yychar, yyline);
+            { return new Symbol(Amuse.elseif, yyline, yycolumn);
             }
           case 83: break;
           case 41: 
-            { return new Symbol(Amuse.selectstart, yychar, yyline);
+            { return new Symbol(Amuse.selectstart, yyline, yycolumn);
             }
           case 84: break;
           case 42: 
-            { return new Symbol(Amuse.options, yychar, yyline);
+            { return new Symbol(Amuse.options, yyline, yycolumn);
             }
           case 85: break;
           case 43: 
-            { return new Symbol(Amuse.ret, yychar, yyline);
+            { return new Symbol(Amuse.ret, yyline, yycolumn);
             }
           case 86: break;
           default:

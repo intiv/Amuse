@@ -1,18 +1,21 @@
 package amuse;
 import java_cup.runtime.*;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 parser code {:
+
+        ArrayList<String> calls = new ArrayList();
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
                         Symbol s=((Symbol)info);
 
                         if(s.left>=0){
-                                m.append("en linea "+(s.right));
+                                m.append("en linea "+(s.left));
                         if(s.right>=0)
-                                m.append(", columna "+(s.left));
+                                m.append(", columna "+(s.right));
                         }
                 }
                 m.append(": "+message);
@@ -26,8 +29,8 @@ parser code {:
 
         public void unrecovered_syntax_error(Symbol cur_token){
                 System.out.println(cur_token.toString());
-                System.err.println("At line "+(cur_token.right)+", column "+cur_token.left);
-                System.exit(1);
+                System.err.println("En linea "+(cur_token.left)+", columna "+cur_token.right);
+                // System.exit(1);
         }
 
         protected void report_expected_token_ids() {
@@ -35,7 +38,6 @@ parser code {:
 	        LinkedList<String> list = new LinkedList<String>();
 	        for (Integer expected : ids)
 		        list.add(symbl_name_from_id(expected));
-                System.err.println("Se esperaba: "+list);
 	}
         
 :};
@@ -112,7 +114,7 @@ non terminal String VALS, TIPO;
 non terminal Integer E,T,F;
 non terminal Integer S;
 
-non terminal FunctionCall FCALL;
+non terminal String FCALL;
 non terminal FCALLARGS, FCALLARGS2;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
@@ -136,10 +138,10 @@ EXP             ::= IF EXP:exp {: RESULT = exp; :}
                 | FOR EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
                 | S EXP:exp {: RESULT = exp; :}
-                | FCALL:val EXP {:RESULT = (FunctionCall)val; System.out.println("RESULT FCALL EXP: "+RESULT); :}
+                | FCALL:val {: calls.add(val); :} EXP
                 | ;
 
-FCALL ::= id:call {: RESULT = new FunctionCall(call); System.out.println("Llamado a funcion: "+call); System.out.println("Result: "+RESULT.call);:} parIzq FCALLARGS parDer;
+FCALL ::= id:call {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:} parIzq FCALLARGS parDer;
 
 FCALLARGS ::= VALS:arg FCALLARGS2 | ;
 FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
@@ -180,7 +182,7 @@ WHILE           ::= {: System.out.println("Inicio WHILE"); :}
 //For
 FOR             ::= {: System.out.println("Inicio FOR"); :}
                 forstart parIzq ASIG pcoma COND 
-                {:System.out.println("\tCondicion for");:}
+                {:System.out.print("\tCondicion for");:}
                 pcoma COND parDer 
                 {:System.out.println("\tCondicion for");:}
                 EXP 
@@ -233,24 +235,42 @@ F               ::= number:n {:RESULT = new Integer(n);:}
 
 
 //Funcion con retorno
-RETFUNC         ::= TIPO {:System.out.println("FUNCTION START");:} RETFUNC2;
+RETFUNC         ::= TIPO {:System.out.println("FUNCTION START"); calls.clear();:} RETFUNC2;
 RETFUNC2        ::= id:val parIzq ARGS {:System.out.println("\tArgumentos");:} parDer 
-                cbOpen {: System.out.println("\tFUNCTION HEADER "); :} RETFUNCBODY:bodyval  cbClose 
+                cbOpen RETFUNCBODY  cbClose 
                 {:
-                        if(!bodyval.equals("")){
-                                if(bodyval.equals(val)){
-                                        System.out.println("La funcion es recursiva");
+                        boolean rec = false;
+                        for(int i = 0; i < calls.size(); i++){
+                                if(calls.get(i).equals(val)){
+                                        rec = true;
+                                        break;
                                 }
                         } 
+                        if(rec){
+                                System.out.println("\tLa funcion "+val+" es recursiva");
+                        }
+                        calls.clear();
                         System.out.println("FIN FUNCTION");
                 :};
 RETFUNCBODY     ::= EXP:exp {: if(exp != null){ RESULT =((FunctionCall)exp).call+""; System.out.println(); }else{ RESULT = ""; }  :} ret {:System.out.print("\tRETURN - ");:} RETVAL;
 RETVAL          ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
 
 //Funcion void
-VOIDFUNC        ::= voidType {:System.out.println("VOID FUNCTION START");:} VOIDFUNC2;
-VOIDFUNC2       ::= id parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
-                cbOpen {: System.out.println("\tFUNCTION HEADER "); :} EXP cbClose {: System.out.println("FIN FUNCTION");:};
+VOIDFUNC        ::= voidType {:System.out.println("VOID FUNCTION START"); calls.clear();:} VOIDFUNC2;
+VOIDFUNC2       ::= id:val parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
+                cbOpen EXP {:
+                        boolean rec = false;
+                        for(int i = 0; i < calls.size(); i++){
+                                if(calls.get(i).equals(val)){
+                                        rec = true;
+                                        break;
+                                }
+                        } 
+                        if(rec){
+                                System.out.println("\tLa funcion "+val+" es recursiva");
+                        }
+                        calls.clear();
+                :} cbClose {: System.out.println("FIN FUNCTION");:};
 
 
 //Argumentos para funciones
