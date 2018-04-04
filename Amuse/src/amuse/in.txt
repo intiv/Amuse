@@ -1,9 +1,21 @@
 Main(){
+    
+    ##asdasdas
+    /# asdasdaskdhasdkashdakhd #/
+    /#
+        asdasljdhasd
+        asldjasd
+    #/
+    /#
+    asdasd
+    asdasdasd
+    asdasdasdsd
+    #/
     asd num := 4+5*6
-    prueba char := 'aa' 
+    prueba char := 'a' 
     hola()
     jaja(1,2,3)
-    holiwis num [] := {2,5,6,5}
+    holiwis num[] := {2,5,6,5}
     while(hola < 10)
         if(y == 2) then
             holiwis bool := 5

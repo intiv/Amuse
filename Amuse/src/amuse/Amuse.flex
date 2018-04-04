@@ -23,6 +23,7 @@ digit = [0-9]
 letra = [a-zA-Z]
 espacio= "\t"|" "
 endLine = \r|\n|\r\n
+whitespace = {espacio} | {endLine}
 number = {digit}+
 //Palabras reservadas
 
@@ -59,8 +60,8 @@ asig = ":="
 coma = ","
 
 //Comments
-commentLine = "##"( [^*] | \*+ [^/*] )*
-multiComment = "/#"[^*]~"#/" | "/#" "#"+ "/"
+commentLine = "##"[^\r\n]*{endLine}?
+multiComment = "/#"[^]~"#/"
 Comment = {commentLine} | {multiComment}
 
 
@@ -120,6 +121,7 @@ id = {letra}({letra}|{digit})*
   "{" {return new Symbol(Amuse.cbOpen, yyline, yycolumn);}
   ";" {return new Symbol(Amuse.pcoma, yyline, yycolumn);}
   "\'"  {charac = null; yybegin(CHARACTER);}
+  . {System.err.println("Error lexico: Caracter invalido en linea "+yyline+", columna: "+yycolumn);}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }
 

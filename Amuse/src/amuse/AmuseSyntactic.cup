@@ -7,7 +7,8 @@ import java.util.List;
 parser code {:
         public ArrayList<String> calls = new ArrayList();
         public String arrayValue="";
-        public void report_error(String message,Object info){
+
+       public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
                         Symbol s=((Symbol)info);
@@ -108,8 +109,8 @@ non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
-non terminal ARGS, ARGS2, ASIG, ARRVAL, ARRVAL2, BRKS;
-
+non terminal ARGS, ARGS2, ASIG, ASIG2, INIT, INIT2, ARRVAL2, BRKS, BRKS2;
+non terminal String ARRVAL;
 non terminal String VALS, TIPO;
 
 non terminal Integer E,T,F;
@@ -134,15 +135,16 @@ START           ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inic
 EXP             ::= IF EXP:exp {: RESULT = exp; :}
                 | WHILE EXP:exp {: RESULT = exp; :}
                 | ASIG EXP:exp {: RESULT = exp; :}
+                | comment EXP
+                | INIT EXP
                 | error  EXP:exp {: RESULT = exp; :}
-                | comment EXP:exp {: RESULT = exp; :}
                 | FOR EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
                 | S EXP:exp {: RESULT = exp; :}
                 | FCALL:val {: calls.add(val);:} EXP 
                 | ;
 
-FCALL ::= id:call {: RESULT = call; System.out.println("Llamado a funcion: "+call);:} parIzq FCALLARGS parDer;
+FCALL ::= id:call {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:} parIzq FCALLARGS parDer;
 
 FCALLARGS ::= VALS:arg FCALLARGS2 | ;
 FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
@@ -154,21 +156,18 @@ FUNC            ::= RETFUNC FUNC
                 | ;
 
 //Asignacion / Inicializacion
-ASIG            ::= id:i TIPO:t opAsig VALS:v 
-                {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
-                |
-                id:i opAsig VALS:v
-                {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :}
-                |
-                id:i TIPO:t BRKS opAsig VALS:v 
-                {: System.out.println("\t Inicializacion: Tipo "+t+", id: "+i+", valor: "+v); :}
-                |
-                id:i BRKS opAsig VALS:v
-                {: System.out.println("\t Asignacion:  id: "+i+", valor: "+v); :};
 
-BRKS            ::= openBrk number:n {:RESULT = new Integer(n);:} closeBrk
-                |
-                openBrk closeBrk;
+INIT            ::= id:i TIPO:t opAsig VALS:v {:System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v);:};
+
+
+ASIG            ::= id:i ASIG2 opAsig VALS:v {: System.out.println("\tAsignacion: id: "+i+", valor: "+v);:} ;
+ASIG2           ::= openBrk number closeBrk
+                | ;
+
+
+BRKS            ::= openBrk BRKS2 closeBrk;
+BRKS2           ::= number:n 
+                |;
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
@@ -290,11 +289,15 @@ ARGS2           ::=  coma TIPO id ARGS2
                 | ;
 
 //Tipos, falta array
-TIPO            ::= bool:val {: RESULT = "bool"; :}
+TIPO            ::= 
+                TIPO:t openBrk closeBrk {: RESULT = t+" array"; :}
+                |
+                bool:val {: RESULT = "bool"; :}
                 | 
                 num:val {: RESULT = "num"; :}
                 | 
-                character:val {: RESULT = "char"; :};
+                character:val {: RESULT = "char"; :}
+                ;
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::= id:val {: RESULT = val; :}
@@ -305,12 +308,12 @@ VALS            ::= id:val {: RESULT = val; :}
                 |
                 S:val {: RESULT = val.intValue() + ""; :}
                 |
-                cbOpen ARRVAL{:RESULT = arrayValue;arrayValue="";:} cbClose
+                ARRVAL:val {: RESULT = val; :}
                 ;
 
 //Valores para array
-ARRVAL            ::= S:val {: arrayValue = val + ""; :} ARRVAL2 
-                | ;
-ARRVAL2           ::=  coma S:val {: arrayValue = ", " + val; :} ARRVAL2
+ARRVAL            ::= cbOpen S:val {: arrayValue = val + ""; :} ARRVAL2 {: RESULT = arrayValue; arrayValue = ""; :} cbClose 
+                | cbOpen  cbClose {: RESULT = ""; :};
+ARRVAL2           ::=  coma S:val {: arrayValue += (", " + val); :} ARRVAL2
                 | ;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;
