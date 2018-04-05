@@ -24,14 +24,15 @@ public class Amuse {
   public static final int end = 9;
   public static final int cbClose = 13;
   public static final int ifstart = 2;
+  public static final int writestart = 39;
   public static final int elseclause = 4;
-  public static final int options = 41;
-  public static final int breaks = 40;
+  public static final int options = 42;
+  public static final int breaks = 41;
   public static final int EOF = 0;
   public static final int error = 1;
   public static final int pcoma = 16;
   public static final int opSuma = 29;
-  public static final int colon = 42;
+  public static final int colon = 43;
   public static final int forstart = 38;
   public static final int endif = 6;
   public static final int parIzq = 10;
@@ -40,11 +41,11 @@ public class Amuse {
   public static final int cbOpen = 12;
   public static final int opArit = 24;
   public static final int openBrk = 17;
-  public static final int comment = 43;
+  public static final int comment = 44;
   public static final int opAsig = 28;
   public static final int id = 20;
   public static final int charval = 36;
-  public static final int selectstart = 39;
+  public static final int selectstart = 40;
   public static final int ifthen = 3;
   public static final int elseif = 5;
   public static final int booleano = 19;
@@ -92,6 +93,7 @@ public class Amuse {
   "charval",
   "whilestart",
   "forstart",
+  "writestart",
   "selectstart",
   "breaks",
   "options",

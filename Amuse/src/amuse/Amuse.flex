@@ -75,7 +75,7 @@ id = {letra}({letra}|{digit})*
   {Comment} {return new Symbol(Amuse.comment, yyline, yycolumn);}
   {espacio} {}
   {endLine} {}
-  {write} {System.out.println("<WRITE, "+yyline+">");}
+  {write} {return new Symbol(Amuse.writestart, yyline, yycolumn);}
   {if}  {return new Symbol(Amuse.ifstart, yyline, yycolumn);}
   {then} {return new Symbol(Amuse.ifthen, yyline, yycolumn);}
   {else}  {return new Symbol(Amuse.elseclause, yyline, yycolumn);}

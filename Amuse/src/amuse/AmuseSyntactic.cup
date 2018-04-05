@@ -75,6 +75,9 @@ terminal String whilestart;
 //For                
 terminal String forstart;
 
+//Write                
+terminal String writestart;
+
 //Select             
 terminal String selectstart, breaks, options, colon;
 
@@ -96,6 +99,9 @@ non terminal WHILE;
 
 //For
 non terminal FOR;
+
+//Write
+non terminal WRITE;
 
 //Select
 non terminal SELECT, OPT;
@@ -142,7 +148,8 @@ EXP             ::= IF EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
                 | S EXP:exp {: RESULT = exp; :}
                 | FCALL:val {: calls.add(val);:} EXP 
-                | ;
+                | WRITE EXP 
+                |;
 
 FCALL ::= id:call {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:} parIzq FCALLARGS parDer;
 
@@ -188,6 +195,11 @@ WHILE           ::= {: System.out.println("Inicio WHILE"); :}
                 whilestart parIzq COND parDer 
                 {:System.out.println("\tCondicion while");:} 
                 EXP end {: System.out.println("fin while"); :};
+
+//Write
+WRITE           ::= {: System.out.println("Inicio WRITE"); :} 
+                writestart parIzq id:val parDer 
+                {:System.out.println("\tVariable:"+val);:};
 
 //For
 FOR             ::= {: System.out.println("Inicio FOR"); :}

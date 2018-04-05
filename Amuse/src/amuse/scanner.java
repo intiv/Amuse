@@ -909,7 +909,7 @@ public class scanner implements java_cup.runtime.Scanner {
             }
           case 85: break;
           case 40: 
-            { System.out.println("<WRITE, "+yyline+">");
+            { return new Symbol(Amuse.writestart, yyline, yycolumn);
             }
           case 86: break;
           case 41: 
