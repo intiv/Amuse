@@ -1,0 +1,17 @@
+Main(){
+    ##Ejemplo 1 - for, llamado de funciones, funcion con retorno e if
+    for(holiwis num := 5;asd < 10 ;asd > 10) begin
+        hola2()
+    end
+    mayor(5,6)
+}
+
+num mayor(num a, num b){
+    retVal num := 1
+    if (a > b) then
+        retVal := a
+    else then
+        retVal := b
+    endif
+    return retVal
+}

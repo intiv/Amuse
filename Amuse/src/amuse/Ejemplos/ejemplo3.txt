@@ -1,0 +1,50 @@
+Main(){
+    ##Ejemplo 3 - tipos/inicializacion, while, if/elseif/else, condiciones, select, varias funciones
+
+    /# 
+        Este es el tercer ejemplo sin errores
+        para la revision del proyecto de compiladores 1
+        presentado por Inti Velasquez y Juany Ramirez
+    #/
+    hola num[] := {10, 0, 5}
+    caracter char := 'a'
+    singlenum num := 1
+    flag bool := true
+    flag2 bool := false
+    while(true)
+        if(!singlenum>1||!singlenum < 1) then
+            write(singlenum)
+        elseif(flag2 != false) then
+            write(flag2)
+        else then
+            write(caracter)
+        endif
+    end
+
+    juany num := 33
+    select(juany)
+        option 33:
+            holiwis num := 5
+        break
+        option 45:
+            holiwis num := 9
+        break
+        option 95:
+            holiwis num := 5
+        break
+    end
+}
+
+num[] getNumbers(){
+    numbers num[] := {1,2,3,4,5}
+    return numbers
+}
+
+
+void printChar(char c){
+    write(c)
+}
+
+bool uselessFunc(){
+    return false
+}

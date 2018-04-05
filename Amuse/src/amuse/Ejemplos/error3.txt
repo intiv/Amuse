@@ -1,0 +1,18 @@
+Main(){
+    ##Error 3 - Caracteres invalidos
+    prueb`a char := 'a'
+
+    test2 num := `1
+
+    
+    
+}
+
+num as`(){
+    return 1
+}
+
+
+bool hol`a(){
+    return 'c'
+}

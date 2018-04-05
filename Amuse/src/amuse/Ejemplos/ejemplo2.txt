@@ -1,0 +1,11 @@
+Main(){
+    ##Ejemplo 2 - Recursion
+    recurTest()
+}
+
+
+void recurTest(){
+    arit num := 1+2*4/(7-2)
+    write(arit)
+    recurTest()
+}

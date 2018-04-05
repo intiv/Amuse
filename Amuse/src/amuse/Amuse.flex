@@ -44,6 +44,7 @@ option = "option"
 break = "break"
 return = "return"
 boolean = "false" | "true"
+charval = "\'"{letra}?"\'"
 //    Tipos
 bool = "bool"
 num = "num"
@@ -73,8 +74,7 @@ id = {letra}({letra}|{digit})*
 
 <YYINITIAL> {
   {Comment} {return new Symbol(Amuse.comment, yyline, yycolumn);}
-  {espacio} {}
-  {endLine} {}
+  {whitespace}  {}
   {write} {return new Symbol(Amuse.writestart, yyline, yycolumn);}
   {if}  {return new Symbol(Amuse.ifstart, yyline, yycolumn);}
   {then} {return new Symbol(Amuse.ifthen, yyline, yycolumn);}
@@ -111,6 +111,7 @@ id = {letra}({letra}|{digit})*
   {bool}  {return new Symbol(Amuse.bool, yyline, yycolumn);}
   {num} {return new Symbol(Amuse.num, yyline, yycolumn);}
   {char}  {return new Symbol(Amuse.character, yyline, yycolumn);}
+  {charval} {return new Symbol(Amuse.charval, yyline, yycolumn, yytext());}
   {boolean}   {return new Symbol(Amuse.booleano, yyline, yycolumn, yytext());}
   {number}  {return new Symbol(Amuse.number, yyline, yycolumn, yytext());}
   {id}  {return new Symbol(Amuse.id, yyline, yycolumn, yytext());}
@@ -120,8 +121,9 @@ id = {letra}({letra}|{digit})*
   "}" {return new Symbol(Amuse.cbClose, yyline, yycolumn);}
   "{" {return new Symbol(Amuse.cbOpen, yyline, yycolumn);}
   ";" {return new Symbol(Amuse.pcoma, yyline, yycolumn);}
-  "\'"  {charac = null; yybegin(CHARACTER);}
-  . {System.err.println("Error lexico: Caracter invalido en linea "+yyline+", columna: "+yycolumn);}
+  // "\'"  {charac = null; yybegin(CHARACTER);}
+
+  . {System.err.println("Error lexico: Caracter invalido ("+yytext()+") en linea "+(yyline+1)+", columna: "+(yycolumn+1));}
   /* \'  {string.setLength(0); yybegin(CHARACTER);} */
 }
 

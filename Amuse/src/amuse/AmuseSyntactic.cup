@@ -14,9 +14,9 @@ parser code {:
                         Symbol s=((Symbol)info);
 
                         if(s.left>=0){
-                                m.append("en linea "+(s.left));
+                                m.append("en linea "+(s.left+1));
                                 if(s.right>=0)
-                                        m.append(", columna "+(s.right));
+                                        m.append(", columna "+(s.right+1));
                         }
                 }
                 m.append(": "+message);
@@ -62,9 +62,10 @@ terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, c
 terminal String booleano, id, voidType, character;
 
 //Operadores
-terminal String opRel, opArit, opOr, opAnd, opNot, opAsig;
+terminal String opRel, opOr, opAnd, opNot, opAsig;
 terminal opSuma, opResta, opMult, opDiv;
 terminal String number;
+
 
 //Valores
 terminal String bool, num, charval;
@@ -82,6 +83,7 @@ terminal String writestart;
 terminal String selectstart, breaks, options, colon;
 
 terminal String comment;
+
 
 
 /*****************
@@ -104,7 +106,7 @@ non terminal FOR;
 non terminal WRITE;
 
 //Select
-non terminal SELECT, OPT;
+non terminal SELECT, OPT, OPT2;
 
 //Condiciones multipes, negadas o normales
 non terminal COND, COND2, COND3, COND4;
@@ -115,7 +117,7 @@ non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
-non terminal ARGS, ARGS2, ASIG, ASIG2, INIT, INIT2, ARRVAL2, BRKS, BRKS2;
+non terminal ARGS, ARGS2, ASIG, ASIG2, INIT, ARRVAL2;
 non terminal String ARRVAL;
 non terminal String VALS, TIPO;
 
@@ -127,7 +129,9 @@ non terminal FCALLARGS, FCALLARGS2;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
 // non terminal Integer EXPS, FACT, TERM;
-
+precedence left opSuma, opResta;
+precedence left opMult, opDiv;
+precedence left opAsig;
 
 start with START;
 
@@ -138,18 +142,21 @@ start with START;
 START           ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: System.out.println("Fin main"); :} FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-EXP             ::= IF EXP:exp {: RESULT = exp; :}
+EXP             ::= error EXP:exp {: RESULT = exp; :}
+                | IF EXP:exp {: RESULT = exp; :}
                 | WHILE EXP:exp {: RESULT = exp; :}
                 | ASIG EXP:exp {: RESULT = exp; :}
                 | comment EXP
                 | INIT EXP
-                | error  EXP:exp {: RESULT = exp; :}
                 | FOR EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
                 | S EXP:exp {: RESULT = exp; :}
-                | FCALL:val {: calls.add(val);:} EXP 
+                | FCALL:val {: calls.add(val);:} EXP
                 | WRITE EXP 
+
                 |;
+
+
 
 FCALL ::= id:call {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:} parIzq FCALLARGS parDer;
 
@@ -159,7 +166,6 @@ FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ;
 //No terminal que maneja todas las funciones despues del main
 FUNC            ::= RETFUNC FUNC
                 | VOIDFUNC FUNC
-                | error FUNC 
                 | ;
 
 //Asignacion / Inicializacion
@@ -170,11 +176,6 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:System.out.println("\tInicializa
 ASIG            ::= id:i ASIG2 opAsig VALS:v {: System.out.println("\tAsignacion: id: "+i+", valor: "+v);:} ;
 ASIG2           ::= openBrk number closeBrk
                 | ;
-
-
-BRKS            ::= openBrk BRKS2 closeBrk;
-BRKS2           ::= number:n 
-                |;
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
@@ -191,21 +192,21 @@ ELSE            ::= elseclause ifthen
                 | ;
 
 //While
-WHILE           ::= {: System.out.println("Inicio WHILE"); :} 
-                whilestart parIzq COND parDer 
+WHILE           ::= 
+                whilestart {: System.out.println("Inicio WHILE"); :}  parIzq COND parDer 
                 {:System.out.println("\tCondicion while");:} 
                 EXP end {: System.out.println("fin while"); :};
 
 //Write
-WRITE           ::= {: System.out.println("Inicio WRITE"); :} 
-                writestart parIzq id:val parDer 
-                {:System.out.println("\tVariable:"+val);:};
+WRITE           ::= 
+                writestart parIzq VALS:val parDer 
+                {:System.out.println("\tWRITE Valor:"+val);:};
 
 //For
-FOR             ::= {: System.out.println("Inicio FOR"); :}
-                forstart parIzq ASIG pcoma COND 
+FOR             ::= 
+                forstart {: System.out.println("Inicio FOR"); :} parIzq INIT pcoma COND 
                 {:System.out.println("\tCondicion for");:}
-                pcoma COND parDer 
+                pcoma COND parDer begin
                 {:System.out.println("\tCondicion for");:}
                 EXP 
                 end {: System.out.println("fin for"); :};
@@ -218,21 +219,20 @@ SELECT          ::= {: System.out.println("Inicio Select"); :}
                 end 
                 {: System.out.println("fin select"); :};
 
-OPT             ::= options VALS:v colon EXP breaks OPT
-                {: System.out.println("\t\tOpcion-valor: "+v); :}
-                | 
-                options VALS:v colon EXP breaks
-                {: System.out.println("\t\tOpcion-valor: "+v); :};
+OPT             ::= options VALS:v {: System.out.println("\t\tOpcion-valor: "+v); :} colon EXP breaks OPT2;
+OPT2            ::= OPT | ;
         
 //Condiciones negadas, normales, con OR o AND
 COND            ::= opNot COND2 
                 |
                 COND2 ;
 COND2           ::= id opRel COND3 
+                | booleano
                 |
                 number opRel COND3;
 COND3           ::= id COND4 
-                | 
+                | booleano COND4
+                |
                 number COND4;
 COND4           ::= opOr COND 
                 | 
@@ -257,9 +257,9 @@ F               ::= number:n {:RESULT = new Integer(n);:}
 
 
 //Funcion con retorno
-RETFUNC         ::= TIPO {:System.out.println("FUNCTION START"); calls.clear(); :} RETFUNC2;
-RETFUNC2        ::= id:val parIzq ARGS {:System.out.println("\tArgumentos");:} parDer 
-                cbOpen {: System.out.println("\tFUNCTION HEADER "); :} RETFUNCBODY cbClose 
+RETFUNC         ::= TIPO  RETFUNC2;
+RETFUNC2        ::= id:val {: System.out.println("FUNCTION "+val+" START ");  calls.clear(); :} parIzq ARGS parDer 
+                cbOpen  RETFUNCBODY cbClose 
                 {:
                         boolean rec = false;
                         for(int i = 0; i < calls.size(); i++){
@@ -277,8 +277,8 @@ RETFUNCBODY     ::= EXP:exp ret {:System.out.print("\tRETURN - ");:} RETVAL;
 RETVAL          ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
 
 //Funcion void
-VOIDFUNC        ::= voidType {:System.out.println("VOID FUNCTION START"); calls.clear(); :} VOIDFUNC2;
-VOIDFUNC2       ::= id:val parIzq ARGS {:System.out.println("\tArgumentos");:} parDer
+VOIDFUNC        ::= voidType  VOIDFUNC2;
+VOIDFUNC2       ::= id:val {:System.out.println("VOID FUNCTION "+val+" START"); calls.clear(); :} parIzq ARGS parDer
                 cbOpen EXP cbClose {: 
                         boolean rec = false;
                         for(int i = 0; i < calls.size(); i++){
@@ -295,9 +295,9 @@ VOIDFUNC2       ::= id:val parIzq ARGS {:System.out.println("\tArgumentos");:} p
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO id ARGS2 
+ARGS            ::= TIPO:t id:i {: System.out.println("\tArgumento - tipo: "+t+", id: "+i); :} ARGS2 
                 | ;
-ARGS2           ::=  coma TIPO id ARGS2
+ARGS2           ::=  coma TIPO:t id:i {: System.out.println("\tArgumento - tipo: "+t+", id: "+i); :} ARGS2
                 | ;
 
 //Tipos, falta array
@@ -312,7 +312,8 @@ TIPO            ::=
                 ;
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
-VALS            ::= id:val {: RESULT = val; :}
+VALS            ::= 
+                id:val {: RESULT = val; :}
                 | 
                 booleano:val {: RESULT = val; :}
                 |

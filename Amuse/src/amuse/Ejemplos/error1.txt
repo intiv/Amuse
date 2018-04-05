@@ -1,0 +1,7 @@
+Main(){
+    ##Error 1 - Error en asignaciones, expresiones buenas entre errores siguen funcionando
+    testchar char := 'aa'
+    asignacion num[] = {1,5,6}
+    write(testchar)
+    asignacion[] := 1
+}

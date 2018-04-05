@@ -11,8 +11,10 @@ Main(){
     asdasdasd
     asdasdasdsd
     #/
+    test char := 'aa'
     asd num := 4+5*6
-    prueba char := 'a' 
+    prueb`a char := 'a' 
+    prueba'2 num := `ada
     write(nuevo)
     hola()
     jaja(1,2,3)
@@ -29,6 +31,7 @@ Main(){
 bool hola(){
     if(a>5) then
         adiowis
+        write(hola)
     endif
     return hola
 }
@@ -37,7 +40,6 @@ bool hola2(){
     for(holiwis num := 5;asd < 10 ;asd > 10)
         hola2()
     end
-    yes
     return asd
 }
 
