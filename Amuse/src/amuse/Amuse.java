@@ -8,50 +8,49 @@ package amuse;
 /** CUP generated class containing symbol constants. */
 public class Amuse {
   /* terminals */
-  public static final int opRel = 23;
-  public static final int bool = 33;
-  public static final int parDer = 11;
+  public static final int opRel = 22;
+  public static final int bool = 32;
+  public static final int parDer = 10;
   public static final int MainProgram = 7;
-  public static final int whilestart = 36;
-  public static final int opNot = 26;
-  public static final int opAnd = 25;
-  public static final int coma = 15;
-  public static final int voidType = 21;
-  public static final int opDiv = 31;
-  public static final int opMult = 30;
-  public static final int begin = 8;
-  public static final int closeBrk = 18;
-  public static final int end = 9;
-  public static final int cbClose = 13;
+  public static final int whilestart = 35;
+  public static final int opNot = 25;
+  public static final int opAnd = 24;
+  public static final int coma = 14;
+  public static final int voidType = 20;
+  public static final int opDiv = 30;
+  public static final int opMult = 29;
+  public static final int closeBrk = 17;
+  public static final int end = 8;
+  public static final int cbClose = 12;
   public static final int ifstart = 2;
-  public static final int writestart = 38;
+  public static final int writestart = 37;
   public static final int elseclause = 4;
-  public static final int options = 41;
-  public static final int breaks = 40;
+  public static final int options = 40;
+  public static final int breaks = 39;
   public static final int EOF = 0;
   public static final int error = 1;
-  public static final int pcoma = 16;
-  public static final int opSuma = 28;
-  public static final int colon = 42;
-  public static final int forstart = 37;
+  public static final int pcoma = 15;
+  public static final int opSuma = 27;
+  public static final int colon = 41;
+  public static final int forstart = 36;
   public static final int endif = 6;
-  public static final int parIzq = 10;
-  public static final int ret = 14;
-  public static final int opOr = 24;
-  public static final int cbOpen = 12;
-  public static final int openBrk = 17;
-  public static final int comment = 43;
-  public static final int opAsig = 27;
-  public static final int id = 20;
-  public static final int charval = 35;
-  public static final int selectstart = 39;
+  public static final int parIzq = 9;
+  public static final int ret = 13;
+  public static final int opOr = 23;
+  public static final int cbOpen = 11;
+  public static final int openBrk = 16;
+  public static final int comment = 42;
+  public static final int opAsig = 26;
+  public static final int id = 19;
+  public static final int charval = 34;
+  public static final int selectstart = 38;
   public static final int ifthen = 3;
   public static final int elseif = 5;
-  public static final int booleano = 19;
-  public static final int character = 22;
-  public static final int opResta = 29;
-  public static final int num = 34;
-  public static final int number = 32;
+  public static final int booleano = 18;
+  public static final int character = 21;
+  public static final int opResta = 28;
+  public static final int num = 33;
+  public static final int number = 31;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -61,7 +60,6 @@ public class Amuse {
   "elseif",
   "endif",
   "MainProgram",
-  "begin",
   "end",
   "parIzq",
   "parDer",

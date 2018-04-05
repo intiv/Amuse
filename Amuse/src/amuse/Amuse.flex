@@ -33,7 +33,6 @@ elseif = "elseif"
 endIf = "endif"
 while = "while"
 then = "then"
-begin = "begin"
 end = "end"
 void = "void"
 main = "Main"
@@ -82,7 +81,6 @@ id = {letra}({letra}|{digit})*
   {elseif}  {return new Symbol(Amuse.elseif, yyline, yycolumn);}
   {endIf} {return new Symbol(Amuse.endif, yyline, yycolumn);}
   {while} {return new Symbol(Amuse.whilestart, yyline, yycolumn);}
-  {begin} {return new Symbol(Amuse.begin, yyline, yycolumn);}
   {end} {return new Symbol(Amuse.end, yyline, yycolumn);}
   {for} {return new Symbol(Amuse.forstart, yyline, yycolumn);}
   {select}  {return new Symbol(Amuse.selectstart, yyline, yycolumn);}

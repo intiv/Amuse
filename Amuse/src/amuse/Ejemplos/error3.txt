@@ -1,10 +1,7 @@
 Main(){
     ##Error 3 - Caracteres invalidos
     prueb`a char := 'a'
-
     test2 num := `1
-
-    
     
 }
 

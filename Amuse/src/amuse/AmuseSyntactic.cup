@@ -56,7 +56,7 @@ action code
 terminal String ifstart, ifthen, elseclause, elseif, endif;
 
 //Estructura 
-terminal String MainProgram, begin, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma, openBrk, closeBrk;
+terminal String MainProgram, end, parIzq, parDer, cbOpen, cbClose, ret, coma, pcoma, openBrk, closeBrk;
 
 //Tipos
 terminal String booleano, id, voidType, character;
@@ -158,7 +158,7 @@ EXP             ::= error EXP:exp {: RESULT = exp; :}
 
 
 
-FCALL ::= id:call {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:} parIzq FCALLARGS parDer;
+FCALL ::= id:call parIzq FCALLARGS parDer {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:};
 
 FCALLARGS ::= VALS:arg FCALLARGS2 | ;
 FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
@@ -206,7 +206,7 @@ WRITE           ::=
 FOR             ::= 
                 forstart {: System.out.println("Inicio FOR"); :} parIzq INIT pcoma COND 
                 {:System.out.println("\tCondicion for");:}
-                pcoma COND parDer begin
+                pcoma COND parDer
                 {:System.out.println("\tCondicion for");:}
                 EXP 
                 end {: System.out.println("fin for"); :};
