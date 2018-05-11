@@ -58,6 +58,7 @@ and = "&&"
 opRel = "<" | ">" | ">=" | "<=" | "==" | "!="
 asig = ":="
 coma = ","
+cont = "++"|"--"
 
 //Comments
 commentLine = "##"[^\r\n]*{endLine}?
@@ -74,6 +75,7 @@ id = {letra}({letra}|{digit})*
 <YYINITIAL> {
   {Comment} {return new Symbol(Amuse.comment, yyline, yycolumn);}
   {whitespace}  {}
+  {cont} {return new Symbol(Amuse.contador, yyline, yycolumn);}
   {write} {return new Symbol(Amuse.writestart, yyline, yycolumn);}
   {if}  {return new Symbol(Amuse.ifstart, yyline, yycolumn);}
   {then} {return new Symbol(Amuse.ifthen, yyline, yycolumn);}

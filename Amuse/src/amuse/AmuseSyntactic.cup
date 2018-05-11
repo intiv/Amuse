@@ -7,8 +7,11 @@ import java.util.List;
 parser code {:
         public ArrayList<String> calls = new ArrayList();
         public String arrayValue="";
+        public int hayErrores = 0;
+        public int contadorNodo = 0;
+        public static Nodo padre;
 
-       public void report_error(String message,Object info){
+        public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
                         Symbol s=((Symbol)info);
@@ -21,20 +24,24 @@ parser code {:
                 }
                 m.append(": "+message);
                 System.err.println(m);
+                hayErrores = 1;
         }
 
         public void report_fatal_error(String message, Object info){
                 report_error(message, info);
+                hayErrores = 1;
                 // System.exit(1);
         }
 
         public void unrecovered_syntax_error(Symbol cur_token){
                 System.out.println(cur_token.toString());
                 System.err.println("At line "+(cur_token.left)+", column "+cur_token.right);
+                hayErrores = 1;
                 // System.exit(1);
         }
 
         protected void report_expected_token_ids() {
+                hayErrores = 1;
 	        List<Integer> ids = expected_token_ids();
 	        LinkedList<String> list = new LinkedList<String>();
 	        for (Integer expected : ids)
@@ -74,7 +81,7 @@ terminal String bool, num, charval;
 terminal String whilestart;
 
 //For                
-terminal String forstart;
+terminal String forstart, contador;
 
 //Write                
 terminal String writestart;
@@ -100,7 +107,7 @@ non terminal IF, ELSIF, ELSE;
 non terminal WHILE;
 
 //For
-non terminal FOR;
+non terminal FOR, CONTADOR;
 
 //Write
 non terminal WRITE;
@@ -206,10 +213,13 @@ WRITE           ::=
 FOR             ::= 
                 forstart {: System.out.println("Inicio FOR"); :} parIzq INIT pcoma COND 
                 {:System.out.println("\tCondicion for");:}
-                pcoma COND parDer
+                pcoma CONTADOR parDer
                 {:System.out.println("\tCondicion for");:}
-                EXP 
+                ASIG 
                 end {: System.out.println("fin for"); :};
+
+CONTADOR        ::= 
+                id:i contador:cont {:System.out.println("\t Contador: id: "+i+", contador: "+cont);:};
 
 //Select
 SELECT          ::= {: System.out.println("Inicio Select"); :}

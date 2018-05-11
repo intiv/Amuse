@@ -1,7 +1,8 @@
 Main(){
     ##Ejemplo 1 - for, llamado de funciones, funcion con retorno e if
-    for(holiwis num := 5;asd < 10 ;asd > 10)
-        hola2()
+   
+    for(holiwis num := 5;asd < 10 ;asd++)
+        retVal := a
     end
     mayor(5,6)
 }
