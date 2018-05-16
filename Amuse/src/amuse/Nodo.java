@@ -12,18 +12,22 @@ import java.util.ArrayList;
  * @author juany
  */
 public class Nodo {
+    
     public String Etiqueta;
+    public String valor;
+    public int idNod;
+    public ArrayList<Nodo> hijos = new ArrayList<>();
+    
+    public Nodo() {
+    }
 
     public Nodo(String Etiqueta, String valor, int idNod) {
         this.Etiqueta = Etiqueta;
         this.valor = valor;
         this.idNod = idNod;
     }
-    public ArrayList<Nodo> hijos = new ArrayList<>();
-    public String valor;
-    public int idNod;
     
-    public void AddHijos(Nodo hijo){
+    public void addHijos(Nodo hijo){
         hijos.add(hijo);
     }
     

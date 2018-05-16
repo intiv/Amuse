@@ -132,7 +132,7 @@ non terminal Integer E,T,F;
 non terminal Integer S;
 
 non terminal String FCALL;
-non terminal FCALLARGS, FCALLARGS2;
+non terminal FCALLARGS, FCALLARGS2, MAIN;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
 // non terminal Integer EXPS, FACT, TERM;
@@ -146,7 +146,20 @@ start with START;
 
 
 
-START           ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: System.out.println("Fin main"); :} FUNC;
+START           ::= MAIN:n1 {:
+                        Nodo nd = new Nodo();
+                        nd.setEtiqueta("Inicio");
+                        nd.setIdNod(parser.contadorNodo);
+                        nd.addHijos((Nodo)n1);             
+                        parser.padre = (Nodo)nd;
+                        parser.contadorNodo++;
+                        RESULT = nd; :};
+
+MAIN            ::= MainProgram parIzq parDer cbOpen 
+                {: System.out.println("Inicio main");:} 
+                EXP cbClose 
+                {: System.out.println("Fin main"); :}
+                FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
 EXP             ::= error EXP:exp {: RESULT = exp; :}

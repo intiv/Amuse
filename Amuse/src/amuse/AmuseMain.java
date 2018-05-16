@@ -31,11 +31,11 @@ public class AmuseMain {
             scanner lex = new scanner(fr);
             Sintactico sint = new Sintactico(lex);
             Symbol simbolo = sint.parse();
-//            if(sint.hayErrores==0){
-//                System.out.println("No hubieron errores");
-//                Nodo raiz = sint.padre;
-//                Graficar(recorrido1(raiz),"Amuse Tree");
-//            }
+            if(sint.hayErrores==0){
+                System.out.println("No hubieron errores");
+                Nodo raiz = sint.padre;
+                Graficar(recorrido1(raiz),"Amuse_Tree");
+            }
             System.out.println(simbolo);
         } catch (Exception ex) {
             Logger.getLogger(AmuseMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -44,12 +44,18 @@ public class AmuseMain {
     
     public static String recorrido1(Nodo raiz){
         String cuerpo = "";
-        for(Nodo hijos:raiz.hijos){
-            cuerpo += raiz.idNod +"[label =\""+cambiar(raiz.valor)+"("+raiz.Etiqueta+")\"]\n";
-                    cuerpo += hijos.idNod +"[label =\""+cambiar(hijos.valor)+"("+hijos.Etiqueta+")\"]\n";
-                    cuerpo += raiz.idNod + "->" +hijos.idNod+"\n";
-                    cuerpo +=  recorrido1(hijos);                
-        }
+        cuerpo += "nodo"+raiz.idNod +"[label=\""+cambiar(raiz.valor)+"("+raiz.Etiqueta+")\"];\n";
+//        for(Nodo hijos:raiz.hijos){
+//            if(hijos.Etiqueta!=null){
+//                cuerpo += raiz.idNod +"[label=\""+cambiar(raiz.valor)+"("+raiz.Etiqueta+")\"]\n";
+//                cuerpo += hijos.idNod +"[label=\""+cambiar(hijos.valor)+"("+hijos.Etiqueta+")\"]\n";
+//                cuerpo += raiz.idNod + "->" +hijos.idNod+"\n";
+//                cuerpo +=  recorrido1(hijos);    
+//            }else{
+//                System.out.println(raiz.Etiqueta);
+//            }
+//                        
+//       }
         return cuerpo;
     }
     
@@ -71,14 +77,16 @@ public class AmuseMain {
         try{
             fichero = new FileWriter(archivo);
             pw = new PrintWriter(fichero);
-            pw.println("diagraph G {node[shape=box, stile=filled, color=Gray95]; edge[color=black];rankdir=TB \n}");
+            pw.println("digraph G {node[shape=box, style=filled, color=Gray95]; edge[color=black];rankdir=TB \n");
             pw.println(cadena);
-            pw.println("\n");
+            pw.println("\n }");
+            fichero.close();
         }catch(Exception e){
             System.out.println(e);
         }
         try{
-            String cmd = "dot.exe -Tpng "+nombre + "dot -o " + cad + ".png";
+            //String cmd = "dot -Tpng Amuse_Tree.dot -o Amuse_Tree.png";
+            String cmd = "dot -Tpng "+ nombre + ".dot -o " + cad + ".png";
             Runtime.getRuntime().exec(cmd);
         }catch(IOException e){
             System.out.println(e);

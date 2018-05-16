@@ -1,0 +1,6 @@
+digraph G {node[shape=box, style=filled, color=Gray95]; edge[color=black];rankdir=TB 
+
+nodo0[label="(Inicio)"];
+
+
+}
