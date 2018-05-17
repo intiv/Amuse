@@ -45,17 +45,14 @@ public class AmuseMain {
     public static String recorrido1(Nodo raiz){
         String cuerpo = "";
         cuerpo += "nodo"+raiz.idNod +"[label=\""+cambiar(raiz.valor)+"("+raiz.Etiqueta+")\"];\n";
-//        for(Nodo hijos:raiz.hijos){
-//            if(hijos.Etiqueta!=null){
-//                cuerpo += raiz.idNod +"[label=\""+cambiar(raiz.valor)+"("+raiz.Etiqueta+")\"]\n";
-//                cuerpo += hijos.idNod +"[label=\""+cambiar(hijos.valor)+"("+hijos.Etiqueta+")\"]\n";
-//                cuerpo += raiz.idNod + "->" +hijos.idNod+"\n";
-//                cuerpo +=  recorrido1(hijos);    
-//            }else{
-//                System.out.println(raiz.Etiqueta);
-//            }
-//                        
-//       }
+       for(Nodo hijos:raiz.hijos){
+           if(hijos.Etiqueta!=null){
+               cuerpo += "nodo"+raiz.idNod +"[label=\""+cambiar(raiz.valor)+"("+raiz.Etiqueta+")\"];\n";
+               cuerpo += "nodo"+ hijos.idNod +"[label=\""+cambiar(hijos.valor)+"("+hijos.Etiqueta+")\"];\n";
+               cuerpo += raiz.idNod + "->" +hijos.idNod+"\n";
+               cuerpo +=  recorrido1(hijos);    
+           }           
+      }
         return cuerpo;
     }
     
@@ -69,10 +66,9 @@ public class AmuseMain {
         return texto;
     }
     
-    public static void Graficar(String cadena, String cad){
+    public static void Graficar(String cadena, String nombre){
         FileWriter fichero = null;
         PrintWriter pw = null;
-        String nombre = cad;
         String archivo = nombre+".dot";
         try{
             fichero = new FileWriter(archivo);
@@ -86,7 +82,7 @@ public class AmuseMain {
         }
         try{
             //String cmd = "dot -Tpng Amuse_Tree.dot -o Amuse_Tree.png";
-            String cmd = "dot -Tpng "+ nombre + ".dot -o " + cad + ".png";
+            String cmd = "dot -Tpng "+ nombre + ".dot -o " + nombre + ".png";
             Runtime.getRuntime().exec(cmd);
         }catch(IOException e){
             System.out.println(e);

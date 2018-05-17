@@ -155,11 +155,58 @@ START           ::= MAIN:n1 {:
                         parser.contadorNodo++;
                         RESULT = nd; :};
 
-MAIN            ::= MainProgram parIzq parDer cbOpen 
-                {: System.out.println("Inicio main");:} 
-                EXP cbClose 
-                {: System.out.println("Fin main"); :}
-                FUNC;
+MAIN            ::= MainProgram parIzq parDer cbOpen EXP:n1 cbClose FUNC:n2 {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Main Function");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta("Main");
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        Nodo nd2 = new Nodo();
+                        nd2.setEtiqueta("(");
+                        nd2.setIdNod(parser.contadorNodo);            
+                        parser.contadorNodo++;
+
+                        Nodo nd3 = new Nodo();
+                        nd3.setEtiqueta(")");
+                        nd3.setIdNod(parser.contadorNodo);           
+                        parser.contadorNodo++;
+
+                        Nodo nd4 = new Nodo();
+                        nd4.setEtiqueta("{");
+                        nd4.setIdNod(parser.contadorNodo);           
+                        parser.contadorNodo++;
+
+                        Nodo nd5 = new Nodo();
+                        nd5.setEtiqueta("Expression");
+                        //nd5.addHijos((Nodo)n1);
+                        nd5.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd6 = new Nodo();
+                        nd6.setEtiqueta("");
+                        nd6.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd7 = new Nodo();
+                        nd7.setEtiqueta("}");
+                        //nd7.addHijos((Nodo)n2);
+                        nd7.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++; 
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        nd0.addHijos((Nodo)nd2);
+                        nd0.addHijos((Nodo)nd3);
+                        nd0.addHijos((Nodo)nd4);
+                        nd0.addHijos((Nodo)nd5);
+                        nd0.addHijos((Nodo)nd6);
+                        nd0.addHijos((Nodo)nd7); 
+                        
+                        RESULT = nd0; :};
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
 EXP             ::= error EXP:exp {: RESULT = exp; :}
