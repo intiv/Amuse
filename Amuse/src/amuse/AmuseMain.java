@@ -26,7 +26,7 @@ public class AmuseMain {
     public static void main(String[] args) {
         try{
 //            buildParser();
-            File file = new File("./src/amuse/Ejemplos/ejemplo1.txt");
+            File file = new File("./src/amuse/in.txt");
             FileReader fr = new FileReader(file);
             scanner lex = new scanner(fr);
             Sintactico sint = new Sintactico(lex);

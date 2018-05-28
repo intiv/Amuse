@@ -1,64 +1,30 @@
+num suma(num, bool)
+bool resta(char, bool, num)
+void print(num)
+
 Main(){
-    
-    ##asdasdas
-    /# asdasdaskdhasdkashdakhd #/
-    /#
-        asdasljdhasd
-        asldjasd
-    #/
-    /#
-    asdasd
-    asdasdasd
-    asdasdasdsd
-    #/
-    test char := 'aa'
-    asd num := 4+5*6
-    prueb`a char := 'a' 
-    prueba'2 num := `ada
-    write(nuevo)
-    hola()
-    jaja(1,2,3)
-    holiwis num[] := {2,5,6,5}
-    while(hola < 10)
-        if(y == 2) then
-            holiwis bool := 5
-            simon bool := true
-        endif
-    end
-    5+2*8
+    ricardo num:=5
+    juany char:='j'
+    inti bool:=false
+
+    ricardo := 3
+    juany := 'k'
+    inti := true
+
+    ricardo := 'r'
+    ricardo := 1
+    arielito := 10
 }
 
-bool hola(){
-    if(a>5) then
-        adiowis
-        write(hola)
-    endif
-    return hola
+
+bool resta(char asd, bool negativos, num base){
+    return true
 }
 
-bool hola2(){
-    for(holiwis num := 5;asd < 10 ;asd > 10)
-        hola2()
-    end
-    return asd
+void print(){
+
 }
 
-num adios(num first, bool simon, char neles){
-    select(juany)
-        option 33:
-            holiwis num := 5
-        break
-        option 45:
-            holiwis num := 9
-        break
-        option 95:
-            holiwis num := 5
-        break
-    end
-    return 1
-}
-
-void hello(num first, bool simon, char neles){
-    quepexis := 5
-    conalexis := 4
+char asd(num hola){
+    return 'k'
 }

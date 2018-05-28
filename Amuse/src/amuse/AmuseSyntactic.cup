@@ -10,7 +10,9 @@ parser code {:
         public int hayErrores = 0;
         public int contadorNodo = 0;
         public static Nodo padre;
-
+        public TablaSimbolos tabla = new TablaSimbolos();
+        public int contadorFunciones = 0;
+         
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
@@ -118,15 +120,21 @@ non terminal SELECT, OPT, OPT2;
 //Condiciones multipes, negadas o normales
 non terminal COND, COND2, COND3, COND4;
 
+//Headers de funciones
+non terminal FUNC_HEAD;
+non terminal String TYPE_LIST, TYPE_LIST2;
+
 //Funcion con retorno
 non terminal FUNC, RETFUNC, RETFUNC2, RETVAL;
 non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC, VOIDFUNC2;
 
-non terminal ARGS, ARGS2, ASIG, ASIG2, INIT, ARRVAL2;
+non terminal String ARGS, ARGS2; 
+non terminal ASIG, ASIG2, INIT, ARRVAL2;
 non terminal String ARRVAL;
-non terminal String VALS, TIPO;
+non terminal String TIPO;
+non terminal Value VALS;
 
 non terminal Integer E,T,F;
 non terminal Integer S;
@@ -144,9 +152,14 @@ start with START;
 
 
 
+START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: 
+                                
+                                System.out.println("Fin main");
+                                tabla.clearVars(contadorFunciones);
 
-
-START           ::= MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: System.out.println("Fin main"); :} FUNC;
+                                System.out.println(tabla.toString()); 
+                        :} 
+                    FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
 EXP             ::= error EXP:exp {: RESULT = exp; :}
@@ -160,7 +173,6 @@ EXP             ::= error EXP:exp {: RESULT = exp; :}
                 | S EXP:exp {: RESULT = exp; :}
                 | FCALL:val {: calls.add(val);:} EXP
                 | WRITE EXP 
-
                 |;
 
 
@@ -175,14 +187,75 @@ FUNC            ::= RETFUNC FUNC
                 | VOIDFUNC FUNC
                 | ;
 
+FUNC_HEAD       ::= TIPO:fun_type id:fun_name parIzq TYPE_LIST:args parDer {:
+                        int index = tabla.contains(fun_name);
+                        if(index == -1){
+                                tabla.addVar(args+"->"+fun_type, fun_name, null);
+                                contadorFunciones++;
+                        }else{
+                                System.err.println("Error en linea "+fun_nameleft+", columna "+fun_nameright+": Ya existe la función "+fun_name);
+                        }
+                :} FUNC_HEAD 
+                | voidType id:fun_name parIzq TYPE_LIST:args parDer {:
+                        int index = tabla.contains(fun_name);
+                        if(index == -1){
+                                tabla.addVar(args+"->void", fun_name, null);
+                                contadorFunciones++;
+                        }else{
+                                System.err.println("Error en linea "+fun_nameleft+", columna "+fun_nameright+": Ya existe la función "+fun_name);
+                        }
+                :} FUNC_HEAD
+                |;
+TYPE_LIST       ::= TIPO:tipo TYPE_LIST2:tl {: RESULT = tipo + tl; :} | ;
+TYPE_LIST2      ::= coma TIPO:tipo TYPE_LIST2:tl {: RESULT = "x"+tipo+tl; :} | {: RESULT = ""; :};
 //Asignacion / Inicializacion
 
-INIT            ::= id:i TIPO:t opAsig VALS:v {:System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v);:};
+INIT            ::= id:i TIPO:t opAsig VALS:v {:
+                        int index = tabla.contains(i);
+                        System.out.println("Asignacion: ID: "+i+", index: "+index);
+                        if(index == -1){
+                                if(v.tipo.equals("error")){
+                                        System.err.println("Error en columna "+vright+", linea "+vleft+": Variable no declarada en inicialización");
+                                }else{
+                                        if(v.tipo.equals(t)){
+                                                tabla.addVar(t, i, v);
+                                                System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
+                                        }else{
+                                                System.err.println("Error en columna"+vright+", linea "+vleft+": Asignacion de "+v.tipo+" a variable de tipo " +t);
+                                        }
+                                }
+                        }else{
+                                System.err.println("Error en columna"+vright+", linea "+vleft+": Variable "+i+" ya fue declarada");
+                        }
+                :};
 
 
-ASIG            ::= id:i ASIG2 opAsig VALS:v {: System.out.println("\tAsignacion: id: "+i+", valor: "+v);:} ;
-ASIG2           ::= openBrk number closeBrk
-                | ;
+ASIG            ::= id:i ASIG2 opAsig VALS:v {: 
+                        int index = tabla.contains(i);
+                        if(index>=0){
+                                if(v.tipo.equals("error")){
+                                        System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                                }else{
+                                        Simbolo sym = tabla.getSymbol(i);
+                                        if(v.tipo.equals(sym.tipo)){
+                                                tabla.assignValue(index, v);
+                                                if(v.tipo.equals("boolean")){
+                                                        System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
+                                                }else if(v.tipo.equals("int")){
+                                                        System.out.println("Asignacion: Variable "+i+", valor: "+v.getIntVal());
+                                                }else if(v.tipo.equals("char")){
+                                                        System.out.println("Asignacion: Variable "+i+", valor: "+v.getCharVal());
+                                                }
+                                        }else{
+                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Asignacion de "+v.tipo+" a variable de tipo "+sym.tipo);
+                                        }
+                                }
+                        }else{
+                                System.err.println("Error en linea "+vleft+", columna "+vright+": Asignación a variable no declarada");
+                        }
+                :};
+ASIG2           ::= openBrk number:n closeBrk {: RESULT = n; :}
+                | {: RESULT = -1; :};
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
@@ -267,55 +340,74 @@ F               ::= number:n {:RESULT = new Integer(n);:}
 
 
 //Funcion con retorno
-RETFUNC         ::= TIPO  RETFUNC2;
-RETFUNC2        ::= id:val {: System.out.println("FUNCTION "+val+" START ");  calls.clear(); :} parIzq ARGS parDer 
-                cbOpen  RETFUNCBODY cbClose 
-                {:
-                        boolean rec = false;
-                        for(int i = 0; i < calls.size(); i++){
-                                if(calls.get(i).equals(val)){
-                                        rec = true;
-                                        break;
+RETFUNC         ::= TIPO:t id:val {: calls.clear(); :} parIzq ARGS:args parDer
+                cbOpen RETFUNCBODY {:
+                        
+                        // boolean rec = false;
+                        // for(int i = 0; i < calls.size(); i++){
+                        //         if(calls.get(i).equals(val)){
+                        //                 rec = true;
+                        //                 break;
+                        //         }
+                        // }
+                        // if(rec){
+                        //         System.out.println("La funcion "+val+" es recursiva");
+                        // }
+                        int index = tabla.contains(val);
+                        if(index >= 0){
+                                Simbolo funcion = tabla.getSymbol(val);
+                                if(funcion.tipo.equals(args+"->"+t)){
+                                        System.out.println("Funcion "+val+", tipo: "+args+"->"+t);
+                                }else{
+                                        System.err.println("Error en linea "+argsleft+", columna "+argsright+": Funcion "+val+" definida como "+(args+"->"+t)+" pero fue declarada como "+funcion.tipo);
                                 }
+                        }else{
+                                System.err.println("Error en linea "+valleft+", columna "+valright+": Funcion "+val+" no declarada");
                         }
-                        if(rec){
-                                System.out.println("La funcion "+val+" es recursiva");
-                        }
-                        System.out.println("FIN FUNCTION");
-                :};
-RETFUNCBODY     ::= EXP:exp ret {:System.out.print("\tRETURN - ");:} RETVAL;
-RETVAL          ::= VALS:retVal {: System.out.println("Return value: "+retVal); :};
+                :} cbClose 
+                ;
+RETFUNCBODY     ::= EXP:exp ret RETVAL;
+RETVAL          ::= VALS:retVal ;
 
 //Funcion void
-VOIDFUNC        ::= voidType  VOIDFUNC2;
-VOIDFUNC2       ::= id:val {:System.out.println("VOID FUNCTION "+val+" START"); calls.clear(); :} parIzq ARGS parDer
-                cbOpen EXP cbClose {: 
-                        boolean rec = false;
-                        for(int i = 0; i < calls.size(); i++){
-                                if(calls.get(i).equals(val)){
-                                        rec = true;
-                                        break;
+VOIDFUNC        ::= voidType id:val {:System.out.println("VOID FUNCTION "+val+" START"); calls.clear(); :} parIzq ARGS:args parDer
+                cbOpen EXP {: 
+                        // boolean rec = false;
+                        // for(int i = 0; i < calls.size(); i++){
+                        //         if(calls.get(i).equals(val)){
+                        //                 rec = true;
+                        //                 break;
+                        //         }
+                        // }
+                        // if(rec){
+                        //         System.out.println("La funcion "+val+" es recursiva");
+                        // }
+                        int index = tabla.contains(val);
+                        if(index >= 0){
+                                Simbolo funcion = tabla.getSymbol(val);
+                                if(funcion.tipo.equals(args+"->void")){
+                                        System.out.println("FIN FUNCTION");
+                                }else{
+                                        System.err.println("Error en linea "+argsleft+", columna "+argsright+": Funcion "+val+" definida como "+(args+"->void")+" pero fue declarada como "+funcion.tipo);
                                 }
+                        }else{
+                                System.err.println("Error en linea "+valleft+", columna "+valright+": Funcion no declarada");
                         }
-                        if(rec){
-                                System.out.println("La funcion "+val+" es recursiva");
-                        }
-                        System.out.println("FIN FUNCTION");
-                :};
+                :} cbClose ;
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO:t id:i {: System.out.println("\tArgumento - tipo: "+t+", id: "+i); :} ARGS2 
+ARGS            ::= TIPO:t id:i ARGS2:arg2 {: RESULT = t+arg2; :} 
                 | ;
-ARGS2           ::=  coma TIPO:t id:i {: System.out.println("\tArgumento - tipo: "+t+", id: "+i); :} ARGS2
-                | ;
+ARGS2           ::=  coma TIPO:t id:i ARGS2:arg2 {: RESULT = "x"+t+arg2; :}
+                | {: RESULT = ""; :};
 
 //Tipos, falta array
 TIPO            ::= 
                 TIPO:t openBrk closeBrk {: RESULT = t+" array"; :}
                 |
                 bool:val {: RESULT = "bool"; :}
-                | 
+                |
                 num:val {: RESULT = "num"; :}
                 | 
                 character:val {: RESULT = "char"; :}
@@ -323,15 +415,24 @@ TIPO            ::=
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::= 
-                id:val {: RESULT = val; :}
+                id:val {: 
+                        int index = tabla.contains(val);
+                        if(index >= 0) {
+
+                        }else{
+                                RESULT = new Value("error", "notfound");
+                        }
+                
+                :}
                 | 
-                booleano:val {: RESULT = val; :}
+                booleano:val {: RESULT = new Value("bool", val); :}
                 |
-                charval:ch {: RESULT = ch; :}
+                charval:ch {: RESULT = new Value("char", ch.charAt(1)+""); :}
                 |
-                S:val {: RESULT = val.intValue() + ""; :}
+                S:val {: RESULT = new Value("num", val.intValue() + ""); :}
                 |
-                ARRVAL:val {: RESULT = val; :}
+                
+                ARRVAL:val {: RESULT = new Value("array", val); :}
                 ;
 
 //Valores para array
