@@ -26,6 +26,12 @@ public class AmuseMain {
     public static void main(String[] args) {
         try{
 //            buildParser();
+//            try{
+//                String cmd = "";
+//                Runtime.getRuntime().exec(cmd);
+//            }catch(IOException e){
+//                System.out.println(e);
+//            }
             File file = new File("./src/amuse/in.txt");
             FileReader fr = new FileReader(file);
             scanner lex = new scanner(fr);

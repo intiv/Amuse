@@ -12,7 +12,6 @@ public class Simbolo{
         this.tipo = tipo;
         this.id = id;
         this.valor = valor;
-        
     }
 
     // public Simbolo(String tipo, String id, ArrayList<Simbolo> args){

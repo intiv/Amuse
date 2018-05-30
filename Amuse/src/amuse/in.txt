@@ -4,16 +4,11 @@ void print(num)
 
 Main(){
     ricardo num:=5
-    juany char:='j'
+    gerardo char:= 'd'
+    juany char:= gerardo
     inti bool:=false
 
-    ricardo := 3
-    juany := 'k'
-    inti := true
-
-    ricardo := 'r'
-    ricardo := 1
-    arielito := 10
+    
 }
 
 

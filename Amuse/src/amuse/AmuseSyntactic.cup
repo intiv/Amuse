@@ -254,6 +254,7 @@ ASIG            ::= id:i ASIG2 opAsig VALS:v {:
                                 System.err.println("Error en linea "+vleft+", columna "+vright+": Asignación a variable no declarada");
                         }
                 :};
+
 ASIG2           ::= openBrk number:n closeBrk {: RESULT = n; :}
                 | {: RESULT = -1; :};
 
@@ -397,47 +398,49 @@ VOIDFUNC        ::= voidType id:val {:System.out.println("VOID FUNCTION "+val+" 
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO:t id:i ARGS2:arg2 {: RESULT = t+arg2; :} 
+ARGS            ::= TIPO:t id:i ARGS2:arg2       {: RESULT = t+arg2; :} 
                 | ;
 ARGS2           ::=  coma TIPO:t id:i ARGS2:arg2 {: RESULT = "x"+t+arg2; :}
-                | {: RESULT = ""; :};
+        |                                        {: RESULT = ""; :};
 
 //Tipos, falta array
 TIPO            ::= 
                 TIPO:t openBrk closeBrk {: RESULT = t+" array"; :}
                 |
-                bool:val {: RESULT = "bool"; :}
+                bool:val                {: RESULT = "bool"; :}
                 |
-                num:val {: RESULT = "num"; :}
+                num:val                 {: RESULT = "num"; :}
                 | 
-                character:val {: RESULT = "char"; :}
+                character:val           {: RESULT = "char"; :}
                 ;
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::= 
-                id:val {: 
-                        int index = tabla.contains(val);
-                        if(index >= 0) {
-
-                        }else{
-                                RESULT = new Value("error", "notfound");
-                        }
-                
-                :}
+                id:val 
+                                {: int index = tabla.contains(val);
+                                        if(index >= 0) {
+                                                Simbolo r = tabla.getSymbol(val);
+                                                System.out.println("HEEEY!->"+r.tipo+"-"+r.id+"-"+r.valor.tipo+"-"+r.valor.val);
+                                                RESULT = r.valor;
+                                        }else{
+                                                RESULT = new Value("error", "notfound");
+                                        }
+                                :}
                 | 
-                booleano:val {: RESULT = new Value("bool", val); :}
+                booleano:val    {: RESULT = new Value("bool", val); :}
                 |
-                charval:ch {: RESULT = new Value("char", ch.charAt(1)+""); :}
+                charval:ch      {: RESULT = new Value("char", ch.charAt(1)+""); :}
                 |
-                S:val {: RESULT = new Value("num", val.intValue() + ""); :}
+                S:val           {: RESULT = new Value("num", val.intValue() + ""); :}
                 |
-                
-                ARRVAL:val {: RESULT = new Value("array", val); :}
+                ARRVAL:val      {: RESULT = new Value("array", val); :}
                 ;
 
 //Valores para array
-ARRVAL            ::= cbOpen S:val {: arrayValue = val + ""; :} ARRVAL2 {: RESULT = arrayValue; arrayValue = ""; :} cbClose 
-                | cbOpen  cbClose {: RESULT = ""; :};
-ARRVAL2           ::=  coma S:val {: arrayValue += (", " + val); :} ARRVAL2
-                | ;
+ARRVAL          ::= cbOpen S:val      {: arrayValue = val + ""; :} ARRVAL2 {: RESULT = arrayValue; arrayValue = ""; :} cbClose 
+                |
+                cbOpen  cbClose       {: RESULT = ""; :};
+
+ARRVAL2           ::=  coma S:val       {: arrayValue += (", " + val); :} ARRVAL2
+                |;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;

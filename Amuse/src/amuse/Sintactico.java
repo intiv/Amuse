@@ -634,7 +634,7 @@ class CUP$Sintactico$actions {
  
                                 
                                 System.out.println("Fin main");
-                                                                tabla.clearVars(contadorFunciones);
+                                tabla.clearVars(contadorFunciones);
 
                                 System.out.println(tabla.toString()); 
                         
@@ -1606,7 +1606,7 @@ System.out.println("\tVariable:"+i);
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
- System.out.println("FUNCTION "+val+" START ");  calls.clear(); 
+ calls.clear(); 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$17",59, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -1640,7 +1640,7 @@ System.out.println("\tVariable:"+i);
                         if(index >= 0){
                                 Simbolo funcion = tabla.getSymbol(val);
                                 if(funcion.tipo.equals(args+"->"+t)){
-                                        System.out.println("FIN FUNCTION");
+                                        System.out.println("Funcion "+val+", tipo: "+args+"->"+t);
                                 }else{
                                         System.err.println("Error en linea "+argsleft+", columna "+argsright+": Funcion "+val+" definida como "+(args+"->"+t)+" pero fue declarada como "+funcion.tipo);
                                 }
@@ -1871,15 +1871,15 @@ System.out.println("VOID FUNCTION "+val+" START"); calls.clear();
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		 
-                        int index = tabla.contains(val);
-                        if(index >= 0) {
-
-                        }else{
-                                RESULT = new Value("error", "notfound");
-                        }
-                
-                
+		 int index = tabla.contains(val);
+                                        if(index >= 0) {
+                                                Simbolo r = tabla.getSymbol(val);
+                                                System.out.println("HEEEY!->"+r.tipo+"-"+r.id+"-"+r.valor.tipo+"-"+r.valor.val);
+                                                RESULT = r.valor;
+                                        }else{
+                                                RESULT = new Value("error", "notfound");
+                                        }
+                                
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("VALS",34, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
