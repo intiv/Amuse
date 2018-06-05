@@ -161,7 +161,8 @@ non terminal String RETFUNCBODY;
 non terminal VOIDFUNC, VOIDFUNC2;
 
 non terminal String ARGS, ARGS2; 
-non terminal ASIG, ASIG2, INIT, ARRVAL2;
+non terminal ASIG, ASIG2, ARRVAL2;
+non terminal String INIT;
 non terminal String ARRVAL;
 non terminal String TIPO;
 non terminal Value VALS;
@@ -247,11 +248,14 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                                         if(v.tipo.equals(t)){
                                                 tabla.addVar(t, i, v);
                                                 System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
+                                                RESULT = i;
                                         }else{
+                                                RESULT = "";
                                                 System.err.println("Error en columna"+vright+", linea "+vleft+": Asignacion de "+v.tipo+" a variable de tipo " +t);
                                         }
                                 }
                         }else{
+                                RESULT = "";
                                 System.err.println("Error en columna"+vright+", linea "+vleft+": Variable "+i+" ya fue declarada");
                         }
                 :};
@@ -317,12 +321,19 @@ WRITE           ::=
 
 //For
 FOR             ::= 
-                forstart {: System.out.println("Inicio FOR"); :} parIzq INIT pcoma COND 
-                {:System.out.println("\tCondicion for");:}
-                pcoma CONTADOR parDer
-                {:System.out.println("\tCondicion for");:}
-                ASIG 
-                end {: System.out.println("fin for"); :};
+                forstart {: //System.out.println("TABLA SIMBOLOS ANTES DE FOR: "+tabla.toString()); 
+                :}
+                parIzq 
+                INIT:id pcoma {: //System.out.println("TABLA SIMBOLOS DESPUES DE VAR DE FOR: "+tabla.toString()); 
+                :}
+                COND pcoma 
+                CONTADOR 
+                parDer
+                EXP
+                end {: 
+                        tabla.removeVar(id);  
+                        //System.out.println("TABLA SIMBOLOS DESPUES DE FOR: "+tabla.toString()); 
+                :};
 
 CONTADOR        ::= 
                 id:i contador:cont {:System.out.println("\t Contador: id: "+i+", contador: "+cont);:};
@@ -434,7 +445,6 @@ F               ::= number:n {:RESULT = new Value("num", n);:}
                                         Simbolo sym = tabla.getSymbol(val);
                                         RESULT = new Value(sym.tipo, sym.id);
                                 }else{
-                                        System.err.println("ACA VEEEH");
                                         RESULT = new Value("error", "notfound");
                                 }
                         :}

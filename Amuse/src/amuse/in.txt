@@ -8,7 +8,10 @@ Main(){
     juany char:= gerardo
     inti bool:= false
     sss num:=5+5+8+ricardo
-    
+    for(i num:= 0; i<5; i++)
+        gerardo := 'a'
+        inti := 1
+    end
 }
 
 num sums(){
@@ -22,3 +25,4 @@ void print(){
 
 char asd(num hola){
     return 'k'
+}
