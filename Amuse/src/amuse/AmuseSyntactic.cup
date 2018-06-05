@@ -50,6 +50,36 @@ parser code {:
 		        list.add(symbl_name_from_id(expected));
                 // System.err.println("Se esperaba: "+list);
 	}
+
+        public String operationValidation(Value e){
+                try {
+                        int p = e.tipo.indexOf("->");
+                        boolean errores= false;
+                        if(p>=0){
+                                if(functionType(e, p).equals("num")){
+                                        return 0+"";
+                                }else{
+                                        return "error";
+                                }
+                        }else{
+                                Integer.parseInt(e.val);
+                                return e.val;                                                        
+                        }                                                                           
+                } catch (NumberFormatException o) {
+                        return "error";
+                }
+                
+        }
+
+        public String functionType(Value e, int indexReturn){
+                if((e.tipo.substring(indexReturn+2).equals("num"))){
+                        return "num";
+                }else{
+                        return "error";
+                }
+        }
+
+
         
 :};
 
@@ -136,8 +166,7 @@ non terminal String ARRVAL;
 non terminal String TIPO;
 non terminal Value VALS;
 
-non terminal Integer E,T,F;
-non terminal Integer S;
+non terminal Value F, E, T, S;
 
 non terminal String FCALL;
 non terminal FCALLARGS, FCALLARGS2;
@@ -156,7 +185,6 @@ START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.pri
                                 
                                 System.out.println("Fin main");
                                 tabla.clearVars(contadorFunciones);
-
                                 System.out.println(tabla.toString()); 
                         :} 
                     FUNC;
@@ -170,8 +198,7 @@ EXP             ::= error EXP:exp {: RESULT = exp; :}
                 | INIT EXP
                 | FOR EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
-                | S EXP:exp {: RESULT = exp; :}
-                | FCALL:val {: calls.add(val);:} EXP
+                | FCALL:val {: calls.add(val); RESULT = val;:} EXP
                 | WRITE EXP 
                 |;
 
@@ -234,7 +261,11 @@ ASIG            ::= id:i ASIG2 opAsig VALS:v {:
                         int index = tabla.contains(i);
                         if(index>=0){
                                 if(v.tipo.equals("error")){
-                                        System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                                        if(v.tipo.equals("notfound")){
+                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                                        }else{
+                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
+                                        }
                                 }else{
                                         Simbolo sym = tabla.getSymbol(i);
                                         if(v.tipo.equals(sym.tipo)){
@@ -242,6 +273,7 @@ ASIG            ::= id:i ASIG2 opAsig VALS:v {:
                                                 if(v.tipo.equals("boolean")){
                                                         System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
                                                 }else if(v.tipo.equals("int")){
+                                                        System.out.println("HEEEEY! ");
                                                         System.out.println("Asignacion: Variable "+i+", valor: "+v.getIntVal());
                                                 }else if(v.tipo.equals("char")){
                                                         System.out.println("Asignacion: Variable "+i+", valor: "+v.getCharVal());
@@ -325,25 +357,93 @@ COND4           ::= opOr COND
 
 // //Expresion Aritmetica
 S               ::= E:e {: RESULT = e;:};
-E               ::= E:e opSuma T:t {: RESULT= new Integer(e.intValue()+t.intValue()); :}
+E               ::= E:e opSuma T:t      {: 
+                                                if(e.tipo.equals("error") || t.tipo.equals("error")){
+                                                        RESULT = new Value("error", "notfound");
+                                                }else{
+                                                        String x = operationValidation(e), y = operationValidation(t);
+                                                        if(x.equals("error") || y.equals("error")){
+                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                        }else{
+                                                                RESULT = new Value("num", (Integer.parseInt(x) + Integer.parseInt(y))+"");
+                                                        }
+                                                }  
+                                        :}
                 | 
-                E:e opResta T:t {: RESULT = new Integer(e.intValue()-t.intValue()); :}
+                E:e opResta T:t         {: 
+                                                if(e.tipo.equals("error") || t.tipo.equals("error")){
+                                                        RESULT = new Value("error", "notfound");
+                                                }else{
+                                                        String x = operationValidation(e), y = operationValidation(t);
+                                                        if(x.equals("error") || y.equals("error")){
+                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                        }else{
+                                                                RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
+                                                        }
+                                                }                                                 
+                                        :}
                 | 
-                T:t{:RESULT = t;:};
-T               ::= T:t opMult F:f {: RESULT = new Integer(t.intValue() * f.intValue());:}
+                T:t                     {:RESULT = t;:};
+T               ::= T:t opMult F:f      {: 
+                                                if(t.tipo.equals("error") || f.tipo.equals("error")){
+                                                        RESULT = new Value("error", "notfound");
+                                                }else{
+                                                        String x = operationValidation(t), y = operationValidation(f);
+                                                        if(x.equals("error") || y.equals("error")){
+                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                        }else{
+                                                                RESULT = new Value("num", (Integer.parseInt(x) * Integer.parseInt(y))+"");
+                                                        }
+                                                }  
+                                        :}
                 | 
-                T:t opDiv F:f {: RESULT = new Integer(t.intValue() / f.intValue());:}
+                T:t opDiv F:f           {: 
+                                                if(t.tipo.equals("error") || f.tipo.equals("error")){
+                                                        RESULT = new Value("error", "notfound");
+                                                }else{
+                                                        String x = operationValidation(t), y = operationValidation(f);
+                                                        if(x.equals("error") || y.equals("error")){
+                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                        }else{
+                                                                RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
+                                                        }
+                                                }  
+                                        :}
                 | 
-                F:f {:RESULT=f;:};
-F               ::= number:n {:RESULT = new Integer(n);:}
+                F:f                     {:RESULT=f;:};
+F               ::= number:n {:RESULT = new Value("num", n);:}
                 |
-                parIzq E:e parDer {:RESULT = e;:};
+                parIzq E:e parDer {:RESULT = e;:}
+                |
+                id:i {:
+                                int index = tabla.contains(i);
+                                int resultado = 0;
+                                if(index>=0){
+                                        Simbolo sym = tabla.getSymbol(i);
+                                        RESULT = sym.valor;
+                                }else{
+                                        RESULT = new Value("error", "notfound");
+                                }
+                        :}
+                |
+                FCALL:val       
+                        {: 
+                                calls.add(val);
+                                int index = tabla.contains(val);
+                                if(index >= 0) {
+                                        Simbolo sym = tabla.getSymbol(val);
+                                        RESULT = new Value(sym.tipo, sym.id);
+                                }else{
+                                        System.err.println("ACA VEEEH");
+                                        RESULT = new Value("error", "notfound");
+                                }
+                        :}
+                ;
 
 
 //Funcion con retorno
 RETFUNC         ::= TIPO:t id:val {: calls.clear(); :} parIzq ARGS:args parDer
                 cbOpen RETFUNCBODY {:
-                        
                         // boolean rec = false;
                         // for(int i = 0; i < calls.size(); i++){
                         //         if(calls.get(i).equals(val)){
@@ -416,22 +516,11 @@ TIPO            ::=
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::= 
-                id:val 
-                                {: int index = tabla.contains(val);
-                                        if(index >= 0) {
-                                                Simbolo r = tabla.getSymbol(val);
-                                                System.out.println("HEEEY!->"+r.tipo+"-"+r.id+"-"+r.valor.tipo+"-"+r.valor.val);
-                                                RESULT = r.valor;
-                                        }else{
-                                                RESULT = new Value("error", "notfound");
-                                        }
-                                :}
-                | 
                 booleano:val    {: RESULT = new Value("bool", val); :}
                 |
                 charval:ch      {: RESULT = new Value("char", ch.charAt(1)+""); :}
                 |
-                S:val           {: RESULT = new Value("num", val.intValue() + ""); :}
+                S:val           {:  RESULT = val; :}
                 |
                 ARRVAL:val      {: RESULT = new Value("array", val); :}
                 ;

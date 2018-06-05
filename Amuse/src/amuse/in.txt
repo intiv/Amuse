@@ -1,20 +1,20 @@
-num suma(num, bool)
+num sums()
 bool resta(char, bool, num)
 void print(num)
 
 Main(){
-    ricardo num:=5
+    ricardo num:= sums() - 1
     gerardo char:= 'd'
     juany char:= gerardo
-    inti bool:=false
-
+    inti bool:= false
+    sss num:=5+5+8+ricardo
     
 }
 
-
-bool resta(char asd, bool negativos, num base){
-    return true
+num sums(){
+    return 0
 }
+
 
 void print(){
 
@@ -22,4 +22,3 @@ void print(){
 
 char asd(num hola){
     return 'k'
-}

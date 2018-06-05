@@ -11,7 +11,6 @@ public class TablaSimbolos{
 
     public int contains(String id){
         for(int i = 0; i < simbolos.size(); i++){
-            
             if(simbolos.get(i).id.equals(id)){
                 return i;
             }
