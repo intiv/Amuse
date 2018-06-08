@@ -7,11 +7,13 @@ Main(){
     gerardo char:= 'd'
     juany char:= gerardo
     inti bool:= false
-    sss num:=5+5+8+ricardo
+    sss num:=5+5+8+ingeniero
+    ssg num array := {5,6,2}
     
 }
 
 num sums(){
+    ricardo:= 2
     return 0
 }
 

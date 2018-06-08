@@ -367,7 +367,7 @@ E               ::= E:e opSuma T:t      {:
                                                         }else{
                                                                 RESULT = new Value("num", (Integer.parseInt(x) + Integer.parseInt(y))+"");
                                                         }
-                                                }  
+                                                }
                                         :}
                 | 
                 E:e opResta T:t         {: 
