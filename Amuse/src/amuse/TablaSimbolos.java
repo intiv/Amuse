@@ -31,6 +31,16 @@ public class TablaSimbolos{
 //        simbolos.add(new Simbolo(tipo, id, args));
 //    }
 
+    public boolean removeVar(String id){
+        for(int i = 0; i < simbolos.size(); i++){
+            if(id.equals(simbolos.get(i).id)){
+                simbolos.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addVar(String tipo, String id, Value valor){
         simbolos.add(new Simbolo(tipo, id, valor));
     }
