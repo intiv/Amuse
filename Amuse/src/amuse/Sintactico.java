@@ -643,7 +643,7 @@ class CUP$Sintactico$actions {
  
                                 
                                 System.out.println("Fin main");
-                                tabla.clearVars(contadorFunciones);
+                                tabla.disableVars(contadorFunciones);
                                 System.out.println(tabla.toString()); 
                         
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$1",43, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
