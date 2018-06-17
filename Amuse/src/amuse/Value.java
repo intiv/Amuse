@@ -20,4 +20,21 @@ public class Value{
         return Integer.parseInt(this.val);
     }
 
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public void setVal(String val) {
+        this.val = val;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public String getVal() {
+        return val;
+    }
+
+    
 }

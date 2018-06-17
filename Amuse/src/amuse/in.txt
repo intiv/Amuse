@@ -1,32 +1,16 @@
 num sums()
-bool resta(char, bool, num)
-void print(num)
 
 Main(){
     ricardo num:= sums() - 1
-    gerardo char:= 'd'
-    juany char:= gerardo
-    inti bool:= false
-    sss num:=5+5+8+ingeniero
-    ssg num array := {5,6,2}
+    ssg num [] := {ricardo,3,4}
+    sdg char [] := {'a',5, 'c'}
+    ssfasdg bool [] := {true,false,true}
+    fda char [] := {'a','b', 'c'}
     
-    sss num:=5+5+8+ricardo
-    for(i num:= 0; i<5; i++)
-        gerardo := 'a'
-        inti := 1
-    end
+    
 }
 
 num sums(){
-    ricardo:= 2
     return 0
 }
 
-
-void print(){
-
-}
-
-char asd(num hola){
-    return 'k'
-}
