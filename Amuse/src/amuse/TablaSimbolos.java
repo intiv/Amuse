@@ -26,6 +26,18 @@ public class TablaSimbolos{
         return null;
     }
 
+    public int getIndexVal(String id){
+        try {
+            int index = this.contains(id);
+            if(index>=0){
+                return Integer.parseInt(simbolos.get(index).valor.val);
+            }
+            return -2;
+        } catch (Exception e) {
+            return -1;
+        }        
+    }
+
 //    public void addFunction(String tipo, String id, ArrayList<String> args){
 //        
 //        simbolos.add(new Simbolo(tipo, id, args));

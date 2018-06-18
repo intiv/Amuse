@@ -1092,6 +1092,7 @@ class CUP$Sintactico$actions {
                         int index = tabla.contains(i);
                         System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
+                                //si no existe la variable revisa si el valor tiene error
                                 if(v.tipo.equals("error")){
                                         if(v.tipo.equals("notfound")){
                                                 System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
@@ -1101,13 +1102,15 @@ class CUP$Sintactico$actions {
                                 }else{  
                                         int ind = t.indexOf("array");
                                         if(ind!=-1){
+                                                //revisa si es de tipo array o no
                                                 String tipo = t.substring(0,ind-1);
                                                 if(v.tipo.equals("array")){
+                                                        // que sea asignado a un conjunto de elementos entre corchetes("array")
                                                         // Cuando es array el contenido de VALS = Value(tipo->"array", val->"{5,6,7}")
                                                         // Cuando es array el contenido de TIPO = "num array"
                                                         try{
                                                                 String[] contenido = v.val.split(",");
-                                                                Array m = new Array(0,contenido.length,tipo);
+                                                                Array m = new Array(0,contenido.length-1,tipo);
                                                                 int cont = 0;
                                                                 if(tipo.equals("num")){
                                                                         for(int j= contenido.length-1 ; 0 <= j; j--){
@@ -1132,6 +1135,7 @@ class CUP$Sintactico$actions {
                                                                 arreglos.add(m);
                                                                 tabla.addVar(t, i, v);
                                                         }catch(Exception e){
+                                                                e.printStackTrace();
                                                                 System.err.println("Error en columna"+vright+", linea "+vleft+": error valores del arreglo deben de ser tipo "+tipo);
                                                         }
                                                 }else{
@@ -1173,16 +1177,25 @@ class CUP$Sintactico$actions {
 		Value v = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
 		 
                         int index = tabla.contains(i);
-                        if(asig2 == -1){
-                                //Cuando esta aqui la unica validacion que necesita es que el valor singular del array sea igualado a otro del mismo
-                                
-                        }else{
-                                if(index>=0){
-                                        if(v.tipo.equals("error")){
-                                                if(v.tipo.equals("notfound")){
-                                                        System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                        if(index>=0){
+                                if(!v.tipo.equals("error")){
+                                        if(asig2 != -1){
+                                                //Cuando esta aqui la unica validacion que necesita es que el valor singular del array sea igualado a otro del mismo
+                                                int arrayIndex;
+                                                arrayIndex = tabla.getIndexVal(i);
+                                                if(arrayIndex>0){
+                                                        if(v.tipo.equals(arreglos.get(arrayIndex).tipo)){
+                                                                arreglos.get(arrayIndex).assignValue(asig2,v.val);
+                                                                System.out.println(arreglos.get(arrayIndex).toStringVals());
+                                                        }else{
+                                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Asignacion de "+v.tipo+" a variable de tipo "+arreglos.get(arrayIndex).tipo);
+                                                        }
                                                 }else{
-                                                        System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
+                                                        if(arrayIndex==-1){
+                                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Variable no es tipo arreglo");
+                                                        }else{
+                                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Asignación a variable no declarada");
+                                                        }
                                                 }
                                         }else{
                                                 Simbolo sym = tabla.getSymbol(i);
@@ -1190,8 +1203,7 @@ class CUP$Sintactico$actions {
                                                         tabla.assignValue(index, v);
                                                         if(v.tipo.equals("boolean")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
-                                                        }else if(v.tipo.equals("int")){
-                                                                System.out.println("HEEEEY! ");
+                                                        }else if(v.tipo.equals("num")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getIntVal());
                                                         }else if(v.tipo.equals("char")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getCharVal());
@@ -1201,10 +1213,16 @@ class CUP$Sintactico$actions {
                                                 }
                                         }
                                 }else{
-                                        System.err.println("Error en linea "+vleft+", columna "+vright+": Asignación a variable no declarada");
+                                        if(v.tipo.equals("notfound")){
+                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                                        }else{
+                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
+                                        }
                                 }
+                                
+                        }else{
+                                System.err.println("Error en linea "+vleft+", columna "+vright+": Asignación a variable no declarada");
                         }
-                        
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("ASIG",26, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-3)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }

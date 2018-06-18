@@ -19,11 +19,11 @@ public class Array {
         this.fin = fin;
         this.tipo = tipo;
         if(this.tipo.equals("num")){
-            this.tabla= new Value[fin];
+            this.tabla= new Value[fin+1];
         }else if(this.tipo.equals("char")){
-            this.tabla= new Value[fin];
+            this.tabla= new Value[fin+1];
         }else if(this.tipo.equals("bool")){
-            this.tabla= new Value[fin];
+            this.tabla= new Value[fin+1];
         }
     }
 
@@ -44,9 +44,7 @@ public class Array {
     }
 
     public void addBool(int index, String value){
-        if(value.equals("true") || value.equals("false")){
-            tabla[index] = new Value("bool", value);
-        }
+        tabla[index] = new Value("bool", value);
     }
 
     public Value getValue(int index){
@@ -54,6 +52,28 @@ public class Array {
             return tabla[index];
         }
         return null;
+    }
+
+    public boolean assignValue(int index, String value){
+        if(index>=0 && index<fin){
+            tabla[index] = new Value("bool", value);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Array{" + "inicio=" + inicio + ", fin=" + fin + ", tipo=" + tipo + ", tabla=" + toStringVals() + '}';
+    }
+
+    public String toStringVals(){
+        String contenido = "";
+        for(int i=0; i<tabla.length-1; i++){
+            contenido+= tabla[i].val+",";
+        }
+        contenido += tabla[tabla.length-1].val;
+        return contenido;
     }
     
     
