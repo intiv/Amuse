@@ -11,7 +11,7 @@ public class TablaSimbolos{
 
     public int contains(String id){
         for(int i = 0; i < simbolos.size(); i++){
-            if(simbolos.get(i).id.equals(id)){
+            if(simbolos.get(i).id.equals(id) && simbolos.get(i).enabled){
                 return i;
             }
         }
@@ -20,7 +20,7 @@ public class TablaSimbolos{
 
     public Simbolo getSymbol(String id){
         int index = this.contains(id);
-        if(index>=0){
+        if(index>=0 && this.simbolos.get(index).enabled){
             return simbolos.get(index);
         }
         return null;
@@ -55,12 +55,18 @@ public class TablaSimbolos{
         return false;
     }
 
+    public void disableVars(int nFuncs){
+        for(int i = simbolos.size() - 1; i >= nFuncs; i-- ){
+            simbolos.get(i).disable();
+        }
+    }
+
     public void addVar(String tipo, String id, Value valor){
         simbolos.add(new Simbolo(tipo, id, valor));
     }
 
     public void clearVars(int nFuncs){
-        for(int i = simbolos.size() - 1; i > nFuncs-1; i--){
+        for(int i = simbolos.size() - 1; i >= nFuncs; i--){
             simbolos.remove(i);
         }
     }
@@ -82,6 +88,7 @@ public class TablaSimbolos{
             if(sym.valor != null){
                 retVal+=", VALOR: "+sym.valor.val;
             }
+            retVal += ", ENABLED: "+sym.enabled;
         }
         retVal += "\n----------------------------------------\n";
         return retVal;

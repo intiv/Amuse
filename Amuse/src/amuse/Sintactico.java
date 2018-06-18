@@ -668,7 +668,7 @@ class CUP$Sintactico$actions {
               Object RESULT =(Object) ((java_cup.runtime.Symbol) CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)).value;
  
                                 System.out.println("Fin main");
-                                tabla.clearVars(contadorFunciones);
+                                tabla.disableVars(contadorFunciones);
                                 System.out.println(tabla.toString()); 
                         
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$1",44, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
