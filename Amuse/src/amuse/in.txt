@@ -2,17 +2,22 @@ num sums()
 
 Main(){
     ricardo num:= sums() + 5
+
     sdg char [] := {'a','d', 'c'}
-    ssg num [] := {ricardo,3,4}
+    ssfasdg bool [] := {true,false,true}
+    fda char [] := {'a','b', 'c'}
+    ccc num [] := {ricardo,3,4}
+
     ssg[0] := 'K'
     ssg[0] := 0
-    ssfasdg bool [] := {true,false,true}
+    
     ssfasdg[0] := false
     ssfasdg[0] := 0
-    fda char [] := {'a','b', 'c'}
+
     fda[0] := 'K'
     fda[0] := 0
-    
+
+    ricardo := ccc[0]
     
 }
 

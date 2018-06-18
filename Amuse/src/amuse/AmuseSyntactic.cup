@@ -209,7 +209,7 @@ EXP             ::= error EXP:exp {: RESULT = exp; :}
 
 IdF ::= id:call TypeIdF:val {:    
                                 int index = tabla.contains(call);
-                                if(val == 1){
+                                if(val == -2){
                                         int resultado = 0;
                                         if(index>=0){
                                                 Simbolo sym = tabla.getSymbol(call);
@@ -217,7 +217,7 @@ IdF ::= id:call TypeIdF:val {:
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
-                                }else if(val == 2){
+                                }else if(val == -3){
                                         calls.add(call);
                                         if(index >= 0) {
                                                 Simbolo sym = tabla.getSymbol(call);
@@ -225,11 +225,38 @@ IdF ::= id:call TypeIdF:val {:
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
+                                }else {
+                                        int ind = tabla.getIndexVal(call);
+                                        if(index >= 0) {
+                                                if(ind>=0){
+                                                        if(val>=0 && val<=arreglos.get(ind).fin){
+                                                                RESULT = arreglos.get(ind).getValue(val);
+                                                        }else{
+                                                                System.out.println("out of bounds");
+                                                                RESULT = new Value("error", "out of bounds");
+                                                        }
+                                                }else{
+                                                        System.out.println("not array");
+                                                        RESULT = new Value("error", "not array");
+                                                }
+                                        }else{
+                                                RESULT = new Value("error", "notfound");
+                                        }
+                                        
                                 }
                         :};
 
-TypeIdF ::= parIzq FCALLARGS parDer     {: RESULT = 2; :}
-        |                               {: RESULT = 1; :};
+TypeIdF ::= parIzq FCALLARGS parDer     {: RESULT = -3; :}
+        |openBrk number:n closeBrk      
+                                        {: 
+                                                if(Integer.parseInt(n)>=0){
+                                                        RESULT = Integer.parseInt(n); 
+                                                }else{
+                                                        RESULT = -1; 
+                                                }
+
+                                        :}
+        |                               {: RESULT = -2; :};
 
 FCALLARGS ::= VALS:arg FCALLARGS2 | ;
 FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
@@ -269,6 +296,8 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                                 if(v.tipo.equals("error")){
                                         if(v.tipo.equals("notfound")){
                                                 System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                                        }else if(v.tipo.equals("out of bounds")){
+                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Indice de arreglo esta fuera de alcance ");
                                         }else{
                                                 System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
                                         }
@@ -372,6 +401,8 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                 }else{
                                         if(v.tipo.equals("notfound")){
                                                 System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
+                                        }if(v.tipo.equals("out of bounds")){
+                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Indice de arreglo esta fuera de alcance ");
                                         }else{
                                                 System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
                                         }
@@ -382,7 +413,14 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                         }
                 :};
 
-ASIG2           ::= openBrk number:n closeBrk {: RESULT = Integer.parseInt(n); :}
+ASIG2           ::= openBrk number:n closeBrk 
+                                                {: 
+                                                        if(Integer.parseInt(n)>=0){
+                                                                RESULT = Integer.parseInt(n); 
+                                                        }else{
+                                                                RESULT = -2; 
+                                                        } 
+                                                :}
                 | {: RESULT = -1; :};
 
 //If

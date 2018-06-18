@@ -32,8 +32,10 @@ public class TablaSimbolos{
             if(index>=0){
                 return Integer.parseInt(simbolos.get(index).valor.val);
             }
+            //no existe
             return -2;
         } catch (Exception e) {
+            //no es arreglo definitivamente
             return -1;
         }        
     }
