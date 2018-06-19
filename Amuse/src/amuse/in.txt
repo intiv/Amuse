@@ -2,7 +2,7 @@ num sums()
 
 Main(){
     ricardo num:= sums() + 5
-
+    ricardo := 3 + 5 - 4
     sdg char [] := {'a','d', 'c'}
     ssfasdg bool [] := {true,false,true}
     fda char [] := {'a','b', 'c'}

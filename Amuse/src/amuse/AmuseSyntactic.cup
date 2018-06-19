@@ -13,7 +13,16 @@ parser code {:
         public TablaSimbolos tabla = new TablaSimbolos();
         public ArrayList<Array> arreglos = new ArrayList();
         public int contadorFunciones = 0;
+        public ArrayList<Cuadruplo> cuadruplos = new ArrayList();
          
+        public void gen(String op, String arg1, String arg2, String res){
+                cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
+        }
+
+        public void gen(String op, String res){
+                cuadruplos.add(new Cuadruplo(op, res));
+        }
+
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
@@ -187,7 +196,7 @@ start with START;
 
 START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: 
                                 System.out.println("Fin main");
-                                tabla.clearVars(contadorFunciones);
+                                tabla.disableVars(contadorFunciones);
                                 System.out.println(tabla.toString()); 
                         :} 
                     FUNC;
@@ -287,6 +296,7 @@ FUNC_HEAD       ::= TIPO:fun_type id:fun_name parIzq TYPE_LIST:args parDer {:
                 |;
 TYPE_LIST       ::= TIPO:tipo TYPE_LIST2:tl {: RESULT = tipo + tl; :} | ;
 TYPE_LIST2      ::= coma TIPO:tipo TYPE_LIST2:tl {: RESULT = "x"+tipo+tl; :} | {: RESULT = ""; :};
+
 //Asignacion / Inicializacion
 INIT            ::= id:i TIPO:t opAsig VALS:v {:
                         int index = tabla.contains(i);
@@ -387,6 +397,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                                 Simbolo sym = tabla.getSymbol(i);
                                                 if(v.tipo.equals(sym.tipo)){
                                                         tabla.assignValue(index, v);
+                                                        gen(":=", v.val, "", sym.id);
                                                         if(v.tipo.equals("boolean")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
                                                         }else if(v.tipo.equals("num")){
@@ -464,7 +475,7 @@ FOR             ::=
                 :};
 
 CONTADOR        ::= 
-                id:i contador:cont {:System.out.println("\t Contador: id: "+i+", contador: "+cont);:};
+                id:i contador:cont {:System.out.println("\t Contador: id: "+i+", contador: "+cont);:}; 
 
 //Select
 SELECT          ::= {: System.out.println("Inicio Select"); :}
@@ -518,6 +529,7 @@ E               ::= E:e opSuma T:t      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible types for operation");
                                                         }else{
+                                                                gen("-", e.val, t.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
                                                         }
                                                 }                                                 
