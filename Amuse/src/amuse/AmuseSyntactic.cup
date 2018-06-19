@@ -23,6 +23,24 @@ parser code {:
                 cuadruplos.add(new Cuadruplo(op, res));
         }
 
+        public ArrayList<Integer> fusiona(ArrayList<Integer> l1, ArrayList<Integer> l2){
+                ArrayList<Integer> retVal = new ArrayList();
+                retVal.addAll(l1);
+                for(Integer i : l2){
+                        if(!retVal.contains(i)){
+                                retVal.add(i);
+                        }
+
+                }
+                return retVal; 
+        }
+
+        public void completa(ArrayList<Integer> lista, int cuad){
+                for(Integer i: lista){
+                        cuadruplos.get(i.intValue()).setResult(cuad+"");
+                }
+        }
+
         public void report_error(String message,Object info){
                 StringBuffer m=new StringBuffer("Error ");
                 if(info instanceof Symbol){
@@ -116,6 +134,8 @@ terminal opSuma, opResta, opMult, opDiv;
 terminal String number;
 
 
+
+
 //Valores
 terminal String bool, num, charval;
 
@@ -140,7 +160,10 @@ terminal String comment;
  *****************/
 
 //Inicial y Expresion
-non terminal START, EXP;
+non terminal Expresion START, EXP;
+non terminal Expresion N;
+non terminal Integer M;
+
 
 //If
 non terminal IF, ELSIF, ELSE;
@@ -158,7 +181,7 @@ non terminal WRITE;
 non terminal SELECT, OPT, OPT2;
 
 //Condiciones multipes, negadas o normales
-non terminal COND, COND2, COND3, COND4;
+non terminal Expresion COND, COND2;
 
 //Headers de funciones
 non terminal FUNC_HEAD;
@@ -186,6 +209,7 @@ non terminal FCALLARGS, FCALLARGS2;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
 // non terminal Integer EXPS, FACT, TERM;
+precedence left opOr, opAnd;
 precedence left opSuma, opResta;
 precedence left opMult, opDiv;
 precedence left opAsig;
@@ -210,7 +234,7 @@ EXP             ::= error EXP:exp {: RESULT = exp; :}
                 | INIT EXP
                 | FOR EXP:exp {: RESULT = exp; :}
                 | SELECT EXP:exp {: RESULT = exp; :}
-                | IdF:val {: RESULT = val;:} EXP
+                | IdF:val {: :} EXP
                 | WRITE EXP 
                 |;
 
@@ -437,7 +461,6 @@ ASIG2           ::= openBrk number:n closeBrk
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
                 ifstart parIzq COND parDer 
-                {: System.out.println("\tCondicion if"); :} 
                 ifthen EXP ELSIF endif 
                 {: System.out.println("Fin if"); :};
 ELSIF           ::= elseif parIzq COND parDer 
@@ -489,21 +512,63 @@ OPT             ::= options VALS:v {: System.out.println("\t\tOpcion-valor: "+v)
 OPT2            ::= OPT | ;
         
 //Condiciones negadas, normales, con OR o AND
-COND            ::= opNot COND2 
-                |
-                COND2 ;
-COND2           ::= id opRel COND3 
-                | booleano
-                |
-                number opRel COND3;
-COND3           ::= id COND4 
-                | booleano COND4
-                |
-                number COND4;
-COND4           ::= opOr COND 
-                | 
-                opAnd COND 
-                | ;
+// COND            ::= opNot COND2 
+//                 |
+//                 COND2 ;
+// COND2           ::= id opRel COND3 
+//                 | booleano
+//                 |
+//                 number opRel COND3;
+// COND3           ::= id COND4 
+//                 | booleano COND4
+//                 |
+//                 number COND4;
+// COND4           ::= opOr COND 
+//                 | 
+//                 opAnd COND 
+//                 | ;
+
+COND ::= parIzq COND parDer COND2
+
+        | opNot COND:c {: RESULT = new Expresion(); RESULT.listav = c.listaf; RESULT.listaf = c.listav; :} COND2
+
+        | id:i1 opRel:opr id:i2 
+                {:
+                        int index_id1 = tabla.contains(i1);
+                        int index_id2 = tabla.contains(i2);
+                        if(index_id1 > -1 && index_id2 > -1){
+                                System.out.println("Condicion: id "+i1+", op "+opr+", id "+i2); 
+                                RESULT = new Expresion();
+                                RESULT.listav.add(cuadruplos.size());
+                                RESULT.listaf.add(cuadruplos.size()+1);
+                                gen("IF"+opr, i1, i2, "");
+                                gen("GOTO", "");
+                        }else{
+                                //error var(s) no encontrada(s)
+                        }
+                :} 
+                COND2 
+
+        | booleano:bo 
+                {: 
+                        RESULT = new Expresion();
+                        if(bo.equals("true")){ 
+                                RESULT.listav.add(cuadruplos.size()); 
+                        }else{
+                                RESULT.listaf.add(cuadruplos.size());
+                        }
+                        gen("GOTO", "");
+                :} 
+                COND2;
+
+COND2 ::= opOr {: System.out.println("operador OR"); :} 
+          M:m {: System.out.println("M.cuad: "+m.intValue()); :} COND
+        | opAnd {: System.out.println("operador AND"); :} M:m {: System.out.println("M.cuad: "+m.intValue()); :} COND
+        | {: System.out.println(""); :};
+
+M ::= {: RESULT = new Integer(cuadruplos.size()); :} ;
+
+
 
 // //Expresion Aritmetica
 S               ::= E:e                 {: RESULT = e;:};
@@ -529,7 +594,7 @@ E               ::= E:e opSuma T:t      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible types for operation");
                                                         }else{
-                                                                gen("-", e.val, t.val, nuevoTemp());
+                                                                //gen("-", e.val, t.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
                                                         }
                                                 }                                                 

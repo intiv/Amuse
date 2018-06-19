@@ -1,23 +1,13 @@
 num sums()
 
 Main(){
-    ricardo num:= sums() + 5
-    ricardo := 3 + 5 - 4
-    sdg char [] := {'a','d', 'c'}
-    ssfasdg bool [] := {true,false,true}
-    fda char [] := {'a','b', 'c'}
-    ccc num [] := {ricardo,3,4}
-
-    ssg[0] := 'K'
-    ssg[0] := 0
-    
-    ssfasdg[0] := false
-    ssfasdg[0] := 0
-
-    fda[0] := 'K'
-    fda[0] := 0
-
-    ricardo := ccc[0]
+    a num := 3
+    b num := 4
+    if(true || false) then
+        a:=b
+    elseif(true && false)then
+        b:=a
+    endif
     
 }
 
