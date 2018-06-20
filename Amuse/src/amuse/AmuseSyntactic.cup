@@ -14,13 +14,21 @@ parser code {:
         public ArrayList<Array> arreglos = new ArrayList();
         public int contadorFunciones = 0;
         public ArrayList<Cuadruplo> cuadruplos = new ArrayList();
-         
+        public Expresion tempExp = new Expresion();
+
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
         }
 
         public void gen(String op, String res){
                 cuadruplos.add(new Cuadruplo(op, res));
+        }
+
+        public void printCuadruplos(){
+                System.out.println("CUADRUPLOS:");
+                for(Cuadruplo cuad : cuadruplos){
+                        System.out.println(cuad.toString());
+                }
         }
 
         public ArrayList<Integer> fusiona(ArrayList<Integer> l1, ArrayList<Integer> l2){
@@ -226,14 +234,14 @@ START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.pri
                     FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-EXP             ::= error EXP:exp {: RESULT = exp; :}
-                | IF EXP:exp {: RESULT = exp; :}
-                | WHILE EXP:exp {: RESULT = exp; :}
-                | ASIG EXP:exp {: RESULT = exp; :}
+EXP             ::= error EXP:exp {: :}
+                | IF EXP:exp {: :}
+                | WHILE EXP:exp {: :}
+                | ASIG EXP:exp {: :}
                 | comment EXP
                 | INIT EXP
-                | FOR EXP:exp {: RESULT = exp; :}
-                | SELECT EXP:exp {: RESULT = exp; :}
+                | FOR EXP:exp {: :}
+                | SELECT EXP:exp {: :}
                 | IdF:val {: :} EXP
                 | WRITE EXP 
                 |;
@@ -460,15 +468,21 @@ ASIG2           ::= openBrk number:n closeBrk
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
-                ifstart parIzq COND parDer 
-                ifthen EXP ELSIF endif 
-                {: System.out.println("Fin if"); :};
+                ifstart parIzq COND:cond parDer 
+                ifthen M:m1 EXP:exp N:n ELSIF:elsif M:m2 ELSE:elsecase endif 
+                {:
+                        completa(cond.listav, m1.intValue());
+                        printCuadruplos();
+                        //IF.listasig = fusiona(cond.listaf, exp.listasig);
+                :};
+               
 ELSIF           ::= elseif parIzq COND parDer 
-                {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF 
-                | 
-                ELSE;
-ELSE            ::= elseclause ifthen 
-                {: System.out.println("\tElse"); :} EXP 
+                {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF
+                |;
+ELSE            ::= N:n elseclause ifthen M:m EXP:exp
+                        {:
+
+                        :}
                 | ;
 
 //While
@@ -528,31 +542,83 @@ OPT2            ::= OPT | ;
 //                 opAnd COND 
 //                 | ;
 
-COND ::= parIzq COND parDer COND2
+COND ::= 
+        parIzq COND:cond parDer 
+                {: 
+                        RESULT = new Expresion();
+                        RESULT.listav = cond.listav;
+                        RESULT.listaf = cond.listaf;
+                :} COND2
 
-        | opNot COND:c {: RESULT = new Expresion(); RESULT.listav = c.listaf; RESULT.listaf = c.listav; :} COND2
+        | opNot COND:c 
+                {:
+                        RESULT = new Expresion(); 
+                        RESULT.listav = c.listaf; 
+                        RESULT.listaf = c.listav; 
+                :} 
+                COND2
 
         | id:i1 opRel:opr id:i2 
+                {:      
+                        RESULT = new Expresion();
+                        RESULT.listav.add(cuadruplos.size());
+                        RESULT.listaf.add(cuadruplos.size()+1);
+                        gen("IF"+opr, i1, i2, "");
+                        gen("GOTO", "");
+                        
+                :} 
+                COND2:cond2 
                 {:
                         int index_id1 = tabla.contains(i1);
                         int index_id2 = tabla.contains(i2);
                         if(index_id1 > -1 && index_id2 > -1){
-                                System.out.println("Condicion: id "+i1+", op "+opr+", id "+i2); 
-                                RESULT = new Expresion();
-                                RESULT.listav.add(cuadruplos.size());
-                                RESULT.listaf.add(cuadruplos.size()+1);
-                                gen("IF"+opr, i1, i2, "");
-                                gen("GOTO", "");
+                                
+                                if(cond2 != null){
+                                        Expresion temp = RESULT;
+                                        if(cond2.or){
+                                                completa(temp.listaf, cond2.cuad);
+                                                RESULT = new Expresion();
+                                                System.out.println("Listas a fusionar:\ntemp.listav\n-----------");
+                                                
+                                                for(Integer ctlv : temp.listav){
+                                                        System.out.println(ctlv.intValue());
+                                                }
+                                                System.out.println("cond2.listav\n-----------");
+                                                
+                                                for(Integer cclv : cond2.listav){
+                                                        System.out.println(cclv.intValue());
+                                                }
+
+                                                ArrayList<Integer> lvfusion = fusiona(temp.listav, cond2.listav);
+                                                System.out.println("Lista fusionada:\n-----------");
+                                                
+                                                for(Integer clvf : lvfusion){
+                                                        System.out.println(clvf.intValue());
+                                                }
+
+                                                RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                                RESULT.listaf = cond2.listaf;
+
+                                                System.out.println("Lista Falsa:\n------------");
+                                                for(Integer crlf : RESULT.listaf){
+                                                        System.out.println(crlf.intValue());
+                                                }
+                                        }else{
+                                                completa(temp.listav, cond2.cuad);
+                                                RESULT = new Expresion();
+                                                RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                                RESULT.listav = cond2.listav;
+                                        }
+                                }
                         }else{
                                 //error var(s) no encontrada(s)
                         }
-                :} 
-                COND2 
+                :}
 
-        | booleano:bo 
+        | booleano:boolval 
                 {: 
                         RESULT = new Expresion();
-                        if(bo.equals("true")){ 
+                        if(boolval.equals("true")){ 
                                 RESULT.listav.add(cuadruplos.size()); 
                         }else{
                                 RESULT.listaf.add(cuadruplos.size());
@@ -562,13 +628,36 @@ COND ::= parIzq COND parDer COND2
                 COND2;
 
 COND2 ::= opOr {: System.out.println("operador OR"); :} 
-          M:m {: System.out.println("M.cuad: "+m.intValue()); :} COND
-        | opAnd {: System.out.println("operador AND"); :} M:m {: System.out.println("M.cuad: "+m.intValue()); :} COND
-        | {: System.out.println(""); :};
+          M:m 
+          COND:cond
+          {:
+                RESULT = new Expresion(true);
+                RESULT.cuad = m.intValue();
+                RESULT.listav = cond.listav;
+                RESULT.listaf = cond.listaf;
+                
+          :}
+        | 
+          opAnd {: System.out.println("operador AND"); :} 
+          M:m 
+          COND:cond 
+          {:
+                RESULT = new Expresion(false);
+                RESULT.cuad = m.intValue();
+                RESULT.listav = cond.listav;
+                RESULT.listaf = cond.listaf;
+                
+          :}
+        | {: RESULT = null; System.out.println(""); :};
 
 M ::= {: RESULT = new Integer(cuadruplos.size()); :} ;
 
-
+N ::= 
+        {:
+                RESULT = new Expresion();
+                RESULT.listav.add(cuadruplos.size());
+                gen("GOTO", "");
+        :};
 
 // //Expresion Aritmetica
 S               ::= E:e                 {: RESULT = e;:};

@@ -1,17 +1,14 @@
-num sums()
 
 Main(){
     a num := 3
     b num := 4
-    if(true || false) then
+    if(a>b || b==a) then
         a:=b
-    elseif(true && false)then
+    else then
         b:=a
     endif
     
 }
 
-num sums(){
-    return 0
-}
+
 
