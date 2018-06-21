@@ -6,7 +6,7 @@ import java.util.List;
 
 parser code {:
         public ArrayList<String> calls = new ArrayList();
-        public String arrayValue="";
+        public String valObject="";
         public int hayErrores = 0;
         public int contadorNodo = 0;
         public static Nodo padre;
@@ -126,12 +126,12 @@ non terminal VOIDFUNC, VOIDFUNC2;
 
 non terminal ARGS, ARGS2, ASIG, ASIG2, INIT, ARRVAL2;
 non terminal String ARRVAL;
-non terminal String VALS, TIPO;
+non terminal VALS, TIPO;
 
 non terminal Integer E,T,F;
 non terminal Integer S;
 
-non terminal String FCALL;
+non terminal FCALL;
 non terminal FCALLARGS, FCALLARGS2, MAIN;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
@@ -162,19 +162,19 @@ MAIN            ::= MainProgram parIzq parDer cbOpen EXP:n1 cbClose FUNC:n2 {:
                         parser.contadorNodo++;
 
                         Nodo nd1 = new Nodo();
-                        nd1.setEtiqueta("Expression");
+                        nd1.setEtiqueta("VALS");
                         nd1.addHijos((Nodo)n1);
                         nd1.setIdNod(parser.contadorNodo);        
                         parser.contadorNodo++;
 
-                        Nodo nd2 = new Nodo();
-                        nd2.setEtiqueta("}");
-                        nd2.addHijos((Nodo)n2);
-                        nd2.setIdNod(parser.contadorNodo);        
-                        parser.contadorNodo++; 
+                        // Nodo nd2 = new Nodo();
+                        // nd2.setEtiqueta("Expresion");
+                        // nd2.addHijos((Nodo)n2);
+                        // nd2.setIdNod(parser.contadorNodo);        
+                        // parser.contadorNodo++; 
                         
                         nd0.addHijos((Nodo)nd1);
-                        nd0.addHijos((Nodo)nd2);
+                        //nd0.addHijos((Nodo)nd2);
                         
                         RESULT = nd0; :};
 
@@ -190,16 +190,98 @@ EXP             ::= error EXP
                 | S EXP
                 | FCALL EXP
                 | WRITE EXP 
-
                 |;
 
 
 
-FCALL ::= id:call parIzq FCALLARGS parDer {: RESULT = call; System.out.println("\tLlamado a funcion: "+call);:};
+FCALL ::= id:n1 parIzq FCALLARGS:n2 parDer 
+                {: 
+                        //llamado de funcion
+                        //ID    Parametros
+                        //i     Parametro
+                        //      VALS    FCALLARGS
+                        //              Parametro
+                        //              VALS    FCALLARGS
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Llamado de Funcion");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
 
-FCALLARGS ::= VALS:arg FCALLARGS2 | ;
-FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(n1);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
 
+                        Nodo nd3 = new Nodo();
+                        nd3.setEtiqueta("ID");
+                        nd3.addHijos(nd1);
+                        nd3.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd2 = new Nodo();
+                        nd2.setEtiqueta("Parametros");
+                        nd2.addHijos((Nodo)n2);
+                        nd2.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++; 
+                        
+                        nd0.addHijos(nd1);
+                        nd0.addHijos(nd3);
+                        
+                        RESULT = nd0;
+                        System.out.println("\tLlamado a funcion: "+n1);
+                :};
+
+FCALLARGS ::=   VALS:n1 FCALLARGS2:n2 
+                        {:
+                                Nodo nd0 = new Nodo();
+                                nd0.setEtiqueta("Parametro");
+                                nd0.setIdNod(parser.contadorNodo);        
+                                parser.contadorNodo++;
+        
+                                Nodo nd1 = new Nodo();
+                                nd1.setEtiqueta("VALS");
+                                nd1.addHijos((Nodo)n1);
+                                nd1.setIdNod(parser.contadorNodo);        
+                                parser.contadorNodo++;
+                                
+                                Nodo nd2 = new Nodo();
+                                nd2.setEtiqueta("FCALLARGS2");
+                                nd2.addHijos((Nodo)n2);
+                                nd2.setIdNod(parser.contadorNodo);        
+                                parser.contadorNodo++; 
+                                
+                                nd0.addHijos((Nodo)nd1);
+                                nd0.addHijos((Nodo)nd2);
+                                
+                                RESULT = nd0;                                
+                        :}
+                | ;
+FCALLARGS2 ::=  coma VALS:n1 FCALLARGS2:n2 
+                        {:
+                                Nodo nd0 = new Nodo();
+                                nd0.setEtiqueta("VALS");
+                                nd0.setIdNod(parser.contadorNodo);        
+                                parser.contadorNodo++;
+
+                                Nodo nd1 = new Nodo();
+                                nd1.setEtiqueta("VALS");
+                                nd1.addHijos((Nodo)n1);
+                                nd1.setIdNod(parser.contadorNodo);        
+                                parser.contadorNodo++;
+                                
+                                Nodo nd2 = new Nodo();
+                                nd2.setEtiqueta("FCALLARGS2");
+                                nd2.addHijos((Nodo)n2);
+                                nd2.setIdNod(parser.contadorNodo);        
+                                parser.contadorNodo++; 
+                                
+                                nd0.addHijos((Nodo)nd1);
+                                nd0.addHijos((Nodo)nd2);
+                                
+                                RESULT = nd0;
+                        :}
+                | ; 
+                
 //No terminal que maneja todas las funciones despues del main
 FUNC            ::= RETFUNC FUNC
                 | VOIDFUNC FUNC
@@ -215,17 +297,98 @@ ASIG2           ::= openBrk number closeBrk
                 | ;
 
 //If
-IF              ::= {: System.out.println("Inicio IF"); :} 
-                ifstart parIzq COND parDer 
-                {: System.out.println("\tCondicion if"); :} 
-                ifthen EXP ELSIF endif 
-                {: System.out.println("Fin if"); :};
-ELSIF           ::= elseif parIzq COND parDer 
-                {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF 
+IF              ::=
+                ifstart parIzq COND:n1 parDer
+                ifthen EXP:n2 ELSIF:n3 endif 
+                {:
+                        //If statement
+                        //Condicion             Body            ELSE
+                        //i>2                   IF      EXP     Body     
+                              
+                        //If statement
+                        //Condicion             Body            ELSEIF
+                        //i>2                   IF      EXP     Condicion             Body              ELSE 
+                        //                                      i>2                   IF      EXP       Body                 
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("If Statement");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta("Condicion");
+                        nd1.addHijos((Nodo)n1);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        Nodo nd2 = new Nodo();
+                        nd2.setEtiqueta("Body");
+                        nd2.addHijos((Nodo)n2);
+                        nd2.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++; 
+
+                        Nodo nd3 = new Nodo();
+                        nd3.setEtiqueta("CONTINUACION");
+                        nd3.addHijos((Nodo)n3);
+                        nd3.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++; 
+                        
+                        nd0.addHijos(nd1);
+                        nd0.addHijos(nd2);
+                        nd0.addHijos(nd3);
+                        
+                        RESULT = nd0;                                
+                :};
+ELSIF           ::= elseif parIzq COND:n1 parDer 
+                ifthen EXP:n2 ELSIF:n3 
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Else If");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta("Condicion");
+                        nd1.addHijos((Nodo)n1);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        Nodo nd2 = new Nodo();
+                        nd2.setEtiqueta("Body");
+                        nd2.addHijos((Nodo)n2);
+                        nd2.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd3 = new Nodo();
+                        nd3.setEtiqueta("CONTINUACION");
+                        nd3.addHijos((Nodo)n3);
+                        nd3.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++; 
+                        
+                        nd0.addHijos(nd1);
+                        nd0.addHijos(nd2);
+                        nd0.addHijos(nd3);
+                        
+                        RESULT = nd0;                                
+                :}
                 | 
-                ELSE;
-ELSE            ::= elseclause ifthen 
-                {: System.out.println("\tElse"); :} EXP 
+                ELSE:n1 {:RESULT = n1;:};
+ELSE            ::= elseclause ifthen EXP:n1
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Else");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta("Body");
+                        nd1.addHijos((Nodo)n1);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                                                
+                        nd0.addHijos(nd1);
+                        
+                        RESULT = nd0;                                
+                :}
                 | ;
 
 //While
@@ -263,17 +426,172 @@ OPT             ::= options VALS:v {: System.out.println("\t\tOpcion-valor: "+v)
 OPT2            ::= OPT | ;
         
 //Condiciones negadas, normales, con OR o AND
-COND            ::= opNot COND2 
+COND            ::= opNot COND2:n1
+                {:
+                        //!
+                        //true
+
+                        //!
+                        //Condicion
+                        //id<id
+
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("!");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta("Condicion");
+                        nd1.addHijos((Nodo)n1);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}  
                 |
-                COND2 ;
-COND2           ::= id opRel COND3 
-                | booleano
+                COND2:n1
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Condicion");
+                        nd0.addHijos((Nodo)n0);
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :};
+COND2           ::= id:i opRel:o COND3:n1
+                {:
+                        //>
+                        //i     Condicion
+                        //      i
+
+                        //>
+                        //i     Condicion
+                        //      and
+                        //      i
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta(o);
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(i);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd2 = new Nodo();
+                        nd2.setEtiqueta("Condicion");
+                        nd2.addHijos((Nodo)n1);
+                        nd2.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        nd0.addHijos((Nodo)nd2);
+                        
+                        RESULT = nd0;
+                :}
+                | 
+                booleano:b
+                {:
+                        //true
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(b);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        RESULT = nd1;
+                :}
                 |
-                number opRel COND3;
-COND3           ::= id COND4 
-                | booleano COND4
+                number:n opRel:o COND3:n1
+                {:
+                        //>
+                        //i     Condicion
+                        //      i                    
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta(o);
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(n);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd2 = new Nodo();
+                        nd2.setEtiqueta("Condicion");
+                        nd2.addHijos((Nodo)n1);
+                        nd2.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        nd0.addHijos((Nodo)nd2);
+                        
+                        RESULT = nd0;
+                :};
+COND3           ::= id:i COND4:n1 
+                {:
+                        //Condicion 
+                        //i     and     Condicion
+                        //
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta(i);
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(b);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}
+                | 
+                booleano COND4:n1
+                {:
+                        //Condicion 
+                        //i     and     Boolean
+                        //
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Condicion");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(b);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}
                 |
-                number COND4;
+                number COND4:n1
+                {:
+                        //Condicion 
+                        //i     and     Boolean
+                        //
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Condicion");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(b);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :};
 COND4           ::= opOr COND 
                 | 
                 opAnd COND 
@@ -353,20 +671,94 @@ TIPO            ::=
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::= 
-                id:val {: RESULT = val; :}
+                id:val 
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("ID");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(val);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}
                 | 
-                booleano:val {: RESULT = val; :}
+                booleano:val 
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Boolean");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(val);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}
                 |
-                charval:ch {: RESULT = ch; :}
+                charval:ch 
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Char");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(ch);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}
                 |
-                S:val {: RESULT = val.intValue() + ""; :}
+                S:val
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Num");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(val.intValue() + "");
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :}
                 |
-                ARRVAL:val {: RESULT = val; :}
-                ;
+                ARRVAL:val
+                {:
+                        Nodo nd0 = new Nodo();
+                        nd0.setEtiqueta("Array");
+                        nd0.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+
+                        Nodo nd1 = new Nodo();
+                        nd1.setEtiqueta(val);
+                        nd1.setIdNod(parser.contadorNodo);        
+                        parser.contadorNodo++;
+                        
+                        nd0.addHijos((Nodo)nd1);
+                        
+                        RESULT = nd0;
+                :};
 
 //Valores para array
-ARRVAL            ::= cbOpen S:val {: arrayValue = val + ""; :} ARRVAL2 {: RESULT = arrayValue; arrayValue = ""; :} cbClose 
+ARRVAL            ::= cbOpen S:val {: valObject = val + ""; :} ARRVAL2 {: RESULT = valObject; valObject = ""; :} cbClose 
                 | cbOpen  cbClose {: RESULT = ""; :};
-ARRVAL2           ::=  coma S:val {: arrayValue += (", " + val); :} ARRVAL2
+ARRVAL2           ::=  coma S:val {: valObject += (", " + val); :} ARRVAL2
                 | ;
                 //| comilla letra:val{: System.out.println("val es:"+String.valueOf(val)); RESULT = String.valueOf(val); :} comilla;
