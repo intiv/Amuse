@@ -1,13 +1,16 @@
-num sums()
 
 Main(){
-    ricardo num:= sums() + 5
-    ricardo := 3 + 5 - 4
-    sdg char [] := {'a','d', 'c'}
-    ssfasdg bool [] := {true,false,true}
-    fda char [] := {'a','b', 'c'}
-    ccc num [] := {ricardo,3,4}
+    a num := 3
+    b num := 4
+    if(b<a) then
+        c num := 5
+    endif
 
+    if(a>b || b==a) then
+        a:=b
+    else then
+        b:=a
+    endif
     ccc[546] := 16
     ccc[0] := 0
     
@@ -20,7 +23,5 @@ Main(){
     
 }
 
-num sums(){
-    return 0
-}
+
 

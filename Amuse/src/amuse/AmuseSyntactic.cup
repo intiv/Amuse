@@ -24,6 +24,31 @@ parser code {:
                 cuadruplos.add(new Cuadruplo(op, res));
         }
 
+        public void printCuadruplos(){
+                System.out.println("CUADRUPLOS:");
+                for(Cuadruplo cuad : cuadruplos){
+                        System.out.println(cuad.toString());
+                }
+        }
+
+        public ArrayList<Integer> fusiona(ArrayList<Integer> l1, ArrayList<Integer> l2){
+                ArrayList<Integer> retVal = new ArrayList();
+                retVal.addAll(l1);
+                for(Integer i : l2){
+                        if(!retVal.contains(i)){
+                                retVal.add(i);
+                        }
+
+                }
+                return retVal; 
+        }
+
+        public void completa(ArrayList<Integer> lista, int cuad){
+                for(Integer i: lista){
+                        cuadruplos.get(i.intValue()).setResult(cuad+"");
+                }
+        }
+
         public String nuevoTemp(){
                 return "t"+contadorTemporales;
         }
@@ -149,6 +174,8 @@ terminal opSuma, opResta, opMult, opDiv;
 terminal String number;
 
 
+
+
 //Valores
 terminal String bool, num, charval;
 
@@ -173,10 +200,14 @@ terminal String comment;
  *****************/
 
 //Inicial y Expresion
-non terminal START, EXP;
+non terminal Expresion LISTEXP;
+non terminal Expresion START, EXP;
+non terminal Expresion N;
+non terminal Integer M;
+
 
 //If
-non terminal IF, ELSIF, ELSE;
+non terminal Expresion IF, ELSIF, ELSE;
 
 //While
 non terminal WHILE;
@@ -191,7 +222,7 @@ non terminal WRITE;
 non terminal SELECT, OPT, OPT2;
 
 //Condiciones multipes, negadas o normales
-non terminal COND, COND2, COND3, COND4;
+non terminal Expresion COND, COND2;
 
 //Headers de funciones
 non terminal FUNC_HEAD;
@@ -219,6 +250,7 @@ non terminal FCALLARGS, FCALLARGS2;
 //Operadores
 // non terminal Object EXP_ARIT, EXPRresp;
 // non terminal Integer EXPS, FACT, TERM;
+precedence left opOr, opAnd;
 precedence left opSuma, opResta;
 precedence left opMult, opDiv;
 precedence left opAsig;
@@ -227,7 +259,7 @@ start with START;
 
 
 
-START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: 
+START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} LISTEXP cbClose {: 
                                 System.out.println("Fin main");
                                 tabla.disableVars(contadorFunciones);
                                 System.out.println(tabla.toString()); 
@@ -235,17 +267,19 @@ START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.pri
                     FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-EXP             ::= error EXP:exp {: RESULT = exp; :}
-                | IF EXP:exp {: RESULT = exp; :}
-                | WHILE EXP:exp {: RESULT = exp; :}
-                | ASIG EXP:exp {: RESULT = exp; :}
-                | comment EXP
-                | INIT EXP
-                | FOR EXP:exp {: RESULT = exp; :}
-                | SELECT EXP:exp {: RESULT = exp; :}
-                | IdF:val {: RESULT = val;:} EXP
-                | WRITE EXP 
-                |;
+LISTEXP ::= EXP:exp M:m {: completa(exp.listasig, m.intValue()); :} LISTEXP:lexp {: RESULT = new Expresion(); :}
+        | EXP:exp M:m {: completa(exp.listasig, m.intValue()); RESULT = new Expresion(); :};
+EXP             ::= error  {: :}
+                | IF:ifexp {: RESULT = new Expresion(); RESULT.listasig = ifexp.listasig; :}  
+                | WHILE  {: :}
+                | ASIG  {: RESULT = new Expresion(); :}
+                | comment
+                | INIT {: RESULT = new Expresion(); :}
+                | FOR  {: :}
+                | SELECT  {: :}
+                | IdF:val {: :}
+                | WRITE 
+                ;
 
 
 
@@ -433,33 +467,51 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                         printError(vleft+1,vright,i,"",v.tipo);
                                 }
                         }else{
-                                printError(vleft,vright,i,"d");
+                                printError(vleft,vright,i,"","notDeclared");
                         }
                 :};
 
 ASIG2           ::= openBrk number:n closeBrk 
-                                                {: 
-                                                        if(Integer.parseInt(n)>=0){
-                                                                RESULT = Integer.parseInt(n); 
-                                                        }else{
-                                                                RESULT = -2; 
-                                                        } 
-                                                :}
+                        {: 
+                                if(Integer.parseInt(n)>=0){
+                                        RESULT = Integer.parseInt(n); 
+                                }else{
+                                        RESULT = -2; 
+                                } 
+                        :}
                 | {: RESULT = -1; :};
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
-                ifstart parIzq COND parDer 
-                {: System.out.println("\tCondicion if"); :} 
-                ifthen EXP ELSIF endif 
-                {: System.out.println("Fin if"); :};
-ELSIF           ::= elseif parIzq COND parDer 
-                {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF 
-                | 
-                ELSE;
-ELSE            ::= elseclause ifthen 
-                {: System.out.println("\tElse"); :} EXP 
-                | ;
+                ifstart parIzq COND:cond parDer 
+                ifthen M:m1 LISTEXP:exp N:n ELSIF:elsif M:m2 ELSE:elsecase endif 
+                {:
+                        completa(cond.listav, m1.intValue());
+                        if(elsif == null && elsecase == null){
+                                RESULT = new Expresion();
+                                RESULT.listasig = fusiona(cond.listaf, fusiona(n.listasig, exp.listasig));
+                        }else if(elsif == null && elsecase != null){
+                                RESULT = new Expresion();
+                                
+                        }else if(elsif != null && elsecase != null){
+                                RESULT = new Expresion();
+
+                        }else if(elsif != null && elsecase != null){
+                                RESULT = new Expresion();
+
+                        }
+                        printCuadruplos();
+                        //IF.listasig = fusiona(cond.listaf, exp.listasig);
+                :};
+               
+ELSIF           ::= M:m1 elseif parIzq COND:cond parDer ifthen EXP M:m2 ELSIF
+                | {: RESULT = null; :};
+
+ELSE            ::= elseclause ifthen M:m EXP:exp
+                        {:
+
+                        :}
+                | {: RESULT = null; :};
 
 //While
 WHILE           ::= 
@@ -502,21 +554,138 @@ OPT             ::= options VALS:v {: System.out.println("\t\tOpcion-valor: "+v)
 OPT2            ::= OPT | ;
         
 //Condiciones negadas, normales, con OR o AND
-COND            ::= opNot COND2 
-                |
-                COND2 ;
-COND2           ::= id opRel COND3 
-                | booleano
-                |
-                number opRel COND3;
-COND3           ::= id COND4 
-                | booleano COND4
-                |
-                number COND4;
-COND4           ::= opOr COND 
-                | 
-                opAnd COND 
-                | ;
+// COND            ::= opNot COND2 
+//                 |
+//                 COND2 ;
+// COND2           ::= id opRel COND3 
+//                 | booleano
+//                 |
+//                 number opRel COND3;
+// COND3           ::= id COND4 
+//                 | booleano COND4
+//                 |
+//                 number COND4;
+// COND4           ::= opOr COND 
+//                 | 
+//                 opAnd COND 
+//                 | ;
+
+COND ::= 
+        parIzq COND:cond parDer 
+                {: 
+                        RESULT = new Expresion();
+                        RESULT.listav = cond.listav;
+                        RESULT.listaf = cond.listaf;
+                :} COND2
+
+        | opNot COND:c 
+                {:
+                        RESULT = new Expresion(); 
+                        RESULT.listav = c.listaf; 
+                        RESULT.listaf = c.listav; 
+                :} 
+                COND2
+
+        | id:i1 opRel:opr id:i2 
+                {:      
+                        RESULT = new Expresion();
+                        RESULT.listav.add(cuadruplos.size());
+                        RESULT.listaf.add(cuadruplos.size()+1);
+                        gen("IF"+opr, i1, i2, "");
+                        gen("GOTO", "");
+                        
+                :} 
+                COND2:cond2 
+                {:
+                        int index_id1 = tabla.contains(i1);
+                        int index_id2 = tabla.contains(i2);
+                        if(index_id1 > -1 && index_id2 > -1){
+                                
+                                if(cond2 != null){
+                                        Expresion temp = RESULT;
+                                        if(cond2.or){
+                                                completa(temp.listaf, cond2.cuad);
+                                                RESULT = new Expresion();
+                                                System.out.println("Listas a fusionar:\ntemp.listav\n-----------");
+                                                
+                                                for(Integer ctlv : temp.listav){
+                                                        System.out.println(ctlv.intValue());
+                                                }
+                                                System.out.println("cond2.listav\n-----------");
+                                                
+                                                for(Integer cclv : cond2.listav){
+                                                        System.out.println(cclv.intValue());
+                                                }
+
+                                                ArrayList<Integer> lvfusion = fusiona(temp.listav, cond2.listav);
+                                                System.out.println("Lista fusionada:\n-----------");
+                                                
+                                                for(Integer clvf : lvfusion){
+                                                        System.out.println(clvf.intValue());
+                                                }
+
+                                                RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                                RESULT.listaf = cond2.listaf;
+
+                                                System.out.println("Lista Falsa:\n------------");
+                                                for(Integer crlf : RESULT.listaf){
+                                                        System.out.println(crlf.intValue());
+                                                }
+                                        }else{
+                                                completa(temp.listav, cond2.cuad);
+                                                RESULT = new Expresion();
+                                                RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                                RESULT.listav = cond2.listav;
+                                        }
+                                }
+                        }else{
+                                //error var(s) no encontrada(s)
+                        }
+                :}
+
+        | booleano:boolval 
+                {: 
+                        RESULT = new Expresion();
+                        if(boolval.equals("true")){ 
+                                RESULT.listav.add(cuadruplos.size()); 
+                        }else{
+                                RESULT.listaf.add(cuadruplos.size());
+                        }
+                        gen("GOTO", "");
+                :} 
+                COND2;
+
+COND2 ::= opOr {: System.out.println("operador OR"); :} 
+          M:m 
+          COND:cond
+          {:
+                RESULT = new Expresion(true);
+                RESULT.cuad = m.intValue();
+                RESULT.listav = cond.listav;
+                RESULT.listaf = cond.listaf;
+                
+          :}
+        | 
+          opAnd {: System.out.println("operador AND"); :} 
+          M:m 
+          COND:cond 
+          {:
+                RESULT = new Expresion(false);
+                RESULT.cuad = m.intValue();
+                RESULT.listav = cond.listav;
+                RESULT.listaf = cond.listaf;
+                
+          :}
+        | {: RESULT = null; System.out.println(""); :};
+
+M ::= {: RESULT = new Integer(cuadruplos.size()); :} ;
+
+N ::= 
+        {:
+                RESULT = new Expresion();
+                RESULT.listasig.add(cuadruplos.size());
+                gen("GOTO", "");
+        :};
 
 // //Expresion Aritmetica
 S               ::= E:e                 {: RESULT = e;:};
@@ -543,7 +712,7 @@ E               ::= E:e opSuma T:t      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("-", e.val, t.val, nuevoTemp());
+                                                                //gen("-", e.val, t.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
                                                         }
                                                 }                                                 
