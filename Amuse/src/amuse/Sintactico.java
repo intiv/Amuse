@@ -256,23 +256,23 @@ public class Sintactico extends java_cup.runtime.lr_parser {
     "\006\uff96\007\uff96\010\uff96\012\uff96\014\uff96\016\uff96\017" +
     "\uff96\020\uff96\021\uff96\025\uff96\045\uff96\046\uff96\050\uff96" +
     "\051\uff96\052\uff96\054\uff96\055\uff96\001\002\000\004\041" +
-    "\205\001\002\000\004\023\206\001\002\000\060\003\uffee" +
-    "\004\uffee\006\uffee\007\uffee\010\uffee\012\uffee\014\uffee\016" +
-    "\uffee\017\uffee\020\uffee\021\uffee\025\uffee\035\uffee\036\uffee" +
-    "\037\uffee\040\uffee\045\uffee\046\uffee\050\uffee\051\uffee\052" +
-    "\uffee\054\uffee\055\uffee\001\002\000\004\023\210\001\002" +
-    "\000\042\003\uffee\004\uffee\006\uffee\007\uffee\010\uffee\012" +
-    "\uffee\016\uffee\017\uffee\025\uffee\034\uffda\045\uffee\046\uffee" +
-    "\050\uffee\051\uffee\052\uffee\055\uffee\001\002\000\016\013" +
+    "\205\001\002\000\004\023\206\001\002\000\060\003\uffef" +
+    "\004\uffef\006\uffef\007\uffef\010\uffef\012\uffef\014\uffef\016" +
+    "\uffef\017\uffef\020\uffef\021\uffef\025\uffef\035\uffef\036\uffef" +
+    "\037\uffef\040\uffef\045\uffef\046\uffef\050\uffef\051\uffef\052" +
+    "\uffef\054\uffef\055\uffef\001\002\000\004\023\210\001\002" +
+    "\000\042\003\uffef\004\uffef\006\uffef\007\uffef\010\uffef\012" +
+    "\uffef\016\uffef\017\uffef\025\uffef\034\uffda\045\uffef\046\uffef" +
+    "\050\uffef\051\uffef\052\uffef\055\uffef\001\002\000\016\013" +
     "\145\015\144\024\146\025\135\041\137\044\143\001\002" +
     "\000\040\003\uffdb\004\uffdb\006\uffdb\007\uffdb\010\uffdb\012" +
     "\uffdb\016\uffdb\017\uffdb\025\uffdb\045\uffdb\046\uffdb\050\uffdb" +
     "\051\uffdb\052\uffdb\055\uffdb\001\002\000\006\014\uffe9\020" +
-    "\217\001\002\000\004\014\215\001\002\000\060\003\uffef" +
-    "\004\uffef\006\uffef\007\uffef\010\uffef\012\uffef\014\uffef\016" +
-    "\uffef\017\uffef\020\uffef\021\uffef\025\uffef\035\uffef\036\uffef" +
-    "\037\uffef\040\uffef\045\uffef\046\uffef\050\uffef\051\uffef\052" +
-    "\uffef\054\uffef\055\uffef\001\002\000\004\014\uffec\001\002" +
+    "\217\001\002\000\004\014\215\001\002\000\060\003\uffee" +
+    "\004\uffee\006\uffee\007\uffee\010\uffee\012\uffee\014\uffee\016" +
+    "\uffee\017\uffee\020\uffee\021\uffee\025\uffee\035\uffee\036\uffee" +
+    "\037\uffee\040\uffee\045\uffee\046\uffee\050\uffee\051\uffee\052" +
+    "\uffee\054\uffee\055\uffee\001\002\000\004\014\uffec\001\002" +
     "\000\016\013\145\015\144\024\146\025\135\041\137\044" +
     "\143\001\002\000\006\014\uffe9\020\217\001\002\000\004" +
     "\014\uffea\001\002\000\016\013\145\015\144\024\146\025" +
@@ -528,8 +528,8 @@ public class Sintactico extends java_cup.runtime.lr_parser {
         public ArrayList<Array> arreglos = new ArrayList();
         public int contadorFunciones = 0;
         public ArrayList<Cuadruplo> cuadruplos = new ArrayList();
-        public Expresion tempExp = new Expresion();
-
+        public int contadorTemporales=0;
+         
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
         }
@@ -561,6 +561,10 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                 for(Integer i: lista){
                         cuadruplos.get(i.intValue()).setResult(cuad+"");
                 }
+        }
+
+        public String nuevoTemp(){
+                return "t"+contadorTemporales;
         }
 
         public void report_error(String message,Object info){
@@ -626,6 +630,34 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                         return "num";
                 }else{
                         return "error";
+                }
+        }
+
+        public void printError(int linea, int columna, String val1, String val2, String tipo){
+                switch (tipo) {
+                        case "DetailVariable":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t"+val2+" "+val1);
+                                break;
+                        case "notfound":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val1);
+                                break;
+                        case "out of bounds":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Indice de arreglo "+val1+" esta fuera de alcance");
+                                break;
+                        case "incompatible":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Asignacion de variable "+val1+" con operacion aritmetica con tipos incompatibles");
+                                break;
+                        case "tipos":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Asignacion de "+val1+" a variable de tipo "+val2);
+                                break;
+                        case "notDeclared":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" no ha sido declarada");
+                                break;
+                        case "declared":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" ya fue declarada");
+                                break;
+                        default: 
+                                break;
                 }
         }
 
@@ -865,7 +897,7 @@ class CUP$Sintactico$actions {
 		Integer val = (Integer)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
 		    
                                 int index = tabla.contains(call);
-                                if(val == -2){
+                                if(val == -3){
                                         int resultado = 0;
                                         if(index>=0){
                                                 Simbolo sym = tabla.getSymbol(call);
@@ -873,7 +905,7 @@ class CUP$Sintactico$actions {
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
-                                }else if(val == -3){
+                                }else if(val == -2){
                                         calls.add(call);
                                         if(index >= 0) {
                                                 Simbolo sym = tabla.getSymbol(call);
@@ -883,16 +915,15 @@ class CUP$Sintactico$actions {
                                         }
                                 }else {
                                         int ind = tabla.getIndexVal(call);
+                                        System.out.println(call+"[val: "+val+"] 0->"+arreglos.get(ind).fin);
                                         if(index >= 0) {
-                                                if(ind>=0){
+                                                if(ind >= 0){
                                                         if(val>=0 && val<=arreglos.get(ind).fin){
                                                                 RESULT = arreglos.get(ind).getValue(val);
-                                                        }else{
-                                                                System.out.println("out of bounds");
+                                                        }else{ 
                                                                 RESULT = new Value("error", "out of bounds");
                                                         }
                                                 }else{
-                                                        System.out.println("not array");
                                                         RESULT = new Value("error", "not array");
                                                 }
                                         }else{
@@ -906,16 +937,7 @@ class CUP$Sintactico$actions {
           return CUP$Sintactico$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 18: // TypeIdF ::= parIzq FCALLARGS parDer 
-            {
-              Integer RESULT =null;
-		 RESULT = -3; 
-              CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("TypeIdF",41, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
-            }
-          return CUP$Sintactico$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 19: // TypeIdF ::= openBrk number closeBrk 
+          case 18: // TypeIdF ::= openBrk number closeBrk 
             {
               Integer RESULT =null;
 		int nleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)).left;
@@ -934,10 +956,19 @@ class CUP$Sintactico$actions {
           return CUP$Sintactico$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 20: // TypeIdF ::= 
+          case 19: // TypeIdF ::= parIzq FCALLARGS parDer 
             {
               Integer RESULT =null;
 		 RESULT = -2; 
+              CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("TypeIdF",41, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
+            }
+          return CUP$Sintactico$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 20: // TypeIdF ::= 
+            {
+              Integer RESULT =null;
+		 RESULT = -3; 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("TypeIdF",41, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -1030,7 +1061,7 @@ class CUP$Sintactico$actions {
                                 tabla.addVar(args+"->"+fun_type, fun_name, null);
                                 contadorFunciones++;
                         }else{
-                                System.err.println("Error en linea "+fun_nameleft+", columna "+fun_nameright+": Ya existe la función "+fun_name);
+                                printError(fun_nameleft,fun_nameright,fun_name, "Ya existe la función","DetailVariable");
                         }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$3",47, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -1073,7 +1104,7 @@ class CUP$Sintactico$actions {
                                 tabla.addVar(args+"->void", fun_name, null);
                                 contadorFunciones++;
                         }else{
-                                System.err.println("Error en linea "+fun_nameleft+", columna "+fun_nameright+": Ya existe la función "+fun_name);
+                                printError(fun_nameleft,fun_nameright,fun_name, "Ya existe la función","DetailVariable");
                         }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$4",48, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -1173,17 +1204,11 @@ class CUP$Sintactico$actions {
                         if(index == -1){
                                 //si no existe la variable revisa si el valor tiene error
                                 if(v.tipo.equals("error")){
-                                        if(v.tipo.equals("notfound")){
-                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
-                                        }else if(v.tipo.equals("out of bounds")){
-                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Indice de arreglo esta fuera de alcance ");
-                                        }else{
-                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
-                                        }
+                                        System.out.println("["+vleft+", "+vright+"] id: "+i+" v.val "+v.val+" v.tipo "+v.tipo);
+                                        printError(vleft,vright,i,"",v.tipo);
                                 }else{  
                                         int ind = t.indexOf("array");
                                         if(ind!=-1){
-                                                //revisa si es de tipo array o no
                                                 String tipo = t.substring(0,ind-1);
                                                 if(v.tipo.equals("array")){
                                                         // que sea asignado a un conjunto de elementos entre corchetes("array")
@@ -1216,27 +1241,26 @@ class CUP$Sintactico$actions {
                                                                 arreglos.add(m);
                                                                 tabla.addVar(t, i, v);
                                                         }catch(Exception e){
-                                                                e.printStackTrace();
-                                                                System.err.println("Error en columna"+vright+", linea "+vleft+": error valores del arreglo deben de ser tipo "+tipo);
+                                                                printError(vleft,vright,i,"Tipos incompatibles en "+tipo,"DetailVariable");
                                                         }
                                                 }else{
-                                                        System.err.println("Error en columna"+vright+", linea "+vleft+": Asignacion de "+v.tipo+" a variable de tipo " +t);
+                                                        printError((vleft+1),vright,v.tipo,t,"tipos");
                                                 }
                                         }else{
                                                 if(v.tipo.equals(t)){
                                                         tabla.addVar(t, i, v);
+                                                        gen(":=", v.val, "", i);
                                                         System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
                                                         RESULT = i;
                                                 }else{
                                                         RESULT = "";
-                                                        System.err.println("Error en columna"+vright+", linea "+vleft+": Asignacion de "+v.tipo+" a variable de tipo " +t);
+                                                        printError((vleft+1),vright,v.tipo,t,"tipos");
                                                 }
                                         }
-                                        
                                 }
                         }else{
                                 RESULT = "";
-                                System.err.println("Error en columna"+vright+", linea "+vleft+": Variable "+i+" ya fue declarada");
+                                printError(vleft,vright,i,"","declared");
                         }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("INIT",32, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-3)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -1264,18 +1288,10 @@ class CUP$Sintactico$actions {
                                                 //Cuando esta aqui la unica validacion que necesita es que el valor singular del array sea igualado a otro del mismo
                                                 int arrayIndex;
                                                 arrayIndex = tabla.getIndexVal(i);
-                                                if(arrayIndex>0){
-                                                        if(v.tipo.equals(arreglos.get(arrayIndex).tipo)){
-                                                                arreglos.get(arrayIndex).assignValue(asig2,v.val);
-                                                        }else{
-                                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Asignacion de "+v.tipo+" a variable de tipo "+arreglos.get(arrayIndex).tipo);
-                                                        }
+                                                if(v.tipo.equals(arreglos.get(arrayIndex).tipo) && arrayIndex>0){
+                                                        arreglos.get(arrayIndex).assignValue(asig2,v.val);
                                                 }else{
-                                                        if(arrayIndex==-1){
-                                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Variable no es tipo arreglo");
-                                                        }else{
-                                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Asignación a variable no declarada");
-                                                        }
+                                                        printError((vleft+1),vright,v.tipo,arreglos.get(arrayIndex).tipo,"tipos");
                                                 }
                                         }else{
                                                 Simbolo sym = tabla.getSymbol(i);
@@ -1289,22 +1305,15 @@ class CUP$Sintactico$actions {
                                                         }else if(v.tipo.equals("char")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getCharVal());
                                                         }
-                                                }else{
-                                                        System.err.println("Error en linea "+vleft+", columna "+vright+": Asignacion de "+v.tipo+" a variable de tipo "+sym.tipo);
+                                                }else{ 
+                                                        printError((vleft+1), vright, v.tipo, sym.tipo,"tipos");
                                                 }
                                         }
-                                }else{
-                                        if(v.tipo.equals("notfound")){
-                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Variable no declarada en asignación");
-                                        }if(v.tipo.equals("out of bounds")){
-                                                System.err.println("Error en linea "+(vleft+1)+", columna "+vright+": Indice de arreglo esta fuera de alcance ");
-                                        }else{
-                                                System.err.println("Error en linea "+vleft+", columna "+vright+": Tipos incompatibles en operacion");
-                                        }
+                                }else{ 
+                                        printError(vleft+1,vright,i,"",v.tipo);
                                 }
-                                
                         }else{
-                                System.err.println("Error en linea "+vleft+", columna "+vright+": Asignación a variable no declarada");
+                                printError(vleft,vright,i,"","notDeclared");
                         }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("ASIG",27, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-3)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -1381,6 +1390,7 @@ class CUP$Sintactico$actions {
                                 RESULT.listasig = fusiona(cond.listaf, fusiona(n.listasig, exp.listasig));
                         }else if(elsif == null && elsecase != null){
                                 RESULT = new Expresion();
+                                
                         }else if(elsif != null && elsecase != null){
                                 RESULT = new Expresion();
 
@@ -1933,8 +1943,9 @@ System.out.println("\tVariable:"+i);
                                                 }else{
                                                         String x = operationValidation(e), y = operationValidation(t);
                                                         if(x.equals("error") || y.equals("error")){
-                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                                RESULT = new Value("error", "incompatible");
                                                         }else{
+                                                                gen("+", e.val, t.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) + Integer.parseInt(y))+"");
                                                         }
                                                 }
@@ -1959,7 +1970,7 @@ System.out.println("\tVariable:"+i);
                                                 }else{
                                                         String x = operationValidation(e), y = operationValidation(t);
                                                         if(x.equals("error") || y.equals("error")){
-                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                                RESULT = new Value("error", "incompatible");
                                                         }else{
                                                                 //gen("-", e.val, t.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
@@ -1998,8 +2009,9 @@ System.out.println("\tVariable:"+i);
                                                 }else{
                                                         String x = operationValidation(t), y = operationValidation(f);
                                                         if(x.equals("error") || y.equals("error")){
-                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                                RESULT = new Value("error", "incompatible");
                                                         }else{
+                                                                gen("*", t.val, f.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) * Integer.parseInt(y))+"");
                                                         }
                                                 }  
@@ -2024,8 +2036,9 @@ System.out.println("\tVariable:"+i);
                                                 }else{
                                                         String x = operationValidation(t), y = operationValidation(f);
                                                         if(x.equals("error") || y.equals("error")){
-                                                                RESULT = new Value("error", "incompatible types for operation");
+                                                                RESULT = new Value("error", "incompatible");
                                                         }else{
+                                                                gen("/", t.val, f.val, nuevoTemp());
                                                                 RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
                                                         }
                                                 }  
@@ -2041,7 +2054,7 @@ System.out.println("\tVariable:"+i);
 		int fleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Value f = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		RESULT=f;
+		 RESULT=f; 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("T",38, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -2053,7 +2066,7 @@ System.out.println("\tVariable:"+i);
 		int nleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int nright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		String n = (String)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		RESULT = new Value("num", n);
+		 RESULT = new Value("num", n); 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("F",36, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -2065,7 +2078,7 @@ System.out.println("\tVariable:"+i);
 		int eleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)).right;
 		Value e = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)).value;
-		RESULT = e;
+		 RESULT = e; 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("F",36, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -2077,7 +2090,7 @@ System.out.println("\tVariable:"+i);
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Value val = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		RESULT = val;
+		 RESULT = val; 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("F",36, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -2127,10 +2140,10 @@ System.out.println("\tVariable:"+i);
                                 if(funcion.tipo.equals(args+"->"+t)){
                                         System.out.println("Funcion "+val+", tipo: "+args+"->"+t);
                                 }else{
-                                        System.err.println("Error en linea "+argsleft+", columna "+argsright+": Funcion "+val+" definida como "+(args+"->"+t)+" pero fue declarada como "+funcion.tipo);
+                                        printError(argsleft, argsright, (args+"->"+t), "Funcion "+val+" de tipo "+funcion.tipo+" ha sido utilizada como ","DetailVariable");
                                 }
                         }else{
-                                System.err.println("Error en linea "+valleft+", columna "+valright+": Funcion "+val+" no declarada");
+                                printError(valleft, valright, val, "No ha sido declarada la función ","DetailVariable");
                         }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$20",64, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -2220,10 +2233,10 @@ System.out.println("VOID FUNCTION "+val+" START"); calls.clear();
                                 if(funcion.tipo.equals(args+"->void")){
                                         System.out.println("FIN FUNCTION");
                                 }else{
-                                        System.err.println("Error en linea "+argsleft+", columna "+argsright+": Funcion "+val+" definida como "+(args+"->void")+" pero fue declarada como "+funcion.tipo);
+                                        printError(argsleft, argsright, funcion.tipo, "Error en funcion de tipo "+args+"->VOID como ","DetailVariable");
                                 }
                         }else{
-                                System.err.println("Error en linea "+valleft+", columna "+valright+": Funcion no declarada");
+                                printError(valleft, valright, val, "Funcion no declarada ","DetailVariable");
                         }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$22",66, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
