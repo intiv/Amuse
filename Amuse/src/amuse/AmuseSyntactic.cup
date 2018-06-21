@@ -26,8 +26,8 @@ parser code {:
 
         public void printCuadruplos(){
                 System.out.println("CUADRUPLOS:");
-                for(Cuadruplo cuad : cuadruplos){
-                        System.out.println(cuad.toString());
+                for(int i = 0; i < cuadruplos.size(); i++){
+                        System.out.println(i+" - "+cuadruplos.get(i).toString());
                 }
         }
 
@@ -257,21 +257,37 @@ precedence left opAsig;
 
 start with START;
 
-
-
 START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} LISTEXP cbClose {: 
                                 System.out.println("Fin main");
                                 tabla.disableVars(contadorFunciones);
+                                printCuadruplos();
                                 System.out.println(tabla.toString()); 
                         :} 
                     FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-LISTEXP ::= EXP:exp M:m {: completa(exp.listasig, m.intValue()); :} LISTEXP:lexp {: RESULT = new Expresion(); :}
-        | EXP:exp M:m {: completa(exp.listasig, m.intValue()); RESULT = new Expresion(); :};
-EXP             ::= error  {: :}
-                | IF:ifexp {: RESULT = new Expresion(); RESULT.listasig = ifexp.listasig; :}  
-                | WHILE  {: :}
+LISTEXP ::= EXP:exp M:m 
+                {: 
+                        completa(exp.listasig, m.intValue()); 
+                :} 
+                LISTEXP:lexp 
+                {: 
+                        RESULT = new Expresion(); 
+                        RESULT.listasig = lexp.listasig;
+                :}
+        | EXP:exp M:m {: 
+                
+                        // RESULT = new Expresion(); 
+                        // RESULT.listasig = ifexp.listasig; 
+                completa(exp.listasig, m.intValue());
+                RESULT = new Expresion(); :};
+
+EXP             ::= error  {: RESULT = new Expresion(); :}
+                | IF:ifexp {: 
+                        RESULT = new Expresion(); 
+                        RESULT.listasig = ifexp.listasig; 
+                :}  
+                | WHILE  {:  :}
                 | ASIG  {: RESULT = new Expresion(); :}
                 | comment
                 | INIT {: RESULT = new Expresion(); :}
@@ -280,7 +296,6 @@ EXP             ::= error  {: :}
                 | IdF:val {: :}
                 | WRITE 
                 ;
-
 
 
 IdF ::= id:call TypeIdF:val {:    
@@ -484,32 +499,50 @@ ASIG2           ::= openBrk number:n closeBrk
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
                 ifstart parIzq COND:cond parDer 
-                ifthen M:m1 LISTEXP:exp N:n ELSIF:elsif M:m2 ELSE:elsecase endif 
+                ifthen M:m1 LISTEXP:exp N:n M:m2 ELSIF:elsif M:m3 ELSE:elsecase endif 
                 {:
                         completa(cond.listav, m1.intValue());
-                        if(elsif == null && elsecase == null){
-                                RESULT = new Expresion();
+                        RESULT = new Expresion();
+                        if(elsif == null && elsecase == null){ 
                                 RESULT.listasig = fusiona(cond.listaf, fusiona(n.listasig, exp.listasig));
-                        }else if(elsif == null && elsecase != null){
-                                RESULT = new Expresion();
-                                
+                        }else if(elsif == null && elsecase != null){              
+                                completa(cond.listaf, m3.intValue());
+                                RESULT.listasig = fusiona(elsecase.listasig, n.listasig);
+                        }else if(elsif != null && elsecase == null){
+                                completa(cond.listaf, m2.intValue());
+                                RESULT.listasig = fusiona(elsif.listasig, n.listasig);
                         }else if(elsif != null && elsecase != null){
-                                RESULT = new Expresion();
-
-                        }else if(elsif != null && elsecase != null){
-                                RESULT = new Expresion();
-
+                                System.out.println("ENTRO A ULTIMO CASO");
+                                completa(cond.listaf, m2.intValue());
+                                System.out.println("ELSIF LISTASIG");
+                                for(Integer ceils : elsif.listasig){
+                                        System.out.println(ceils.intValue());
+                                }
+                                ArrayList<Integer> tempLista = new ArrayList();
+                                tempLista.add(elsif.listasig.get(0));
+                                completa(tempLista, m3.intValue());
+                                elsif.listasig.remove(0);
+                                RESULT.listasig = fusiona(elsecase.listasig, fusiona(elsif.listasig, n.listasig));
                         }
-                        printCuadruplos();
-                        //IF.listasig = fusiona(cond.listaf, exp.listasig);
                 :};
                
-ELSIF           ::= M:m1 elseif parIzq COND:cond parDer ifthen EXP M:m2 ELSIF
+ELSIF           ::= elseif parIzq COND:cond parDer ifthen M:m1 LISTEXP:exp N:n M:m2 ELSIF:elseifcase
+                {:
+                        completa(cond.listav, m1.intValue());
+                        RESULT = new Expresion();
+                        if(elseifcase !=null){
+                                completa(cond.listaf, m2.intValue());
+                                RESULT.listasig = fusiona(elseifcase.listasig, fusiona(exp.listasig, n.listasig));
+                        }else{
+                                RESULT.listasig = fusiona(exp.listasig, fusiona(cond.listaf, n.listasig));
+                        }
+                :}
                 | {: RESULT = null; :};
 
-ELSE            ::= elseclause ifthen M:m EXP:exp
+ELSE            ::= elseclause ifthen LISTEXP:exp
                         {:
-
+                                RESULT = new Expresion();
+                                RESULT.listasig = exp.listasig;
                         :}
                 | {: RESULT = null; :};
 

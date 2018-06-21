@@ -2,24 +2,18 @@
 Main(){
     a num := 3
     b num := 4
-    if(b<a) then
-        c num := 5
-    endif
-
     if(a>b || b==a) then
-        a:=b
+        if(b<a) then
+            c num := 5
+        endif
+    elseif(a == a && b < c && b == b) then
+        a := 15
+    elseif( a < b) then
+        c := 20
     else then
         b:=a
     endif
-    ccc[546] := 16
-    ccc[0] := 0
-    
-    ssfasdg[0] := false
-    ssfasdg[0] := 0
-
-    fda[0] := 'K'
-
-    ricardo := ccc
+    d num := 99
     
 }
 
