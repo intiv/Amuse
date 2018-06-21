@@ -2,6 +2,10 @@
 Main(){
     a num := 3
     b num := 4
+    if(b<a) then
+        c num := 5
+    endif
+
     if(a>b || b==a) then
         a:=b
     else then

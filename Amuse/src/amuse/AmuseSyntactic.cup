@@ -168,13 +168,14 @@ terminal String comment;
  *****************/
 
 //Inicial y Expresion
+non terminal Expresion LISTEXP;
 non terminal Expresion START, EXP;
 non terminal Expresion N;
 non terminal Integer M;
 
 
 //If
-non terminal IF, ELSIF, ELSE;
+non terminal Expresion IF, ELSIF, ELSE;
 
 //While
 non terminal WHILE;
@@ -226,7 +227,7 @@ start with START;
 
 
 
-START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} EXP cbClose {: 
+START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} LISTEXP cbClose {: 
                                 System.out.println("Fin main");
                                 tabla.disableVars(contadorFunciones);
                                 System.out.println(tabla.toString()); 
@@ -234,17 +235,19 @@ START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.pri
                     FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-EXP             ::= error EXP:exp {: :}
-                | IF EXP:exp {: :}
-                | WHILE EXP:exp {: :}
-                | ASIG EXP:exp {: :}
-                | comment EXP
-                | INIT EXP
-                | FOR EXP:exp {: :}
-                | SELECT EXP:exp {: :}
-                | IdF:val {: :} EXP
-                | WRITE EXP 
-                |;
+LISTEXP ::= EXP:exp M:m {: completa(exp.listasig, m.intValue()); :} LISTEXP:lexp {: RESULT = new Expresion(); :}
+        | EXP:exp M:m {: completa(exp.listasig, m.intValue()); RESULT = new Expresion(); :};
+EXP             ::= error  {: :}
+                | IF:ifexp {: RESULT = new Expresion(); RESULT.listasig = ifexp.listasig; :}  
+                | WHILE  {: :}
+                | ASIG  {: RESULT = new Expresion(); :}
+                | comment
+                | INIT {: RESULT = new Expresion(); :}
+                | FOR  {: :}
+                | SELECT  {: :}
+                | IdF:val {: :}
+                | WRITE 
+                ;
 
 
 
@@ -457,33 +460,46 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                 :};
 
 ASIG2           ::= openBrk number:n closeBrk 
-                                                {: 
-                                                        if(Integer.parseInt(n)>=0){
-                                                                RESULT = Integer.parseInt(n); 
-                                                        }else{
-                                                                RESULT = -2; 
-                                                        } 
-                                                :}
+                        {: 
+                                if(Integer.parseInt(n)>=0){
+                                        RESULT = Integer.parseInt(n); 
+                                }else{
+                                        RESULT = -2; 
+                                } 
+                        :}
                 | {: RESULT = -1; :};
 
 //If
 IF              ::= {: System.out.println("Inicio IF"); :} 
                 ifstart parIzq COND:cond parDer 
-                ifthen M:m1 EXP:exp N:n ELSIF:elsif M:m2 ELSE:elsecase endif 
+                ifthen M:m1 LISTEXP:exp N:n ELSIF:elsif M:m2 ELSE:elsecase endif 
                 {:
                         completa(cond.listav, m1.intValue());
+                        if(elsif == null && elsecase == null){
+                                RESULT = new Expresion();
+                                RESULT.listasig = fusiona(cond.listaf, fusiona(n.listasig, exp.listasig));
+                        }else if(elsif == null && elsecase != null){
+                                RESULT = new Expresion();
+                                
+                        }else if(elsif != null && elsecase != null){
+                                RESULT = new Expresion();
+
+                        }else if(elsif != null && elsecase != null){
+                                RESULT = new Expresion();
+
+                        }
                         printCuadruplos();
                         //IF.listasig = fusiona(cond.listaf, exp.listasig);
                 :};
                
-ELSIF           ::= elseif parIzq COND parDer 
-                {: System.out.println("\tCondicion elseif"); :} ifthen EXP ELSIF
-                |;
-ELSE            ::= N:n elseclause ifthen M:m EXP:exp
+ELSIF           ::= M:m1 elseif parIzq COND:cond parDer ifthen EXP M:m2 ELSIF
+                | {: RESULT = null; :};
+
+ELSE            ::= elseclause ifthen M:m EXP:exp
                         {:
 
                         :}
-                | ;
+                | {: RESULT = null; :};
 
 //While
 WHILE           ::= 
@@ -655,7 +671,7 @@ M ::= {: RESULT = new Integer(cuadruplos.size()); :} ;
 N ::= 
         {:
                 RESULT = new Expresion();
-                RESULT.listav.add(cuadruplos.size());
+                RESULT.listasig.add(cuadruplos.size());
                 gen("GOTO", "");
         :};
 
