@@ -1,30 +1,21 @@
 
 Main(){
-    a num := 3
-    b num := 4
-    if(a>b || b==a) then
-        if(b<a) then
-            c num := 5
-        endif
-    elseif(a == a && b < c && b == b) then
-        a := 15
-    elseif( a < b) then
-        c := 20
-    else then
-        b:=a
-    endif
-    d num := 99
-    while(a < b)
-        e bool := true
-        d := 0
-        if(d > a)then
-            e := false
+    
+    /#ok num := 0
+    notok num := 1#/
+    asd num := 0
+    c num := 10
+    for(holiwis num := 5;asd < c ;asd++)
+        if(holiwis < asd) then
+
+            holiwis := holiwis + 1
         else then
-            e := true    
+            holiwis := 0
         endif
+        c := 11
     end
 
-    d:=100
+    f bool := false
 }
 
 

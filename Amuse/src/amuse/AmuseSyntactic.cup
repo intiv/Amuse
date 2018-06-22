@@ -213,7 +213,7 @@ non terminal Expresion IF, ELSIF, ELSE;
 non terminal Expresion WHILE;
 
 //For
-non terminal FOR, CONTADOR;
+non terminal Expresion FOR, CONTADOR;
 
 //Write
 non terminal WRITE;
@@ -298,9 +298,13 @@ EXP             ::= error
                                 RESULT.listasig = whileexp.listasig;
                         :}
                 | ASIG  {: RESULT = new Expresion(); :}
-                | comment
+                | comment {: RESULT = new Expresion(); :}
                 | INIT {: RESULT = new Expresion(); :}
-                | FOR  {: :}
+                | FOR:forexp  
+                        {: 
+                                RESULT = new Expresion();
+                                RESULT.listasig = forexp.listasig;
+                        :}
                 | SELECT  {: :}
                 | IdF:val {: :}
                 | WRITE 
@@ -570,22 +574,25 @@ WRITE           ::= writestart parIzq VALS:val parDer
 
 //For
 FOR             ::= 
-                forstart {: //System.out.println("TABLA SIMBOLOS ANTES DE FOR: "+tabla.toString()); 
-                :}
+                forstart 
                 parIzq 
-                INIT:id pcoma {: //System.out.println("TABLA SIMBOLOS DESPUES DE VAR DE FOR: "+tabla.toString()); 
-                :}
-                COND pcoma 
-                CONTADOR 
+                INIT:id pcoma 
+                M:m1 COND:cond pcoma 
+                M:m2 CONTADOR N:n1
                 parDer
-                EXP
+                M:m3 LISTEXP:exp N:n2
                 end {: 
+                        completa(n1.listasig, m1.intValue());
+                        completa(n2.listasig, m2.intValue());
+                        completa(cond.listav, m3.intValue());
+                        RESULT = new Expresion();
+                        RESULT.listasig = cond.listaf;
                         tabla.removeVar(id);  
                         //System.out.println("TABLA SIMBOLOS DESPUES DE FOR: "+tabla.toString()); 
                 :};
 
 CONTADOR        ::= 
-                id:i contador:cont {:System.out.println("\t Contador: id: "+i+", contador: "+cont);:}; 
+                id:i contador:cont {: gen("+", "1", "", i); :}; 
 
 //Select
 SELECT          ::= {: System.out.println("Inicio Select"); :}
