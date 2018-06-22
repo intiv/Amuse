@@ -14,7 +14,17 @@ Main(){
         b:=a
     endif
     d num := 99
-    
+    while(a < b)
+        e bool := true
+        d := 0
+        if(d > a)then
+            e := false
+        else then
+            e := true    
+        endif
+    end
+
+    d:=100
 }
 
 

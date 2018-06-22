@@ -210,7 +210,7 @@ non terminal Integer M;
 non terminal Expresion IF, ELSIF, ELSE;
 
 //While
-non terminal WHILE;
+non terminal Expresion WHILE;
 
 //For
 non terminal FOR, CONTADOR;
@@ -275,19 +275,28 @@ LISTEXP ::= EXP:exp M:m
                         RESULT = new Expresion(); 
                         RESULT.listasig = lexp.listasig;
                 :}
-        | EXP:exp M:m {: 
+        | EXP:exp M:m 
+                {: 
                 
                         // RESULT = new Expresion(); 
                         // RESULT.listasig = ifexp.listasig; 
-                completa(exp.listasig, m.intValue());
-                RESULT = new Expresion(); :};
+                        completa(exp.listasig, m.intValue());
+                        RESULT = new Expresion(); :};
 
-EXP             ::= error  {: RESULT = new Expresion(); :}
-                | IF:ifexp {: 
-                        RESULT = new Expresion(); 
-                        RESULT.listasig = ifexp.listasig; 
-                :}  
-                | WHILE  {:  :}
+EXP             ::= error  
+                        {: 
+                                RESULT = new Expresion(); 
+                        :}
+                | IF:ifexp 
+                        {: 
+                                RESULT = new Expresion(); 
+                                RESULT.listasig = ifexp.listasig; 
+                        :}  
+                | WHILE:whileexp  
+                        {:
+                                RESULT = new Expresion(); 
+                                RESULT.listasig = whileexp.listasig;
+                        :}
                 | ASIG  {: RESULT = new Expresion(); :}
                 | comment
                 | INIT {: RESULT = new Expresion(); :}
@@ -548,10 +557,13 @@ ELSE            ::= elseclause ifthen LISTEXP:exp
 
 //While
 WHILE           ::= 
-                whilestart {: System.out.println("Inicio WHILE"); :}  parIzq COND parDer 
-                {:System.out.println("\tCondicion while");:} 
-                EXP end {: System.out.println("fin while"); :};
-
+                whilestart M:m1 parIzq COND:cond parDer M:m2 LISTEXP:exp N:n end 
+                        {: 
+                                completa(cond.listav, m2.intValue());
+                                completa(fusiona(exp.listasig, n.listasig), m1.intValue());
+                                RESULT = new Expresion();
+                                RESULT.listasig = cond.listaf;
+                        :};
 //Write
 WRITE           ::= writestart parIzq VALS:val parDer 
                 {:System.out.println("\tWRITE Valor:"+val);:};
