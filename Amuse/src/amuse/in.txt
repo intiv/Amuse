@@ -5,6 +5,9 @@ Main(){
     notok num := 1#/
     asd num := 0
     c num := 10
+    cs num [] := {4,5,6}
+    c := cs[500]
+    cs[500] := 5
     for(holiwis num := 5;asd < c ;asd++)
         if(holiwis < asd) then
 
@@ -16,6 +19,7 @@ Main(){
     end
 
     f bool := false
+    numero num := 6
 }
 
 
