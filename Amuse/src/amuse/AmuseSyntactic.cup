@@ -49,6 +49,12 @@ parser code {:
                 }
         }
 
+        public void completaArg1(ArrayList<Integer> lista, String id){
+                for(Integer i: lista){
+                        cuadruplos.get(i.intValue()).setArg1(id+"");
+                }
+        }
+
         public String nuevoTemp(){
                 return "t"+contadorTemporales;
         }
@@ -219,7 +225,7 @@ non terminal Expresion FOR, CONTADOR;
 non terminal WRITE;
 
 //Select
-non terminal SELECT, OPT, OPT2;
+non terminal Expresion SELECT, OPT, OPT2;
 
 //Condiciones multipes, negadas o normales
 non terminal Expresion COND, COND2;
@@ -266,7 +272,9 @@ START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.pri
                     FUNC;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
-LISTEXP ::= EXP:exp M:m 
+LISTEXP ::= EXP:exp M:m
+
+
                 {: 
                         completa(exp.listasig, m.intValue()); 
                 :} 
@@ -305,7 +313,7 @@ EXP             ::= error
                                 RESULT = new Expresion();
                                 RESULT.listasig = forexp.listasig;
                         :}
-                | SELECT  {: :}
+                | SELECT:selectexp  {: RESULT = new Expresion(); RESULT.listasig = selectexp.listasig; :}
                 | IdF:val {: :}
                 | WRITE 
                 ;
@@ -348,7 +356,7 @@ IdF ::= id:call TypeIdF:val {:
                                         
                                 }
                         :};
-
+        
 TypeIdF ::= 
         openBrk number:n closeBrk      
                                         {: 
@@ -592,18 +600,45 @@ FOR             ::=
                 :};
 
 CONTADOR        ::= 
-                id:i contador:cont {: gen("+", "1", "", i); :}; 
+                id:i contador:cont {: gen("+", "1", i, i); :}; 
 
 //Select
-SELECT          ::= {: System.out.println("Inicio Select"); :}
+SELECT          ::= 
                 selectstart parIzq id:i parDer
-                {:System.out.println("\tVariable:"+i);:}
-                OPT
+                
+                OPT:optexp {: 
+                        completaArg1(optexp.listav, i); 
+                        RESULT = new Expresion();
+                        RESULT.listasig = optexp.listasig;
+                :}
                 end 
-                {: System.out.println("fin select"); :};
+                ;
 
-OPT             ::= options VALS:v {: System.out.println("\t\tOpcion-valor: "+v); :} colon EXP breaks OPT2;
-OPT2            ::= OPT | ;
+OPT             ::= options VALS:v colon M:m1 {:
+                                RESULT = new Expresion();
+                                RESULT.listav.add(cuadruplos.size());
+                                RESULT.listaf.add(cuadruplos.size()+1); 
+                                gen("IF:=", "", v.val +"", m1.intValue()+2+"");
+                                gen("GOTO", "", "", "");
+                                
+                        :} LISTEXP:exp breaks N:n M:m2 OPT2:optexp {:
+                                if(optexp != null){
+                                        completa(RESULT.listaf, m2.intValue());
+                                        RESULT.listasig = fusiona(optexp.listasig, n.listasig);
+                                        RESULT.listav = fusiona(optexp.listav, RESULT.listav);
+                                }else{
+                                        RESULT.listasig = fusiona(RESULT.listaf, n.listasig);
+                                }
+                        :};
+OPT2            ::= 
+                OPT:optexp {: 
+                        RESULT = new Expresion();
+                        RESULT.listasig = optexp.listasig;
+                        RESULT.listav = optexp.listav;
+                :}
+
+                | 
+                {: RESULT = null; :} ;
         
 //Condiciones negadas, normales, con OR o AND
 // COND            ::= opNot COND2 
@@ -837,7 +872,7 @@ RETFUNC         ::= TIPO:t id:val {: calls.clear(); :} parIzq ARGS:args parDer
                         }
                 :} cbClose 
                 ;
-RETFUNCBODY     ::= EXP:exp ret RETVAL;
+RETFUNCBODY     ::= LISTEXP:exp ret RETVAL;
 RETVAL          ::= VALS:retVal ;
 
 //Funcion void
