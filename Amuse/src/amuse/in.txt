@@ -19,7 +19,20 @@ Main(){
     end
 
     f bool := false
-    numero num := 6
+
+    hola num := 0
+    juany num := 33
+    select(juany)
+        option 33:
+            hola := 5
+        break
+        option 45:
+            hola := 9
+        break
+        option 95:
+            hola := 5
+        break
+    end
 }
 
 
