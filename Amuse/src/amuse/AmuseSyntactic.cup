@@ -15,6 +15,7 @@ parser code {:
         public int contadorFunciones = 0;
         public ArrayList<Cuadruplo> cuadruplos = new ArrayList();
         public int contadorTemporales=0;
+        public String currAmbito = "";
          
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
@@ -263,13 +264,12 @@ precedence left opAsig;
 
 start with START;
 
-START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main");:} LISTEXP cbClose {: 
+START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main"); currAmbito = "Main"; :} LISTEXP cbClose 
+                    FUNC {: 
                                 System.out.println("Fin main");
-                                tabla.disableVars(contadorFunciones);
                                 printCuadruplos();
                                 System.out.println(tabla.toString()); 
-                        :} 
-                    FUNC;
+                        :} ;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
 LISTEXP ::= EXP:exp M:m
@@ -321,32 +321,32 @@ EXP             ::= error {: RESULT = new Expresion(); :}
                 | 
                 SELECT:selectexp  {: RESULT = new Expresion(); RESULT.listasig = selectexp.listasig; :}
                 | 
-                IdF:val {: :}
+                IdF:val {: RESULT = new Expresion(); :}
                 | 
                 WRITE 
                 ;
 
 
 IdF ::= id:ident TypeIdF:val {:    
-                                int index = tabla.contains(ident);
+                                int index = tabla.contains(ident, currAmbito);
                                 if(val == -3){
                                         int resultado = 0;
                                         if(index>=0){
-                                                Simbolo sym = tabla.getSymbol(ident);
+                                                Simbolo sym = tabla.getSymbol(ident, currAmbito);
                                                 RESULT = sym.valor;
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
                                 }else if(val == -2){
-                                        calls.add(ident);
+                                        // calls.add(ident);
                                         if(index >= 0) {
-                                                Simbolo sym = tabla.getSymbol(ident);
+                                                Simbolo sym = tabla.getSymbol(ident, currAmbito);
                                                 RESULT = new Value(sym.tipo, sym.id);
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
                                 }else {
-                                        int ind = tabla.getIndexVal(ident);
+                                        int ind = tabla.getIndexVal(ident, currAmbito);
                                         if(index >= 0) {
                                                 if(val>=0 && val<=arreglos.get(ind).fin){
                                                         RESULT = arreglos.get(ind).getValue(val);
@@ -384,18 +384,18 @@ FUNC            ::= RETFUNC FUNC
                 | ;
 
 FUNC_HEAD       ::= TIPO:fun_type id:fun_name parIzq TYPE_LIST:args parDer {:
-                        int index = tabla.contains(fun_name);
+                        int index = tabla.contains(fun_name, currAmbito);
                         if(index == -1){
-                                tabla.addVar(args+"->"+fun_type, fun_name, null);
+                                tabla.addVar(args+"->"+fun_type, fun_name, null, "global");
                                 contadorFunciones++;
                         }else{
                                 printError(fun_nameleft,fun_nameright,fun_name, "Ya existe la función","DetailVariable");
                         }
                 :} FUNC_HEAD 
                 | voidType id:fun_name parIzq TYPE_LIST:args parDer {:
-                        int index = tabla.contains(fun_name);
+                        int index = tabla.contains(fun_name, currAmbito);
                         if(index == -1){
-                                tabla.addVar(args+"->void", fun_name, null);
+                                tabla.addVar(args+"->void", fun_name, null, "global");
                                 contadorFunciones++;
                         }else{
                                 printError(fun_nameleft,fun_nameright,fun_name, "Ya existe la función","DetailVariable");
@@ -408,13 +408,13 @@ TYPE_LIST2      ::= coma TIPO:tipo TYPE_LIST2:tl {: RESULT = "x"+tipo+tl; :} | {
 //Asignacion / Inicializacion
 DECL            ::=id:i TIPO:t ASIG2:asig2
                 {:
-                        int index = tabla.contains(i);
+                        int index = tabla.contains(i, currAmbito);
                         System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
                                 int ind = t.indexOf("array");
                                 
                                 Value v = new Value("","");
-                                tabla.addVar(t, i, v);
+                                tabla.addVar(t, i, v, currAmbito);
                                 System.out.println("\tInicializacion: id: "+i+", tipo: "+t);
                                 RESULT = i;
                         }else{
@@ -424,7 +424,7 @@ DECL            ::=id:i TIPO:t ASIG2:asig2
                 :};
 
 INIT            ::= id:i TIPO:t opAsig VALS:v {:
-                        int index = tabla.contains(i);
+                        int index = tabla.contains(i, currAmbito);
                         System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
                                 //si no existe la variable revisa si el valor tiene error
@@ -463,7 +463,7 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                                                                 }
                                                                 v.setVal(arreglos.size()+"");
                                                                 arreglos.add(m);
-                                                                tabla.addVar(t, i, v);
+                                                                tabla.addVar(t, i, v, currAmbito);
                                                         }catch(Exception e){
                                                                 printError(vleft,vright,i,"Tipos incompatibles en "+tipo,"DetailVariable");
                                                         }
@@ -472,7 +472,7 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                                                 }
                                         }else{
                                                 if(v.tipo.equals(t)){
-                                                        tabla.addVar(t, i, v);
+                                                        tabla.addVar(t, i, v, currAmbito);
                                                         gen(":=", v.val, "", i);
                                                         System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
                                                         RESULT = i;
@@ -490,13 +490,13 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
 
 
 ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {: 
-                        int index = tabla.contains(i);
+                        int index = tabla.contains(i, currAmbito);
                         if(index>=0){
                                 if(v.tipo.equals("error")){
                                         printError(vleft+1,vright,i,"",v.val);
                                 }else{ 
                                         if(asig2 == -1){
-                                                Simbolo sym = tabla.getSymbol(i);
+                                                Simbolo sym = tabla.getSymbol(i, currAmbito);
                                                 if(v.tipo.equals(sym.tipo)){
                                                         tabla.assignValue(index, v);
                                                         gen(":=", v.val, "", sym.id);
@@ -513,7 +513,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                         }else{
                                                 //Cuando esta aqui la unica validacion que necesita es que el valor singular del array sea igualado a otro del mismo
                                                 int arrayIndex;
-                                                arrayIndex = tabla.getIndexVal(i);
+                                                arrayIndex = tabla.getIndexVal(i, currAmbito);
                                                 System.out.println("HEEEEY-> Indice del array "+asig2+" Bounds [0, "+arreglos.get(arrayIndex).fin+"] ");
                                                 if(asig2>=0 && asig2<=arreglos.get(arrayIndex).fin){
                                                         if(v.tipo.equals(arreglos.get(arrayIndex).tipo) && arrayIndex>0){
@@ -614,7 +614,7 @@ FOR             ::=
                         completa(cond.listav, m3.intValue());
                         RESULT = new Expresion();
                         RESULT.listasig = cond.listaf;
-                        tabla.removeVar(id);  
+                        tabla.removeVar(id, currAmbito);  
                         //System.out.println("TABLA SIMBOLOS DESPUES DE FOR: "+tabla.toString()); 
                 :};
 
@@ -703,8 +703,8 @@ COND ::=
                 :} 
                 COND2:cond2 
                 {:
-                        int index_id1 = tabla.contains(i1);
-                        int index_id2 = tabla.contains(i2);
+                        int index_id1 = tabla.contains(i1, currAmbito);
+                        int index_id2 = tabla.contains(i2, currAmbito);
                         if(index_id1 > -1 && index_id2 > -1){
                                 
                                 if(cond2 != null){
@@ -900,7 +900,7 @@ F               ::=
 
 
 //Funcion con retorno
-RETFUNC         ::= TIPO:t id:val {: calls.clear(); :} parIzq ARGS:args parDer
+RETFUNC         ::= TIPO:t id:val {: currAmbito = val; calls.clear(); :} parIzq ARGS:args parDer
                 cbOpen RETFUNCBODY {:
                         // boolean rec = false;
                         // for(int i = 0; i < calls.size(); i++){
@@ -912,9 +912,9 @@ RETFUNC         ::= TIPO:t id:val {: calls.clear(); :} parIzq ARGS:args parDer
                         // if(rec){
                         //         System.out.println("La funcion "+val+" es recursiva");
                         // }
-                        int index = tabla.contains(val);
+                        int index = tabla.contains(val, currAmbito);
                         if(index >= 0){
-                                Simbolo funcion = tabla.getSymbol(val);
+                                Simbolo funcion = tabla.getSymbol(val, currAmbito);
                                 if(funcion.tipo.equals(args+"->"+t)){
                                         System.out.println("Funcion "+val+", tipo: "+args+"->"+t);
                                 }else{
@@ -929,7 +929,7 @@ RETFUNCBODY     ::= LISTEXP:exp ret RETVAL;
 RETVAL          ::= VALS:retVal ;
 
 //Funcion void
-VOIDFUNC        ::= voidType id:val {:System.out.println("VOID FUNCTION "+val+" START"); calls.clear(); :} parIzq ARGS:args parDer
+VOIDFUNC        ::= voidType id:val {: currAmbito = val; System.out.println("VOID FUNCTION "+val+" START"); calls.clear(); :} parIzq ARGS:args parDer
                 cbOpen EXP {: 
                         // boolean rec = false;
                         // for(int i = 0; i < calls.size(); i++){
@@ -941,9 +941,9 @@ VOIDFUNC        ::= voidType id:val {:System.out.println("VOID FUNCTION "+val+" 
                         // if(rec){
                         //         System.out.println("La funcion "+val+" es recursiva");
                         // }
-                        int index = tabla.contains(val);
+                        int index = tabla.contains(val, currAmbito);
                         if(index >= 0){
-                                Simbolo funcion = tabla.getSymbol(val);
+                                Simbolo funcion = tabla.getSymbol(val, currAmbito);
                                 if(funcion.tipo.equals(args+"->void")){
                                         System.out.println("FIN FUNCTION");
                                 }else{
@@ -956,49 +956,60 @@ VOIDFUNC        ::= voidType id:val {:System.out.println("VOID FUNCTION "+val+" 
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO:t id:i ARGS2:arg2       {: RESULT = t+arg2; :} 
+ARGS            ::= TIPO:t id:i ARGS2:arg2       
+                        {: RESULT = t+arg2; :} 
                 | ;
-ARGS2           ::=  coma TIPO:t id:i ARGS2:arg2 {: RESULT = "x"+t+arg2; :}
-        |                                        {: RESULT = ""; :};
+ARGS2           ::=  coma TIPO:t id:i ARGS2:arg2 
+                        {: RESULT = "x"+t+arg2; :}
+                |                                        
+                        {: RESULT = ""; :};
 
 //Tipos, falta array
 TIPO            ::=
-                TIPO:t openBrk closeBrk {: RESULT = t+" array"; :}
+                TIPO:t openBrk closeBrk 
+                        {: RESULT = t+" array"; :}
                 |
-                bool:val                {: RESULT = "bool"; :}
+                bool:val                
+                        {: RESULT = "bool"; :}
                 |
-                num:val                 {: RESULT = "num"; :}
+                num:val                 
+                        {: RESULT = "num"; :}
                 | 
-                character:val           {: RESULT = "char"; :}
+                character:val           
+                        {: RESULT = "char"; :}
                 ;
 
 //Posibles valores que pueden haber: ids, numeros, booleans, strings/char (estos faltan)
 VALS            ::=
-                booleano:val    {: RESULT = new Value("bool", val); :}
+                booleano:val    
+                        {: RESULT = new Value("bool", val); :}
                 |
-                charval:ch      {: RESULT = new Value("char", ch.charAt(1)+""); :}
+                charval:ch      
+                        {: RESULT = new Value("char", ch.charAt(1)+""); :}
                 |
-                S:val           {: RESULT = val; :}
+                S:val           
+                        {: RESULT = val; :}
                 |
-                ARRVAL0:val      {: RESULT = new Value("array", val); :}
+                ARRVAL0:val      
+                        {: RESULT = new Value("array", val); :}
                 ;
 
 //Valores para array
 ARRVAL0          ::= cbOpen S:v ARRVAL2 cbClose 
                         {: 
-                                arrayValue += v.val + "";
+                                arrayValue += (v.val + "");
                                 RESULT = arrayValue; 
                                 arrayValue = ""; 
                         :}
                 |cbOpen booleano:v ARRVAL2 cbClose 
                         {: 
-                                arrayValue += v + "";
+                                arrayValue += (v + "");
                                 RESULT = arrayValue; 
                                 arrayValue = ""; 
                         :}
                 |cbOpen charval:v ARRVAL2 cbClose 
                         {: 
-                                arrayValue += v + "";
+                                arrayValue += (v + "");
                                 RESULT = arrayValue; 
                                 arrayValue = ""; 
                         :};        
@@ -1008,14 +1019,14 @@ ARRVAL2         ::= coma ARRVAL3:v
                 |;
 
 ARRVAL3         ::= S:v ARRVAL2       
-                                        {:   
-                                                arrayValue += (v.val+",");
-                                        :}
+                        {:   
+                                arrayValue += (v.val+",");
+                        :}
                 |booleano:v ARRVAL2   
-                                        {:   
-                                                arrayValue += (v+","); 
-                                        :}
+                        {:   
+                                arrayValue += (v+","); 
+                        :}
                 |charval:v ARRVAL2    
-                                        {:   
-                                                arrayValue += (v+",");
-                                        :};
+                        {:   
+                                arrayValue += (v+",");
+                        :};
