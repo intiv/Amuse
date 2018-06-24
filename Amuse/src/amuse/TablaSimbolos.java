@@ -32,6 +32,15 @@ public class TablaSimbolos{
         return null;
     }
 
+    public Simbolo getFunction(String id, int nFuncs){
+        for(int i = 0; i < nFuncs; i++){
+            if(simbolos.get(i).id.equals(id)){
+                return simbolos.get(i);
+            }
+        }
+        return null;
+    }
+
     public int getIndexVal(String id, String ambito){
         try {
             int index = this.contains(id, ambito);

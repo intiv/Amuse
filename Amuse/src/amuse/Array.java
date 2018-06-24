@@ -48,7 +48,7 @@ public class Array {
     }
 
     public Value getValue(int index){
-        if(index>=0 && index<fin){
+        if(index>=0 && index<=fin){
             return tabla[index];
         }
         return null;

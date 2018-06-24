@@ -1,7 +1,9 @@
 num arielito(num, num)
+void hola()
 
 Main(){
     c num 
+    c := 10
     asd num := 0
     asd := c
     for(holiwis num := 5;asd < c ;asd++)
@@ -10,16 +12,19 @@ Main(){
         else then
             holiwis := 0
         endif
-        arielito(3,5)
-        arreglo num [5]
-        arreglo[4] := 5
-        c := arreglo [0]
+
     end
     prueba bool := true
 }
 
 num arielito(num inti, num juany){
     agni char := 'd'
-    return 5
+    asd num := 7
+    return true
+}
+
+void hola(){
+    jeje bool := true
+    return jeje
 }
 
