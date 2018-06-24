@@ -9,26 +9,32 @@ public class TablaSimbolos{
         simbolos = new ArrayList();
     }
 
-    public int contains(String id){
+    public int contains(String id, String ambito){
+        int temp = -1;
         for(int i = 0; i < simbolos.size(); i++){
-            if(simbolos.get(i).id.equals(id) && simbolos.get(i).enabled){
-                return i;
+            
+            if(simbolos.get(i).id.equals(id)){
+                if(simbolos.get(i).ambito.equals(ambito)){
+                    return i;
+                }else if(simbolos.get(i).ambito.equals("global")){
+                    temp = i;
+                }
             }
         }
-        return -1;
+        return temp;
     }
 
-    public Simbolo getSymbol(String id){
-        int index = this.contains(id);
-        if(index>=0 && this.simbolos.get(index).enabled){
+    public Simbolo getSymbol(String id, String ambito){
+        int index = this.contains(id, ambito);
+        if(index>=0){
             return simbolos.get(index);
         }
         return null;
     }
 
-    public int getIndexVal(String id){
+    public int getIndexVal(String id, String ambito){
         try {
-            int index = this.contains(id);
+            int index = this.contains(id, ambito);
             if(index>=0){
                 return Integer.parseInt(simbolos.get(index).valor.val);
             }
@@ -45,9 +51,9 @@ public class TablaSimbolos{
 //        simbolos.add(new Simbolo(tipo, id, args));
 //    }
 
-    public boolean removeVar(String id){
+    public boolean removeVar(String id, String ambito){
         for(int i = 0; i < simbolos.size(); i++){
-            if(id.equals(simbolos.get(i).id)){
+            if(simbolos.get(i).id.equals(id) && simbolos.get(i).ambito.equals(ambito)){
                 simbolos.remove(i);
                 return true;
             }
@@ -55,14 +61,14 @@ public class TablaSimbolos{
         return false;
     }
 
-    public void disableVars(int nFuncs){
-        for(int i = simbolos.size() - 1; i >= nFuncs; i-- ){
-            simbolos.get(i).disable();
-        }
-    }
+    // public void disableVars(int nFuncs){
+    //     for(int i = simbolos.size() - 1; i >= nFuncs; i-- ){
+    //         simbolos.get(i).disable();
+    //     }
+    // }
 
-    public void addVar(String tipo, String id, Value valor){
-        simbolos.add(new Simbolo(tipo, id, valor));
+    public void addVar(String tipo, String id, Value valor, String ambito){
+        simbolos.add(new Simbolo(tipo, id, valor, ambito));
     }
 
     public void clearVars(int nFuncs){
@@ -88,7 +94,7 @@ public class TablaSimbolos{
             if(sym.valor != null){
                 retVal+=", VALOR: "+sym.valor.val;
             }
-            retVal += ", ENABLED: "+sym.enabled;
+            retVal += ", AMBITO: "+sym.ambito;
         }
         retVal += "\n----------------------------------------\n";
         return retVal;

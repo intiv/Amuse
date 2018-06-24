@@ -1,39 +1,25 @@
+num arielito(num, num)
 
 Main(){
-    
-    /#ok num := 0
-    notok num := 1#/
+    c num 
     asd num := 0
-    c num := 10
-    cs num [] := {4,5,6}
-    c := cs[500]
-    cs[500] := 5
+    asd := c
     for(holiwis num := 5;asd < c ;asd++)
         if(holiwis < asd) then
-
             holiwis := holiwis + 1
         else then
             holiwis := 0
         endif
-        c := 11
+        arielito(3,5)
+        arreglo num [5]
+        arreglo[4] := 5
+        c := arreglo [0]
     end
-
-    f bool := false
-
-    hola num := 0
-    juany num := 33
-    select(juany)
-        option 33:
-            hola := 5
-        break
-        option 45:
-            hola := 9
-        break
-        option 95:
-            hola := 5
-        break
-    end
+    prueba bool := true
 }
 
-
+num arielito(num inti, num juany){
+    agni char := 'd'
+    return 5
+}
 
