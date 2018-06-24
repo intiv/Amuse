@@ -75,6 +75,38 @@ public class Array {
         contenido += tabla[tabla.length-1].val;
         return contenido;
     }
+
+    public int getInicio() {
+        return inicio;
+    }
+
+    public void setInicio(int inicio) {
+        this.inicio = inicio;
+    }
+
+    public int getFin() {
+        return fin;
+    }
+
+    public void setFin(int fin) {
+        this.fin = fin;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Value[] getTabla() {
+        return tabla;
+    }
+
+    public void setTabla(Value[] tabla) {
+        this.tabla = tabla;
+    }
     
     
 }

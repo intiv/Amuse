@@ -646,23 +646,18 @@ public class Sintactico extends java_cup.runtime.lr_parser {
 	}
 
         public String operationValidation(Value e){
-                try {
-                        int p = e.tipo.indexOf("->");
-                        boolean errores= false;
-                        if(p>=0){
-                                if(functionType(e, p).equals("num")){
-                                        return 0+"";
-                                }else{
-                                        return "error";
-                                }
-                        }else{
-                                Integer.parseInt(e.val);
-                                return e.val;                                                        
-                        }                                                                           
-                } catch (NumberFormatException o) {
-                        return "error";
+                int p = e.tipo.indexOf("->");
+                boolean errores= false;
+                if(p>=0){
+                        if(functionType(e, p).equals("num")){
+                                return 0+"";
+                        }
+                }else{
+                        if(e.tipo.equals("num")){
+                                return e.val; 
+                        }                                                     
                 }
-                
+                return "error";
         }
 
         public String functionType(Value e, int indexReturn){
@@ -696,7 +691,14 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                         case "declared":
                                 System.err.println("Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" ya fue declarada");
                                 break;
-                        default: 
+                        case "blankCall":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Expresion incompleta");
+                                break;
+                        case "notInitialized":
+                                System.err.println("Error en linea "+linea+", columna "+columna+":\t La variable no ha sido inicializada");
+                                break;
+                        default:
+                                System.err.println("Error en linea "+linea+", columna "+columna); 
                                 break;
                 }
         }
@@ -939,7 +941,13 @@ class CUP$Sintactico$actions {
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Value val = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		 RESULT = new Expresion(); 
+		 
+                                int p = val.tipo.indexOf("->");
+                                if(p==-1){
+                                        printError(valleft,valright,"","","blankCall");
+                                }
+                                RESULT = new Expresion(); 
+                        
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("EXP",2, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -967,9 +975,16 @@ class CUP$Sintactico$actions {
                                 int index = tabla.contains(ident, currAmbito);
                                 if(val == -3){
                                         int resultado = 0;
+                                        
                                         if(index>=0){
                                                 Simbolo sym = tabla.getSymbol(ident, currAmbito);
-                                                RESULT = sym.valor;
+                                                Value valor = sym.valor;
+                                                if(!valor.val.equals("")){
+                                                        sym.valor.setVal(ident);
+                                                        RESULT = sym.valor;
+                                                }else{
+                                                        RESULT = new Value("error", "notInitialized");
+                                                }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
@@ -985,14 +1000,18 @@ class CUP$Sintactico$actions {
                                         int ind = tabla.getIndexVal(ident, currAmbito);
                                         if(index >= 0) {
                                                 if(val>=0 && val<=arreglos.get(ind).fin){
-                                                        RESULT = arreglos.get(ind).getValue(val);
+                                                        Value arrayValue = arreglos.get(ind).getValue(val);
+                                                        if(!arrayValue.val.equals("")){
+                                                                RESULT = arrayValue;
+                                                        }else{
+                                                                RESULT = new Value("error", "notInitialized");
+                                                        }
                                                 }else{ 
                                                         RESULT = new Value("error", "out of bounds");
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
                                         }
-                                        
                                 }
                         
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("IdF",41, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -1265,14 +1284,32 @@ class CUP$Sintactico$actions {
                         int index = tabla.contains(i, currAmbito);
                         System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
-                                Value v = new Value("","");
-                                tabla.addVar(t, i, v, currAmbito);
-                                System.out.println("\tInicializacion: id: "+i+", tipo: "+t);
-                                RESULT = i;
+                                int ind = t.indexOf("array");
+                                if(ind==-1){
+                                        if(asig2==-1){
+                                                Value v = new Value(t, "");
+                                                tabla.addVar(t, i, v, currAmbito);
+                                                System.out.println("\tInicializacion: id: "+i+", tipo: "+t);
+                                                RESULT = i;
+                                        }else{
+                                                Array m = new Array(0,asig2-1,t);
+                                                Value v = new Value(t, arreglos.size()+"");
+                                                Value [] arrayTable= new Value[asig2];
+                                                for(int j=0; j<asig2; j++){
+                                                        arrayTable[j] = new Value(t, "");
+                                                }
+                                                m.setTabla(arrayTable);
+                                                System.out.println(m.toString());
+                                                arreglos.add(m);
+                                                tabla.addVar(t, i, v, currAmbito);
+                                        }
+                                }else{
+                                        printError(tleft,tright,i,"Declaracion sin tamaño de arreglo","DetailVariable");
+                                }
                         }else{
                                 RESULT = "";
                                 printError(tleft,tright,i,"","declared");
-                        } 
+                        }
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("DECL",33, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
@@ -1386,7 +1423,7 @@ class CUP$Sintactico$actions {
                                                         if(v.tipo.equals("boolean")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
                                                         }else if(v.tipo.equals("num")){
-                                                                System.out.println("Asignacion: Variable "+i+", valor: "+v.getIntVal());
+                                                                System.out.println("Asignacion: Variable "+i+", valor: "+v.getVal());
                                                         }else if(v.tipo.equals("char")){
                                                                 System.out.println("Asignacion: Variable "+i+", valor: "+v.getCharVal());
                                                         }
@@ -1399,7 +1436,8 @@ class CUP$Sintactico$actions {
                                                 arrayIndex = tabla.getIndexVal(i, currAmbito);
                                                 System.out.println("HEEEEY-> Indice del array "+asig2+" Bounds [0, "+arreglos.get(arrayIndex).fin+"] ");
                                                 if(asig2>=0 && asig2<=arreglos.get(arrayIndex).fin){
-                                                        if(v.tipo.equals(arreglos.get(arrayIndex).tipo) && arrayIndex>0){
+                                                        System.out.println("arrayIndex"+arrayIndex);
+                                                        if(v.tipo.equals(arreglos.get(arrayIndex).tipo) && arrayIndex>=0){
                                                                 arreglos.get(arrayIndex).assignValue(asig2,v.val);
                                                         }else{
                                                                 printError((vleft+1),vright,v.tipo,arreglos.get(arrayIndex).tipo,"tipos");
@@ -2104,8 +2142,9 @@ class CUP$Sintactico$actions {
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("+", e.val, t.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) + Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("+", e.val, t.val, temp);
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }
                                         
@@ -2131,8 +2170,9 @@ class CUP$Sintactico$actions {
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                //gen("-", e.val, t.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("-", e.val, t.val, temp);
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }                                                 
                                         
@@ -2170,8 +2210,9 @@ class CUP$Sintactico$actions {
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("*", t.val, f.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) * Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("*", t.val, f.val, temp);
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }  
                                         
@@ -2189,7 +2230,7 @@ class CUP$Sintactico$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Value f = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		 
+		
                                                 if(t.tipo.equals("error") || f.tipo.equals("error")){
                                                         RESULT = new Value("error", "notfound");
                                                 }else{
@@ -2197,10 +2238,12 @@ class CUP$Sintactico$actions {
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("/", t.val, f.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("/", t.val, f.val, temp);
+                                                                //RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
+                                                                RESULT = new Value("num", temp);
                                                         }
-                                                }  
+                                                }
                                         
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("T",39, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-2)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
@@ -2249,7 +2292,9 @@ class CUP$Sintactico$actions {
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Value val = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
-		 RESULT = val; 
+		 
+                                                RESULT = val; 
+                                        
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("F",37, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;

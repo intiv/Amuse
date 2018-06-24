@@ -1,16 +1,19 @@
 num arielito(num, num)
 
 Main(){
-    c num := 10
+    c num 
     asd num := 0
+    asd := c
     for(holiwis num := 5;asd < c ;asd++)
         if(holiwis < asd) then
-
             holiwis := holiwis + 1
         else then
             holiwis := 0
         endif
         arielito(3,5)
+        arreglo num [5]
+        arreglo[4] := 5
+        c := arreglo [0]
     end
     prueba bool := true
 }
