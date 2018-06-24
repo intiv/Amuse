@@ -794,7 +794,32 @@ N ::=
         :};
 
 // //Expresion Aritmetica
-// String 
+// 1 + 2 * 3
+// S
+// E + T
+// T   T * F
+// F   F   num
+// num num 3
+// 1   2
+
+// 1 + 2 + 3
+// S
+// E            +       T
+// E    +  T   
+// F       F            num
+// num    num           3
+// 1       2
+
+// 1 + (2 + 3)
+// S
+// E  +   T
+// T      F
+// F      (E)
+// num     E   +   T          
+// 1       T       F
+//         F       num
+//         num     3
+//         2
 S               ::= E:e                 {: RESULT = e;:};
 
 E               ::= E:e opSuma T:t      {: 
@@ -844,7 +869,7 @@ T               ::= T:t opMult F:f      {:
                                                 }  
                                         :}
                 | 
-                T:t opDiv F:f           {: //1+2/3
+                T:t opDiv F:f           {:
                                                 if(t.tipo.equals("error") || f.tipo.equals("error")){
                                                         RESULT = new Value("error", "notfound");
                                                 }else{
@@ -857,7 +882,7 @@ T               ::= T:t opMult F:f      {:
                                                                 //RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
                                                                 RESULT = new Value("num", temp);
                                                         }
-                                                }  
+                                                }
                                         :}
                 | 
                 F:f                     {: RESULT=f; :};
@@ -867,7 +892,10 @@ F               ::=
                 |
                 parIzq E:e parDer       {: RESULT = e; :}
                 |
-                IdF:val                 {: RESULT = val; :}
+                IdF:val                 {: 
+                                                if(val.val)
+                                                RESULT = val; 
+                                        :}
                 ;
 
 
