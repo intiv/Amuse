@@ -411,6 +411,8 @@ DECL            ::=id:i TIPO:t ASIG2:asig2
                         int index = tabla.contains(i);
                         System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
+                                int ind = t.indexOf("array");
+                                
                                 Value v = new Value("","");
                                 tabla.addVar(t, i, v);
                                 System.out.println("\tInicializacion: id: "+i+", tipo: "+t);
@@ -792,6 +794,7 @@ N ::=
         :};
 
 // //Expresion Aritmetica
+// String 
 S               ::= E:e                 {: RESULT = e;:};
 
 E               ::= E:e opSuma T:t      {: 
@@ -802,8 +805,9 @@ E               ::= E:e opSuma T:t      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("+", e.val, t.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) + Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("+", e.val, t.val, temp);
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }
                                         :}
@@ -816,8 +820,9 @@ E               ::= E:e opSuma T:t      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                //gen("-", e.val, t.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) - Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("-", e.val, t.val, temp);
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }                                                 
                                         :}
@@ -832,13 +837,14 @@ T               ::= T:t opMult F:f      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("*", t.val, f.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) * Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("*", t.val, f.val, temp);
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }  
                                         :}
                 | 
-                T:t opDiv F:f           {: 
+                T:t opDiv F:f           {: //1+2/3
                                                 if(t.tipo.equals("error") || f.tipo.equals("error")){
                                                         RESULT = new Value("error", "notfound");
                                                 }else{
@@ -846,8 +852,10 @@ T               ::= T:t opMult F:f      {:
                                                         if(x.equals("error") || y.equals("error")){
                                                                 RESULT = new Value("error", "incompatible");
                                                         }else{
-                                                                gen("/", t.val, f.val, nuevoTemp());
-                                                                RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
+                                                                String temp = nuevoTemp();
+                                                                gen("/", t.val, f.val, temp);
+                                                                //RESULT = new Value("num", (Integer.parseInt(x) / Integer.parseInt(y))+"");
+                                                                RESULT = new Value("num", temp);
                                                         }
                                                 }  
                                         :}
