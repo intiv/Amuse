@@ -58,7 +58,9 @@ parser code {:
         }
 
         public String nuevoTemp(){
-                return "t"+contadorTemporales;
+                String tempRet = "t"+contadorTemporales;
+                contadorTemporales++;
+                return tempRet;
         }
 
         public void report_error(String message,Object info){
@@ -360,7 +362,6 @@ IdF ::= id:ident TypeIdF:val {:
                                 int index = tabla.contains(ident, currAmbito);
                                 if(val == -3){
                                         int resultado = 0;
-                                        
                                         if(index>=0){
                                                 Simbolo sym = tabla.getSymbol(ident, currAmbito);
                                                 if(!sym.valor.val.equals("")){
@@ -371,6 +372,7 @@ IdF ::= id:ident TypeIdF:val {:
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
+                                                RESULT.id = ident;
                                         }
                                 }else if(val == -2){
                                         // calls.add(ident);
@@ -379,14 +381,13 @@ IdF ::= id:ident TypeIdF:val {:
                                                 RESULT = new Value(sym.tipo, sym.id);
                                         }else{
                                                 RESULT = new Value("error", "notfound");
+                                                RESULT.id = ident;
                                         }
                                 }else {
                                         int ind = tabla.getIndexVal(ident, currAmbito);
                                         if(index >= 0) {
                                                 if(val>=0 && val<=arreglos.get(ind).fin){
-                                                        
                                                         Value arrayValue = arreglos.get(ind).getValue(val);
-
                                                         if(!arrayValue.val.equals("")){
                                                                 RESULT = arrayValue;
                                                         }else{
@@ -397,6 +398,7 @@ IdF ::= id:ident TypeIdF:val {:
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
+                                                RESULT.id = ident;
                                         }
                                 }
                         :};
@@ -450,14 +452,12 @@ TYPE_LIST2      ::= coma TIPO:tipo TYPE_LIST2:tl {: RESULT = "x"+tipo+tl; :} | {
 DECL            ::=id:i TIPO:t ASIG2:asig2
                 {:
                         int index = tabla.contains(i, currAmbito);
-                        System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
                                 int ind = t.indexOf("array");
                                 if(ind==-1){
                                         if(asig2==-1){
                                                 Value v = new Value(t, "");
                                                 tabla.addVar(t, i, v, currAmbito);
-                                                System.out.println("\tInicializacion: id: "+i+", tipo: "+t);
                                                 RESULT = i;
                                         }else{
                                                 Array m = new Array(0,asig2-1,t);
@@ -596,9 +596,8 @@ ASIG2           ::= openBrk number:n closeBrk
                 {: RESULT = -1; :};
 
 //If
-IF              ::= {: System.out.println("Inicio IF"); :} 
-                ifstart parIzq COND:cond parDer 
-                ifthen M:m1 LISTEXP:exp N:n M:m2 ELSIF:elsif M:m3 ELSE:elsecase endif 
+IF              ::= 
+                ifstart parIzq COND:cond parDer ifthen M:m1 LISTEXP:exp N:n M:m2 ELSIF:elsif M:m3 ELSE:elsecase endif 
                 {:
                         completa(cond.listav, m1.intValue());
                         RESULT = new Expresion();
@@ -611,12 +610,7 @@ IF              ::= {: System.out.println("Inicio IF"); :}
                                 completa(cond.listaf, m2.intValue());
                                 RESULT.listasig = fusiona(elsif.listasig, n.listasig);
                         }else if(elsif != null && elsecase != null){
-                                System.out.println("ENTRO A ULTIMO CASO");
                                 completa(cond.listaf, m2.intValue());
-                                System.out.println("ELSIF LISTASIG");
-                                for(Integer ceils : elsif.listasig){
-                                        System.out.println(ceils.intValue());
-                                }
                                 ArrayList<Integer> tempLista = new ArrayList();
                                 tempLista.add(elsif.listasig.get(0));
                                 completa(tempLista, m3.intValue());
@@ -656,7 +650,7 @@ WHILE           ::=
                         :};
 //Write
 WRITE           ::= writestart parIzq VALS:val parDer 
-                {:System.out.println("\tWRITE Valor:"+val);:};
+                {: gen("WRITE", "", "", val.val); :};
 
 //For
 FOR             ::= 
@@ -694,10 +688,15 @@ SELECT          ::=
 
 OPT             ::= options VALS:v colon M:m1 {:
                                 RESULT = new Expresion();
-                                RESULT.listav.add(cuadruplos.size());
-                                RESULT.listaf.add(cuadruplos.size()+1); 
-                                gen("IF:=", "", v.val +"", m1.intValue()+2+"");
-                                gen("GOTO", "", "", "");
+
+                                if(!v.val.equals("notfound")){
+                                        RESULT.listav.add(cuadruplos.size());
+                                        RESULT.listaf.add(cuadruplos.size()+1); 
+                                        gen("IF:=", "", v.val +"", m1.intValue()+2+"");
+                                        gen("GOTO", "", "", "");
+                                }else{
+                                        printError(vleft, vright, v.id, "", "notDeclared");
+                                }
                                 
                         :} LISTEXP:exp breaks N:n M:m2 OPT2:optexp {:
                                 if(optexp != null){

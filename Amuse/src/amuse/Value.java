@@ -2,7 +2,8 @@ package amuse;
 public class Value{
     public String tipo;
     public String val;
-
+    public String id = "";
+    
     public Value(String t, String v){
         this.tipo = t;
         this.val = v;

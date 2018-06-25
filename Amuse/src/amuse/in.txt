@@ -4,15 +4,21 @@ void hola()
 Main(){
     c num 
     c := 10
-    asd num := 0
+    arit num := (1+2)*(4/(7-2*3))
+    asd num := 0 + 5 / (7)
     asd := c
-    for(holiwis num := 5;asd < c ;asd++)
-        if(holiwis < asd) then
-            holiwis := holiwis + 1
-        else then
-            holiwis := 0
-        endif
-
+    juany num := 33
+    holiwis num
+    select(juany)
+        option 33:
+            holiwis := 5
+        break
+        option holiw:
+            holiwis := 9
+        break
+        option 95:
+            holiwis := 5
+        break
     end
     prueba bool := true
 }
