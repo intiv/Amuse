@@ -2,18 +2,23 @@ num arielito(num, num)
 void hola()
 
 Main(){
+
     c num 
     c := 10
     arit num := (1+2)*(4/(7-2*3))
     asd num := 0 + 5 / (7)
     asd := c
     juany num := 33
+    if((c<asd || c>asd) && (arit == c || arit == asd)) then
+        juany := 0
+    endif
+
     holiwis num
     select(juany)
         option 33:
             holiwis := 5
         break
-        option holiw:
+        option c:
             holiwis := 9
         break
         option 95:
@@ -26,11 +31,11 @@ Main(){
 num arielito(num inti, num juany){
     agni char := 'd'
     asd num := 7
-    return true
+    return asd
 }
 
 void hola(){
     jeje bool := true
-    return jeje
+    
 }
 
