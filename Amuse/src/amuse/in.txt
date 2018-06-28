@@ -1,5 +1,5 @@
 num arielito(num, num)
-void hola()
+void hola(num, char, bool, num, char, num, bool)
 
 Main(){
 
@@ -35,7 +35,7 @@ num arielito(num inti, num juany){
     return asd
 }
 
-void hola(){
+void hola(num a, char b, bool c, num d, char e, num f, bool g){
     jeje bool := true
     
 }

@@ -588,6 +588,8 @@ public class Sintactico extends java_cup.runtime.lr_parser {
         public int contadorTemporales=0;
         public String currAmbito = "";
         public boolean hasReturn = false;
+        public int offset = 0;
+        public int contArgs = 0;
 
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
@@ -611,7 +613,6 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                         if(!retVal.contains(i)){
                                 retVal.add(i);
                         }
-
                 }
                 return retVal; 
         }
@@ -1356,7 +1357,14 @@ class CUP$Sintactico$actions {
                                 if(ind==-1){
                                         if(asig2==-1){
                                                 Value v = new Value(t, "");
-                                                tabla.addVar(t, i, v, currAmbito);
+                                                tabla.addVar(t, i, v, currAmbito, new Integer(offset));
+                                                if(t.equals("char")){
+                                                        offset+=1;
+                                                }else if(t.equals("num")){
+                                                        offset+=4;
+                                                }else if(t.equals("bool")){
+                                                        offset+=1;
+                                                }
                                                 RESULT = i;
                                         }else{
                                                 Array m = new Array(0,asig2-1,t);
@@ -1366,7 +1374,6 @@ class CUP$Sintactico$actions {
                                                         arrayTable[j] = new Value(t, "");
                                                 }
                                                 m.setTabla(arrayTable);
-                                                System.out.println(m.toString());
                                                 arreglos.add(m);
                                                 tabla.addVar(t, i, v, currAmbito);
                                         }
@@ -1443,8 +1450,15 @@ class CUP$Sintactico$actions {
                                                 }
                                         }else{
                                                 if(v.tipo.equals(t)){
-                                                        tabla.addVar(t, i, v, currAmbito);
+                                                        tabla.addVar(t, i, v, currAmbito, new Integer(offset));
                                                         gen(":=", v.val, "", i);
+                                                        if(t.equals("char")){
+                                                                offset+=1;
+                                                        }else if(t.equals("num")){
+                                                                offset+=4;
+                                                        }else if(t.equals("bool")){
+                                                                offset+=1;
+                                                        }
                                                         // System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
                                                         RESULT = i;
                                                 }else{
@@ -2044,7 +2058,7 @@ class CUP$Sintactico$actions {
                                 RESULT = new Expresion();
 
                                 if(validate < 3){
-                                        if((i1.tipo.equals("boolean") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("boolean"))
+                                        if((i1.tipo.equals("bool") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("bool"))
                                         ||(i1.tipo.equals("num") && i2.tipo.equals("num"))
                                         ||(i1.tipo.equals("char") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("char"))){
                                                 RESULT.listav.add(cuadruplos.size());
@@ -2068,7 +2082,7 @@ class CUP$Sintactico$actions {
                                         }
                                 }
                         }else if(!isID1 && !isID2){
-                                        if((i1.tipo.equals("boolean") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("boolean"))
+                                        if((i1.tipo.equals("bool") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("bool"))
                                          ||(i1.tipo.equals("num") && i2.tipo.equals("num"))
                                          ||(i1.tipo.equals("char") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("char"))){
                                                 RESULT.listav.add(cuadruplos.size());
@@ -2448,7 +2462,7 @@ class CUP$Sintactico$actions {
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
- currAmbito = val; calls.clear(); 
+ currAmbito = val; offset = 0; calls.clear(); 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$10",55, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -2482,9 +2496,7 @@ class CUP$Sintactico$actions {
                                                 argType = "void";
                                         }
                                         argType += "->"+t;
-                                        if(funcion.tipo.equals(argType)){
-                                                System.out.println("Funcion "+val+", tipo: "+argType);
-                                        }else{
+                                        if(!funcion.tipo.equals(argType)){
                                                 printError(argsleft, argsright, argType, "Funcion "+val+" de tipo "+funcion.tipo+" ha sido utilizada como ","DetailVariable");
                                         }
                                 }else{
@@ -2525,7 +2537,7 @@ class CUP$Sintactico$actions {
 		int valleft = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).left;
 		int valright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		String val = (String)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
- currAmbito = val;  calls.clear(); 
+ currAmbito = val; contArgs = 0; offset = 0; calls.clear(); 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("NT$12",57, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
             }
           return CUP$Sintactico$result;
@@ -2541,6 +2553,7 @@ class CUP$Sintactico$actions {
 		int argsright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Parametros args = (Parametros)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
 
+                        
                         int index = tabla.contains(val, "global");
                         if(index >= 0){
                                 Simbolo funcion = tabla.getSymbol(val, currAmbito);
@@ -2556,9 +2569,7 @@ class CUP$Sintactico$actions {
                                         argType = "void";
                                 }
                                 argType += "->void";
-                                if(funcion.tipo.equals(argType)){
-                                        System.out.println("Funcion "+val+", tipo: "+argType);
-                                }else{
+                                if(!funcion.tipo.equals(argType)){
                                         printError(argsleft, argsright, argType, "Funcion "+val+" de tipo "+funcion.tipo+" ha sido utilizada como ","DetailVariable");
                                 }
                         }else{
@@ -2605,7 +2616,9 @@ class CUP$Sintactico$actions {
 		 
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){
+                                        
                                         tabla.addParam(tipo, ident, new Value(tipo, ""), currAmbito);
+                                        contArgs = 1;
                                         RESULT = new Parametros();
                                         if(arg2 != null){
                                                 RESULT.ids = arg2.ids;
@@ -2613,13 +2626,26 @@ class CUP$Sintactico$actions {
                                         }
                                         RESULT.ids.add(ident);
                                         RESULT.tipos.add(tipo);
-                                        if(RESULT.ids.size() > 1){
-                                                Collections.reverse(RESULT.ids);
-                                                Collections.reverse(RESULT.tipos);
-                                        }
                                 }else{
                                         //printerror argumento ya declarado
                                         RESULT = arg2;
+                                }
+                                if(RESULT.ids.size() > 1){
+                                        Collections.reverse(RESULT.ids);
+                                        Collections.reverse(RESULT.tipos);
+                                        for(int i = 0; i <RESULT.ids.size(); i++){
+                                                String currTipo = RESULT.tipos.get(i);
+                                                if(i + contArgs < 4){
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
+                                                }else{
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));
+                                                        if(currTipo.equals("char") || currTipo.equals("bool")){
+                                                                offset+=1;
+                                                        }else if(currTipo.equals("num")){
+                                                                offset+=4;
+                                                        }
+                                                }
+                                        }
                                 }
 
                         
@@ -2654,7 +2680,17 @@ class CUP$Sintactico$actions {
 		 
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){
-                                        tabla.addParam(tipo, ident, new Value(tipo, ""), currAmbito);
+                                        // if(contArgs < 4){
+                                        //         tabla.addParam(tipo, ident, new Value(tipo, ""), currAmbito);
+                                        // }else{
+                                        //         tabla.addParam(tipo, ident, new Value(tipo, ""), currAmbito, new Integer(offset));
+                                        //         if(tipo.equals("char") || tipo.equals("bool")){
+                                        //                 offset+=1;
+                                        //         }else if(tipo.equals("num")){
+                                        //                 offset+=4;
+                                        //         }
+                                        // }
+                                        // contArgs++;
                                         RESULT = new Parametros();
                                         if(arg2 != null){
                                                 RESULT.ids = arg2.ids;
@@ -2662,10 +2698,10 @@ class CUP$Sintactico$actions {
                                         }
                                         RESULT.ids.add(ident);
                                         RESULT.tipos.add(tipo);
-                                        if(RESULT.ids.size() > 1){
-                                                Collections.reverse(RESULT.ids);
-                                                Collections.reverse(RESULT.tipos);
-                                        }
+                                        // if(RESULT.ids.size() > 1){
+                                        //         Collections.reverse(RESULT.ids);
+                                        //         Collections.reverse(RESULT.tipos);
+                                        // }
                                 }else{
                                         //printerror argumento ya declarado
                                         RESULT = arg2;
