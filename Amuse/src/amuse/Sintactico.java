@@ -2617,7 +2617,7 @@ class CUP$Sintactico$actions {
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){
                                         
-                                        tabla.addParam(tipo, ident, new Value(tipo, ""), currAmbito);
+                                        // tabla.addParam(tipo, ident, new Value(tipo, ""), currAmbito);
                                         contArgs = 1;
                                         RESULT = new Parametros();
                                         if(arg2 != null){
@@ -2635,7 +2635,7 @@ class CUP$Sintactico$actions {
                                         Collections.reverse(RESULT.tipos);
                                         for(int i = 0; i <RESULT.ids.size(); i++){
                                                 String currTipo = RESULT.tipos.get(i);
-                                                if(i + contArgs < 4){
+                                                if(i < 4){
                                                         tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
                                                 }else{
                                                         tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));

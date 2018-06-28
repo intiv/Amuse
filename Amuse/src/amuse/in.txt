@@ -1,4 +1,4 @@
-num arielito(num, num)
+num arielito(num, num, char, char, bool, num)
 void hola(num, char, bool, num, char, num, bool)
 
 Main(){
@@ -29,7 +29,7 @@ Main(){
     prueba bool := true
 }
 
-num arielito(num inti, num juany){
+num arielito(num inti, num juany, char pity, char ricardo, bool aceituno, num vallejo){
     agni char := 'd'
     asd num := 7
     return asd
