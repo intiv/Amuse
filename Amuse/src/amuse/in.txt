@@ -2,12 +2,12 @@ num arielito(num, num, char, char, bool, num)
 void hola(num, char, bool, num, char, num, bool)
 
 Main(){
-
+    D num
     c num 
     c := 10
     arit num := (1+2)*(4/(7-2*3))
     asd num := 0 + 5 / (7)
-    asd := c
+    asd := D
     juany num := 33
 
     if((c < d || c>asd) && (arit == c || arit == asd)) then
