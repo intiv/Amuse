@@ -9,7 +9,8 @@ Main(){
     asd num := 0 + 5 / (7)
     asd := c
     juany num := 33
-    if((c<asd || c>asd) && (arit == c || arit == asd)) then
+
+    if((c < d || c>asd) && (arit == c || arit == asd)) then
         juany := 0
     endif
 

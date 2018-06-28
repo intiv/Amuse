@@ -125,6 +125,18 @@ parser code {:
                 }
         }
 
+        public boolean isID(Value value){
+                if(value.val.length() == 3 && value.val.charAt(0) == '\'' && value.val.charAt(2) == '\''){
+                        return false;
+                }else if(value.val.matches("\\d+")){
+                        return false;
+                }else if(value.val.equals("true") || value.val.equals("false")){
+                        return false;
+                }
+
+                return true;
+        }
+
         public void printError(int linea, int columna, String val1, String val2, String tipo){
                 switch (tipo) {
                         case "DetailVariable":
@@ -555,7 +567,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                         if(asig2 == -1){
                                                 Simbolo sym = tabla.getSymbol(i, currAmbito);
                                                 if(v.tipo.equals(sym.tipo)){
-                                                        tabla.assignValue(index, v);
+                                                        tabla.assignValue(index, new Value(v.tipo, i));
                                                         gen(":=", v.val, "", sym.id);
                                                         // if(v.tipo.equals("boolean")){
                                                         //         System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
@@ -793,47 +805,106 @@ COND ::=
                         }
                 :}
 
-        | id:i1 opRel:opr id:i2 
+        | VALS:i1 opRel:opr VALS:i2 
                 {:      
-                        int index_id1 = tabla.contains(i1, currAmbito);
-                        int index_id2 = tabla.contains(i2, currAmbito);
-                        if(index_id1 > -1 && index_id2 > -1){
+                        boolean isID1 = isID(i1);
+                        boolean isID2 = isID(i2);
+
+                        if(isID1 && isID2){
+                                int index_id1 = tabla.contains(i1.val, currAmbito);
+                                int index_id2 = tabla.contains(i2.val, currAmbito);
+                                if(index_id1 > -1 && index_id2 > -1){
+                                        RESULT = new Expresion();
+                                        RESULT.listav.add(cuadruplos.size());
+                                        RESULT.listaf.add(cuadruplos.size()+1);
+                                        gen("IF"+opr, i1.val, i2.val, "");
+                                        gen("GOTO", "");
+                                }else{
+                                        if(index_id1 == -1){
+                                                printError(i1left, i1right, "en la condicion", "", "notDeclared");
+                                        }
+                                        if(index_id2 == -1){
+                                                printError(i2left, i2right, "en la condicion", "", "notDeclared");                                        
+                                        }
+                                        RESULT = new Expresion();
+                                }
+                        }else if((isID1 && !isID2) || (!isID1 && isID2)){
+                                int validate = 3;
+                                if(isID1){
+                                        int index_id1 = tabla.contains(i1.val, currAmbito);
+                                        if(index_id1 > -1){
+                                                validate = 1;
+                                        }else{
+                                                validate = 3;
+                                        }
+                                }else if(isID2){
+                                        int index_id2 = tabla.contains(i2.val, currAmbito);
+                                        if(index_id2 > -1){
+                                                validate = 2;
+                                        }else{
+                                                validate = 4;
+                                        }
+                                }
+
                                 RESULT = new Expresion();
-                                RESULT.listav.add(cuadruplos.size());
-                                RESULT.listaf.add(cuadruplos.size()+1);
-                                gen("IF"+opr, i1, i2, "");
-                                gen("GOTO", "");
-                        }else{
-                                if(index_id1 == -1){
-                                        printError(i1left, i1right, i1, "", "notfound");
+
+                                if(validate < 3){
+                                        if((i1.tipo.equals("boolean") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("boolean"))
+                                        ||(i1.tipo.equals("num") && i2.tipo.equals("num"))
+                                        ||(i1.tipo.equals("char") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("char"))){
+                                                RESULT.listav.add(cuadruplos.size());
+                                                RESULT.listaf.add(cuadruplos.size()+1);
+                                                gen("IF"+opr, i1.val, i2.val, "");
+                                                gen("GOTO", "");
+                                        }else{
+                                                //printerror tipos incopatibles u operador inorrecto
+                                                System.err.println("Tipos incopatibles en condicion");
+                                                
+                                        }
+                                }else{
+                                        if(validate == 3){
+                                                //printerror i1 no encontrada
+                                                printError(i1left, i1right, i1.val, "", "notDeclared");
+
+                                        }else if(validate == 4){
+                                                //printerror i2 no encontrada
+                                                printError(i2left, i2right, i2.val, "", "notDeclared");
+                                                
+                                        }
                                 }
-                                if(index_id2 == -1){
-                                        printError(i2left, i2right, i2, "", "notfound");                                        
-                                }
+                        }else if(!isID1 && !isID2){
+                                        if((i1.tipo.equals("boolean") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("boolean"))
+                                         ||(i1.tipo.equals("num") && i2.tipo.equals("num"))
+                                         ||(i1.tipo.equals("char") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("char"))){
+                                                RESULT.listav.add(cuadruplos.size());
+                                                RESULT.listaf.add(cuadruplos.size()+1);
+                                                gen("IF"+opr, i1.val, i2.val, "");
+                                                gen("GOTO", "");
+                                        }else{
+                                                //printerror tipos incopatibles u operador inorrecto
+                                                System.err.println("Tipos incopatibles en condicion");
+                                        }                                
                         }
                         
                 :} 
                 COND2:cond2 
                 {:
-                        int index_id1 = tabla.contains(i1, currAmbito);
-                        int index_id2 = tabla.contains(i2, currAmbito);
-                        if(index_id1 > -1 && index_id2 > -1){
-                                
-                                if(cond2 != null){
-                                        Expresion temp = RESULT;
-                                        if(cond2.or){
-                                                completa(temp.listaf, cond2.cuad);
-                                                RESULT = new Expresion();
-                                                RESULT.listav = fusiona(temp.listav, cond2.listav);
-                                                RESULT.listaf = cond2.listaf;
-                                        }else{
-                                                completa(temp.listav, cond2.cuad);
-                                                RESULT = new Expresion();
-                                                RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
-                                                RESULT.listav = cond2.listav;
-                                        }
+                        if(cond2 != null){
+                                Expresion temp = RESULT;
+                                if(cond2.or){
+                                        completa(temp.listaf, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                        RESULT.listaf = cond2.listaf;
+                                }else{
+                                        completa(temp.listav, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                        RESULT.listav = cond2.listav;
                                 }
                         }
+                                
+                        
                 :}
 
         | booleano:boolval 
@@ -846,7 +917,23 @@ COND ::=
                         }
                         gen("GOTO", "");
                 :} 
-                COND2;
+                COND2:cond2 
+                {:
+                      if(cond2 != null){
+                                Expresion temp = RESULT;
+                                if(cond2.or){
+                                        completa(temp.listaf, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                        RESULT.listaf = cond2.listaf;
+                                }else{
+                                        completa(temp.listav, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                        RESULT.listav = cond2.listav;
+                                }
+                        }  
+                :};
 
 COND2 ::= opOr
           M:m 
