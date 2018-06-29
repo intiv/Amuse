@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class Builder {
     public static void main(String[] args){
-        String params[] = new String[7];
+       String params[] = new String[7];
 
        params[0] = "-destdir";
        params[1] = "src/amuse/";
