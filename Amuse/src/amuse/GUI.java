@@ -63,22 +63,25 @@ public class GUI extends javax.swing.JFrame {
                     }
 
                     currAmbito = amuse.funciones.get(funCont).nombre;
-                    System.out.println("Nuevo ambito: "+currAmbito);
                     maxoffset = amuse.tabla.getMaxOffset(currAmbito);
                     code += "_FUN_"+currAmbito+":\n";
                     code += line("sw $fp, -4($sp)") + line("sw $ra, -8($sp");
                     for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
-                        if(i < 4){
+                        //if(i < 4){
                             //primero 4 parametros, se deberia multiplicar i por el tamaño del tipo de param, por ahora se asume que son nums por que nums funcionan bien
                             code += line("sw $s"+i+", -"+((i+1)*4+8)+"($sp)");
-                        }
+                        
                     }
+                    int contParam = 1;
                     for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
                         if(i < 4){
                             code += line("move $s"+i+", $a"+i);
+                        }else{
+                            contParam = amuse.funciones.get(funCont).params.ids.size() - i;
+                            code += line("lw $s"+i+", +"+(contParam*4)+"($sp)");
                         }
                     }
-                    code += line("move $fp, $sp") + line("sub $sp, $sp, "+(maxoffset+8));
+                    code += line("move $fp, $sp") + line("sub $sp, $sp, "+(maxoffset));
                     
 
 //                    amuse.cuadFuncs.remove(0);
@@ -453,9 +456,10 @@ public class GUI extends javax.swing.JFrame {
             }else{
                 ta_codigoFinal.setText(amuse.Errores);
             }
+            
             // System.out.println(simbolo);
         } catch (Exception ex) {
-            Logger.getLogger(AmuseMain.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_btn_compilar1MouseClicked
 

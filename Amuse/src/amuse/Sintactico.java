@@ -2728,10 +2728,16 @@ class CUP$Sintactico$actions {
                                 if(RESULT.ids.size() > 1){
                                         Collections.reverse(RESULT.ids);
                                         Collections.reverse(RESULT.tipos);
+
                                         for(int i = 0; i <RESULT.ids.size(); i++){
                                                 String currTipo = RESULT.tipos.get(i);
                                                 if(i < 4){
                                                         tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
+                                                        if(currTipo.equals("char") || currTipo.equals("bool")){
+                                                                offset+=1;
+                                                        }else if(currTipo.equals("num")){
+                                                                offset+=4;
+                                                        }
                                                 }else{
                                                         if(currTipo.equals("char") || currTipo.equals("bool")){
                                                                 offset+=1;
