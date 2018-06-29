@@ -8,7 +8,7 @@ import java.util.Collections;
 parser code {:
         public ArrayList<String> calls = new ArrayList();
         public String arrayValue="";
-        public int hayErrores = 0;
+        public boolean hayErrores = false;
         public int contadorNodo = 0;
         public static Nodo padre;
         public TablaSimbolos tabla = new TablaSimbolos();
@@ -20,6 +20,7 @@ parser code {:
         public boolean hasReturn = false;
         public int offset = 0;
         public int contArgs = 0;
+        public String Errores = "";
 
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
@@ -29,11 +30,13 @@ parser code {:
                 cuadruplos.add(new Cuadruplo(op, res));
         }
 
-        public void printCuadruplos(){
-                System.out.println("CUADRUPLOS:");
+        public String printCuadruplos(){
+                String retVal = "-------------------------------------------------------------\n\tCUADRUPLOS:\n-------------------------------------------------------------\n";
                 for(int i = 0; i < cuadruplos.size(); i++){
-                        System.out.println(i+" - "+cuadruplos.get(i).toString());
+                        retVal+=(i+" - "+cuadruplos.get(i).toString()+"\n");
                 }
+                retVal += "-------------------------------------------------------------\n";
+                return retVal;
         }
 
         public ArrayList<Integer> fusiona (ArrayList<Integer> l1, ArrayList<Integer> l2){
@@ -78,24 +81,24 @@ parser code {:
                 }
                 m.append(": "+message);
                 System.err.println(m);
-                hayErrores = 1;
+                hayErrores = true;
         }
 
         public void report_fatal_error(String message, Object info){
                 report_error(message, info);
-                hayErrores = 1;
+                hayErrores = true;
                 // System.exit(1);
         }
 
         public void unrecovered_syntax_error(Symbol cur_token){
                 System.out.println(cur_token.toString());
                 System.err.println("At line "+(cur_token.left)+", column "+cur_token.right);
-                hayErrores = 1;
+                hayErrores = true;
                 // System.exit(1);
         }
 
         protected void report_expected_token_ids() {
-                hayErrores = 1;
+                hayErrores = true;
 	        List<Integer> ids = expected_token_ids();
 	        LinkedList<String> list = new LinkedList<String>();
 	        for (Integer expected : ids)
@@ -139,36 +142,37 @@ parser code {:
         }
 
         public void printError(int linea, int columna, String val1, String val2, String tipo){
+                hayErrores = true;
                 switch (tipo) {
                         case "DetailVariable":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t"+val2+" "+val1);
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t"+val2+" "+val1+"\n";
                                 break;
                         case "notfound":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val1);
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val1+"\n";
                                 break;
                         case "out of bounds":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Indice "+val2+" fuera de alcance del arreglo");
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Indice "+val2+" fuera de alcance del arreglo"+"\n";
                                 break;
                         case "incompatible":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Asignacion de variable "+val1+" con operacion aritmetica con tipos incompatibles");
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Asignacion de variable "+val1+" con operacion aritmetica con tipos incompatibles"+"\n";
                                 break;
                         case "tipos":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Asignacion de "+val1+" a variable de tipo "+val2);
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Asignacion de "+val1+" a variable de tipo "+val2+"\n";
                                 break;
                         case "notDeclared":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" no ha sido declarada");
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" no ha sido declarada"+"\n";
                                 break;
                         case "declared":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" ya fue declarada");
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t La variable "+val1+" ya fue declarada"+"\n";
                                 break;
                         case "blankCall":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Expresion incompleta");
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Expresion incompleta"+"\n";
                                 break;
                         case "notInitialized":
-                                System.err.println("Error en linea "+linea+", columna "+columna+":\t Uso de variable no inicializada");
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable no inicializada"+"\n";
                                 break;
                         default:
-                                System.err.println("Error en linea "+linea+", columna "+columna); 
+                                Errores += "Error en linea "+linea+", columna "+columna+"\n"; 
                                 break;
                 }
         }
@@ -286,7 +290,7 @@ start with START;
 START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: currAmbito = "Main"; :} LISTEXP cbClose 
                     FUNC {: 
                                 //printCuadruplos();
-                                System.out.println(tabla.toString()); 
+                                //System.out.println(tabla.toString()); 
                         :} ;
 
 //No terminal para todas las expresiones que pueden haber. Aqui van ifs, for, switch, while, asignaciones, etc
@@ -309,7 +313,7 @@ LISTEXP ::= EXP:exp M:m
                         completa(exp.listasig, m.intValue());
                         RESULT = new Expresion(); :};
 
-EXP             ::= error {: RESULT = new Expresion(); :}
+EXP             ::= error {: RESULT = new Expresion(); hayErrores = true; :}
                 | 
                 IF:ifexp 
                         {: 
@@ -682,7 +686,6 @@ WRITE           ::= writestart parIzq VALS:value parDer
 
 READ            ::= readstart parIzq VALS:value parDer 
                 {:
-                        System.out.println("Aqui estooooy!");
                         if(value.val.equals("notInitialized")){
                                 int index = tabla.contains(value.id, currAmbito);
                                 Simbolo sym = tabla.getSymbol(value.id, currAmbito);
