@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java_cup.runtime.Symbol;
+import java.util.ArrayList;
 /**
  *
  * @author juany
@@ -30,23 +31,69 @@ public class GUI extends javax.swing.JFrame {
     public File file = null;
     Sintactico amuse = null;
     DescriptorRegistros desc = new DescriptorRegistros();
-
+    String currAmbito = "Main";
+    int inc = 0;
     public String CodigoFinal(){
         int cont = 0;
+        int funCont = 0;
         int operation = 10;
+        
         int maxoffset = amuse.tabla.getMaxOffset("Main");
         String code = ".text\n.globl main\nmain:\n\tmove $fp, $sp\n\tsub $sp, $sp, "+maxoffset+"\n";
-        boolean cambioAmbito = false;
-        String ambito = "Main";
+        boolean finMain = false;
+        boolean writeFinFunc = true;
         for(Cuadruplo cuad : amuse.cuadruplos){
-            
+            if(amuse.cuadFuncs.size() > 0 && amuse.cuadFuncs.size() == amuse.funciones.size()){
+                if((!finMain &&amuse.cuadFuncs.contains(new Integer(cont)))|| (finMain && amuse.cuadFuncs.contains(new Integer(cont-1))) ){
+                    
+                    if(!currAmbito.equals("Main") && writeFinFunc ){
+                        code += "_FIN_FUN_"+currAmbito+"\n"+line("add $sp, $sp, "+maxoffset);
+                        for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
+                            if(i < 4){
+                                code += line("lw $s"+i+", "+((i+1)*4+8)+"($fp)");
+                            }
+                        }
+                        code += line("lw $ra, -8($fp)") + line("lw $fp, -4($fp)") + line("jr $ra\n");
+                    }
+                    if(!finMain){
+                        code += "_etiq"+cont+":\n" + line("li $v0, 10\n\tsyscall\n");
+                        cont++;
+                        inc = 1;
+                        writeFinFunc = true;
+                    }
+
+                    currAmbito = amuse.funciones.get(funCont).nombre;
+                    System.out.println("Nuevo ambito: "+currAmbito);
+                    maxoffset = amuse.tabla.getMaxOffset(currAmbito);
+                    code += "_FUN_"+currAmbito+":\n";
+                    code += line("sw $fp, -4($sp)") + line("sw $ra, -8($sp");
+                    for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
+                        if(i < 4){
+                            //primero 4 parametros, se deberia multiplicar i por el tamaño del tipo de param, por ahora se asume que son nums por que nums funcionan bien
+                            code += line("sw $s"+i+", -"+((i+1)*4+8)+"($sp)");
+                        }
+                    }
+                    for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
+                        if(i < 4){
+                            code += line("move $s"+i+", $a"+i);
+                        }
+                    }
+                    code += line("move $fp, $sp") + line("sub $sp, $sp, "+(maxoffset+8));
+                    
+
+//                    amuse.cuadFuncs.remove(0);
+//                    amuse.funciones.remove(0);
+                    funCont++;
+                    finMain = true;
+                }
+            }
             code+= "_etiq"+cont+":\n";
             if(cuad.operator.equals("READ")){
                 code += genREAD(cuad);
             }else if(cuad.operator.equals("WRITE")){
                 code += genWRITE(cuad);
             }else if(cuad.operator.equals("GOTO")){
-                code += line("b _etiq"+cuad.result);
+                code += line("b _etiq"+(Integer.parseInt(cuad.result)+inc));
             }else if(cuad.operator.contains("IF")){
                 code += genIF(cuad);
             }else if(cuad.operator.equals(":=")){
@@ -62,6 +109,16 @@ public class GUI extends javax.swing.JFrame {
             }
             cont++;
         }
+        if(funCont > 1){
+            funCont--;
+            code += "_FIN_FUN_"+currAmbito+"\n"+line("add $sp, $sp, "+maxoffset);
+            for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
+                if(i < 4){
+                    code += line("lw $s"+i+", "+((i+1)*4+8)+"($fp)");
+                }
+            }
+            code += line("lw $ra, -8($fp)") + line("lw $fp, -4($fp)") + line("jr $ra\n");
+        }
         code += ".data\n_bufferChars:\t.space\t1\n";
         return code;
 
@@ -72,7 +129,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     public String genREAD(Cuadruplo cuad){
-        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+        Simbolo sym = amuse.tabla.getSymbol(cuad.result, currAmbito);
         String retVal = "";
         if(sym.tipo.equals("num") || sym.tipo.equals("bool")){
             retVal = line("li $v0, 5") +
@@ -85,7 +142,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     public String genWRITE(Cuadruplo cuad){
-        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+        Simbolo sym = amuse.tabla.getSymbol(cuad.result, currAmbito);
         String retVal = "";
         if(sym.tipo.equals("num") || sym.tipo.equals("bool")){
             retVal = line("lw $a0, -"+sym.offset+"($fp)") +
@@ -107,7 +164,7 @@ public class GUI extends javax.swing.JFrame {
             desc.ts[0] = " ";
         }
         if(isid1){
-            Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+            Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, currAmbito);
             if(id1.tipo.equals("num") || id1.tipo.equals("bool")){
                 retVal += line("lw $t"+temp1+", -"+id1.offset+"($fp)");
             }
@@ -123,7 +180,7 @@ public class GUI extends javax.swing.JFrame {
             desc.ts[1] = " ";
         }
         if(isid2){
-            Simbolo id2 = amuse.tabla.getSymbol(cuad.arg2, "Main");
+            Simbolo id2 = amuse.tabla.getSymbol(cuad.arg2, currAmbito);
             if(id2.tipo.equals("num") || id2.tipo.equals("bool")){
                 retVal += line("lw $t"+temp2+", -"+id2.offset+"($fp)");
             }
@@ -133,17 +190,17 @@ public class GUI extends javax.swing.JFrame {
         } 
         String tipoIf = cuad.operator.substring(2, cuad.operator.length());
         if(tipoIf.equals("<")){
-            retVal += line("blt $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+            retVal += line("blt $t"+temp1+", $t"+temp2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals("<=")){
-            retVal += line("ble $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+            retVal += line("ble $t"+temp1+", $t"+temp2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals(">")){
-            retVal += line("bgt $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+            retVal += line("bgt $t"+temp1+", $t"+temp2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals(">=")){
-            retVal += line("bge $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+            retVal += line("bge $t"+temp1+", $t"+temp2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals(":=")){
-            retVal += line("beq $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+            retVal += line("beq $t"+temp1+", $t"+temp2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals("!=")){
-            retVal += line("bne $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+            retVal += line("bne $t"+temp1+", $t"+temp2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }
         desc.freeTS();
         return retVal;
@@ -151,16 +208,17 @@ public class GUI extends javax.swing.JFrame {
 
     public String genASIG(Cuadruplo cuad){
         String retVal = "";
-        Simbolo sym = amuse.isID(cuad.result) ? amuse.tabla.getSymbol(cuad.result, "Main") : null;
+        Simbolo sym = amuse.isID(cuad.result) ? amuse.tabla.getSymbol(cuad.result, currAmbito) : null;
         if(cuad.arg1.contains("$t") && sym != null){
-            retVal = line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
+            // retVal = line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
         }else if(sym != null){
             if(amuse.isID(cuad.arg1)){
-                Simbolo sym2 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+                Simbolo sym2 = amuse.tabla.getSymbol(cuad.arg1, currAmbito);
                 retVal = line("lw $t0, -"+sym2.offset+"($fp)") +
                         line("sw $t0, -"+sym.offset+"($fp)");
             }else{
-                retVal = line("li $t0, "+cuad.arg1) +
+                String arg1 = cuad.arg1.equals("true") ? "1" : (cuad.arg1.equals("false")? "0" : cuad.arg1);
+                retVal = line("li $t0, "+arg1) +
                         line("sw $t0, -"+sym.offset+"($fp)");
             }
             //se asume es numero, falta char

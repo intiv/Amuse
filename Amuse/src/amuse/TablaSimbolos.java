@@ -49,7 +49,9 @@ public class TablaSimbolos{
         int retVal = 0;
         for(int i = 0; i < simbolos.size() ; i++){
             if(simbolos.get(i).ambito.equals(ambito)){
-                retVal = simbolos.get(i).offset;
+                if(simbolos.get(i).offset != null){
+                    retVal = simbolos.get(i).offset.intValue();
+                }
             }
         }
         return retVal;
