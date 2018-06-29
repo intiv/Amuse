@@ -23,31 +23,32 @@ public class Amuse {
   public static final int end = 8;
   public static final int cbClose = 12;
   public static final int ifstart = 2;
-  public static final int writestart = 38;
+  public static final int writestart = 39;
   public static final int elseclause = 4;
-  public static final int options = 41;
-  public static final int breaks = 40;
+  public static final int options = 42;
+  public static final int breaks = 41;
   public static final int EOF = 0;
   public static final int error = 1;
   public static final int pcoma = 15;
   public static final int opSuma = 27;
-  public static final int colon = 42;
-  public static final int forstart = 36;
+  public static final int colon = 43;
+  public static final int forstart = 37;
   public static final int endif = 6;
   public static final int parIzq = 9;
   public static final int ret = 13;
   public static final int opOr = 23;
   public static final int cbOpen = 11;
   public static final int openBrk = 16;
-  public static final int comment = 43;
+  public static final int comment = 44;
   public static final int opAsig = 26;
   public static final int id = 19;
   public static final int charval = 34;
-  public static final int selectstart = 39;
+  public static final int selectstart = 40;
   public static final int ifthen = 3;
   public static final int elseif = 5;
+  public static final int readstart = 36;
   public static final int booleano = 18;
-  public static final int contador = 37;
+  public static final int contador = 38;
   public static final int character = 21;
   public static final int opResta = 28;
   public static final int num = 33;
@@ -89,6 +90,7 @@ public class Amuse {
   "num",
   "charval",
   "whilestart",
+  "readstart",
   "forstart",
   "contador",
   "writestart",

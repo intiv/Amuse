@@ -1,25 +1,42 @@
-num arielito(num, num)
+num arielito(num, num, char, char, bool, num)
+void hola(num, char, bool, num, char, num, bool)
 
 Main(){
+    D num
     c num 
-    asd num := 0
-    asd := c
-    for(holiwis num := 5;asd < c ;asd++)
-        if(holiwis < asd) then
-            holiwis := holiwis + 1
-        else then
-            holiwis := 0
-        endif
-        arielito(3,5)
-        arreglo num [5]
-        arreglo[4] := 5
-        c := arreglo [0]
+    c := 10
+    arit num := (1+2)*(4/(7-2*3))
+    asd num := 0 + 5 / (7)
+    asd := D
+    juany num := 33
+
+    if((c < d || c>asd) && (arit == c || arit == asd)) then
+        juany := 0
+    endif
+
+    holiwis num
+    select(juany)
+        option 33:
+            holiwis := 5
+        break
+        option c:
+            holiwis := 9
+        break
+        option 95:
+            holiwis := 5
+        break
     end
     prueba bool := true
 }
 
-num arielito(num inti, num juany){
+num arielito(num inti, num juany, char pity, char ricardo, bool aceituno, num vallejo){
     agni char := 'd'
-    return 5
+    asd num := 7
+    return asd
+}
+
+void hola(num a, char b, bool c, num d, char e, num f, bool g){
+    jeje bool := true
+    
 }
 

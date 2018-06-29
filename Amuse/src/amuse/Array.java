@@ -47,8 +47,8 @@ public class Array {
         tabla[index] = new Value("bool", value);
     }
 
-    public Value getValue(int index) {
-        if (index >= 0 && index < fin) {
+    public Value getValue(int index){
+        if(index>=0 && index<=fin){
             return tabla[index];
         }
         return null;

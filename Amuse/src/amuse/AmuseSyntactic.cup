@@ -3,6 +3,7 @@ import java_cup.runtime.*;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 parser code {:
         public ArrayList<String> calls = new ArrayList();
@@ -16,7 +17,10 @@ parser code {:
         public ArrayList<Cuadruplo> cuadruplos = new ArrayList();
         public int contadorTemporales=0;
         public String currAmbito = "";
-         
+        public boolean hasReturn = false;
+        public int offset = 0;
+        public int contArgs = 0;
+
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
         }
@@ -39,7 +43,6 @@ parser code {:
                         if(!retVal.contains(i)){
                                 retVal.add(i);
                         }
-
                 }
                 return retVal; 
         }
@@ -57,7 +60,9 @@ parser code {:
         }
 
         public String nuevoTemp(){
-                return "t"+contadorTemporales;
+                String tempRet = "t"+contadorTemporales;
+                contadorTemporales++;
+                return tempRet;
         }
 
         public void report_error(String message,Object info){
@@ -119,6 +124,18 @@ parser code {:
                 }else{
                         return "error";
                 }
+        }
+
+        public boolean isID(Value value){
+                if(value.val.length() == 3 && value.val.charAt(0) == '\'' && value.val.charAt(2) == '\''){
+                        return false;
+                }else if(value.val.matches("\\d+")){
+                        return false;
+                }else if(value.val.equals("true") || value.val.equals("false")){
+                        return false;
+                }
+
+                return true;
         }
 
         public void printError(int linea, int columna, String val1, String val2, String tipo){
@@ -189,7 +206,7 @@ terminal String number;
 terminal String bool, num, charval;
 
 //While                
-terminal String whilestart;
+terminal String whilestart, readstart;
 
 //For                
 terminal String forstart, contador;
@@ -225,7 +242,7 @@ non terminal Expresion WHILE;
 non terminal Expresion FOR, CONTADOR;
 
 //Write
-non terminal WRITE;
+non terminal Expresion WRITE, READ;
 
 //Select
 non terminal Expresion SELECT, OPT, OPT2;
@@ -243,7 +260,7 @@ non terminal String RETFUNCBODY;
 //Funcion void
 non terminal VOIDFUNC;
 
-non terminal String ARGS, ARGS2; 
+non terminal Parametros ARGS, ARGS2; 
 non terminal ASIG, ARRVAL1, ARRVAL2, ARRVAL3;
 non terminal Integer ASIG2;
 non terminal String INIT, DECL;
@@ -266,9 +283,8 @@ precedence left opAsig;
 
 start with START;
 
-START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: System.out.println("Inicio main"); currAmbito = "Main"; :} LISTEXP cbClose 
+START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: currAmbito = "Main"; :} LISTEXP cbClose 
                     FUNC {: 
-                                System.out.println("Fin main");
                                 printCuadruplos();
                                 System.out.println(tabla.toString()); 
                         :} ;
@@ -331,7 +347,29 @@ EXP             ::= error {: RESULT = new Expresion(); :}
                                 RESULT = new Expresion(); 
                         :}
                 | 
-                WRITE 
+                WRITE {: RESULT = new Expresion(); :}
+                |
+                READ {: RESULT = new Expresion(); :}
+                |
+                ret VALS:val 
+                        {:   
+                                if(currAmbito.equals("Main")){
+                                        System.err.println("Error en linea "+(valleft+1)+", columna "+valright+": Return en main");
+                                }else{
+                                        Simbolo funcion = tabla.getFunction(currAmbito, contadorFunciones);
+                                        if(funcion != null){
+                                                String retType = funcion.tipo.substring(funcion.tipo.indexOf("->")+2, funcion.tipo.length());
+                                                if(retType.equals("void")){
+                                                        System.err.println("Error en linea "+(valleft+1)+", columna "+valright+": Return en funcion void");
+                                                }else if(!retType.equals(val.tipo)){
+                                                        System.err.println("Error en linea "+(valleft+1)+", columna "+valright+": Return de tipo "+val.tipo+" en funcion de tipo "+retType);
+                                                }else if(retType.equals(val.tipo)){
+                                                        //Cuadruplos de return
+                                                }
+                                        }
+                                }
+                                RESULT = new Expresion();
+                        :}
                 ;
 
 
@@ -339,25 +377,25 @@ IdF ::= id:ident TypeIdF:val {:
                                 int index = tabla.contains(ident, currAmbito);
                                 if(val == -3){
                                         int resultado = 0;
-                                        
                                         if(index>=0){
                                                 Simbolo sym = tabla.getSymbol(ident, currAmbito);
                                                 if(!sym.valor.val.equals("")){
-                                                        sym.setVal(ident);
+                                                        sym.valor.setVal(ident);
                                                         RESULT = sym.valor;
                                                 }else{
                                                         RESULT = new Value("error", "notInitialized");
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
+                                                RESULT.id = ident;
                                         }
                                 }else if(val == -2){
-                                        // calls.add(ident);
                                         if(index >= 0) {
                                                 Simbolo sym = tabla.getSymbol(ident, currAmbito);
                                                 RESULT = new Value(sym.tipo, sym.id);
                                         }else{
                                                 RESULT = new Value("error", "notfound");
+                                                RESULT.id = ident;
                                         }
                                 }else {
                                         int ind = tabla.getIndexVal(ident, currAmbito);
@@ -374,6 +412,7 @@ IdF ::= id:ident TypeIdF:val {:
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
+                                                RESULT.id = ident;
                                         }
                                 }
                         :};
@@ -420,21 +459,24 @@ FUNC_HEAD       ::= TIPO:fun_type id:fun_name parIzq TYPE_LIST:args parDer {:
                         }
                 :} FUNC_HEAD
                 |;
-TYPE_LIST       ::= TIPO:tipo TYPE_LIST2:tl {: RESULT = tipo + tl; :} | ;
+TYPE_LIST       ::= TIPO:tipo TYPE_LIST2:tl {: RESULT = tipo + tl; :} | {: RESULT = "void"; :} ;
 TYPE_LIST2      ::= coma TIPO:tipo TYPE_LIST2:tl {: RESULT = "x"+tipo+tl; :} | {: RESULT = ""; :};
 
 //Asignacion / Inicializacion
 DECL            ::=id:i TIPO:t ASIG2:asig2
                 {:
                         int index = tabla.contains(i, currAmbito);
-                        System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
                                 int ind = t.indexOf("array");
                                 if(ind==-1){
                                         if(asig2==-1){
                                                 Value v = new Value(t, "");
-                                                tabla.addVar(t, i, v, currAmbito);
-                                                System.out.println("\tInicializacion: id: "+i+", tipo: "+t);
+                                                tabla.addVar(t, i, v, currAmbito, new Integer(offset));
+                                                if(t.equals("char") || t.equals("bool")){
+                                                        offset+=1;
+                                                }else if(t.equals("num")){
+                                                        offset+=4;
+                                                }
                                                 RESULT = i;
                                         }else{
                                                 Array m = new Array(0,asig2-1,t);
@@ -444,11 +486,11 @@ DECL            ::=id:i TIPO:t ASIG2:asig2
                                                         arrayTable[j] = new Value(t, "");
                                                 }
                                                 m.setTabla(arrayTable);
-                                                System.out.println(m.toString());
                                                 arreglos.add(m);
                                                 tabla.addVar(t, i, v, currAmbito);
                                         }
                                 }else{
+                                        RESULT = "";
                                         printError(tleft,tright,i,"Declaracion sin tamaño de arreglo","DetailVariable");
                                 }
                         }else{
@@ -459,7 +501,6 @@ DECL            ::=id:i TIPO:t ASIG2:asig2
 
 INIT            ::= id:i TIPO:t opAsig VALS:v {:
                         int index = tabla.contains(i, currAmbito);
-                        System.out.println("Asignacion: ID: "+i+", index: "+index);
                         if(index == -1){
                                 //si no existe la variable revisa si el valor tiene error
                                 if(v.tipo.equals("error")){
@@ -506,9 +547,16 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                                                 }
                                         }else{
                                                 if(v.tipo.equals(t)){
-                                                        tabla.addVar(t, i, v, currAmbito);
+                                                        tabla.addVar(t, i, v, currAmbito, new Integer(offset));
                                                         gen(":=", v.val, "", i);
-                                                        System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
+                                                        if(t.equals("char")){
+                                                                offset+=1;
+                                                        }else if(t.equals("num")){
+                                                                offset+=4;
+                                                        }else if(t.equals("bool")){
+                                                                offset+=1;
+                                                        }
+                                                        // System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
                                                         RESULT = i;
                                                 }else{
                                                         RESULT = "";
@@ -532,15 +580,8 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                         if(asig2 == -1){
                                                 Simbolo sym = tabla.getSymbol(i, currAmbito);
                                                 if(v.tipo.equals(sym.tipo)){
-                                                        tabla.assignValue(index, v);
+                                                        tabla.assignValue(index, new Value(v.tipo, i));
                                                         gen(":=", v.val, "", sym.id);
-                                                        if(v.tipo.equals("boolean")){
-                                                                System.out.println("Asignacion: Variable "+i+", valor: "+v.getBoolVal());
-                                                        }else if(v.tipo.equals("num")){
-                                                                System.out.println("Asignacion: Variable "+i+", valor: "+v.getVal());
-                                                        }else if(v.tipo.equals("char")){
-                                                                System.out.println("Asignacion: Variable "+i+", valor: "+v.getCharVal());
-                                                        }
                                                 }else{ 
                                                         printError((vleft+1), vright, v.tipo, sym.tipo,"tipos");
                                                 }
@@ -548,9 +589,9 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                                 //Cuando esta aqui la unica validacion que necesita es que el valor singular del array sea igualado a otro del mismo
                                                 int arrayIndex;
                                                 arrayIndex = tabla.getIndexVal(i, currAmbito);
-                                                System.out.println("HEEEEY-> Indice del array "+asig2+" Bounds [0, "+arreglos.get(arrayIndex).fin+"] ");
+                                                //.out.println("HEEEEY-> Indice del array "+asig2+" Bounds [0, "+arreglos.get(arrayIndex).fin+"] ");
                                                 if(asig2>=0 && asig2<=arreglos.get(arrayIndex).fin){
-                                                        System.out.println("arrayIndex"+arrayIndex);
+                                                        //System.out.println("arrayIndex: "+arrayIndex);
                                                         if(v.tipo.equals(arreglos.get(arrayIndex).tipo) && arrayIndex>=0){
                                                                 arreglos.get(arrayIndex).assignValue(asig2,v.val);
                                                         }else{
@@ -562,6 +603,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                         }
                                 }
                         }else{
+                                //System.out.println("index -1 case");
                                 printError(vleft,vright,i,"","notDeclared");
                         }
                 :};
@@ -572,9 +614,8 @@ ASIG2           ::= openBrk number:n closeBrk
                 {: RESULT = -1; :};
 
 //If
-IF              ::= {: System.out.println("Inicio IF"); :} 
-                ifstart parIzq COND:cond parDer 
-                ifthen M:m1 LISTEXP:exp N:n M:m2 ELSIF:elsif M:m3 ELSE:elsecase endif 
+IF              ::= 
+                ifstart parIzq COND:cond parDer ifthen M:m1 LISTEXP:exp N:n M:m2 ELSIF:elsif M:m3 ELSE:elsecase endif 
                 {:
                         completa(cond.listav, m1.intValue());
                         RESULT = new Expresion();
@@ -587,12 +628,7 @@ IF              ::= {: System.out.println("Inicio IF"); :}
                                 completa(cond.listaf, m2.intValue());
                                 RESULT.listasig = fusiona(elsif.listasig, n.listasig);
                         }else if(elsif != null && elsecase != null){
-                                System.out.println("ENTRO A ULTIMO CASO");
                                 completa(cond.listaf, m2.intValue());
-                                System.out.println("ELSIF LISTASIG");
-                                for(Integer ceils : elsif.listasig){
-                                        System.out.println(ceils.intValue());
-                                }
                                 ArrayList<Integer> tempLista = new ArrayList();
                                 tempLista.add(elsif.listasig.get(0));
                                 completa(tempLista, m3.intValue());
@@ -631,8 +667,23 @@ WHILE           ::=
                                 RESULT.listasig = cond.listaf;
                         :};
 //Write
-WRITE           ::= writestart parIzq VALS:val parDer 
-                {:System.out.println("\tWRITE Valor:"+val);:};
+WRITE           ::= writestart parIzq VALS:value parDer 
+                {: 
+                        if(!value.val.equals("notfound")){
+                                gen("WRITE", "", "", value.val); 
+                        }else{
+                                printError(valueleft, valueright, value.id, "", "notDeclared");
+                        }
+                :};
+
+READ            ::= readstart parIzq VALS:value parDer 
+                {:
+                        if(!value.val.equals("notfound")){
+                                gen("READ", "", "", value.val); 
+                        }else{
+                                printError(valueleft, valueright, value.id, "", "notDeclared");
+                        }
+                :};
 
 //For
 FOR             ::= 
@@ -668,14 +719,22 @@ SELECT          ::=
                 end 
                 ;
 
-OPT             ::= options VALS:v colon M:m1 {:
+OPT             ::= options VALS:v colon M:m1 
+                        {:
                                 RESULT = new Expresion();
-                                RESULT.listav.add(cuadruplos.size());
-                                RESULT.listaf.add(cuadruplos.size()+1); 
-                                gen("IF:=", "", v.val +"", m1.intValue()+2+"");
-                                gen("GOTO", "", "", "");
+
+                                if(!v.val.equals("notfound")){
+                                        RESULT.listav.add(cuadruplos.size());
+                                        RESULT.listaf.add(cuadruplos.size()+1); 
+                                        gen("IF:=", "", v.val +"", m1.intValue()+2+"");
+                                        gen("GOTO", "", "", "");
+                                }else{
+                                        printError(vleft, vright, v.id, "", "notDeclared");
+                                }
                                 
-                        :} LISTEXP:exp breaks N:n M:m2 OPT2:optexp {:
+                        :} 
+                LISTEXP:exp breaks N:n M:m2 OPT2:optexp 
+                        {:
                                 if(optexp != null){
                                         completa(RESULT.listaf, m2.intValue());
                                         RESULT.listasig = fusiona(optexp.listasig, n.listasig);
@@ -683,16 +742,17 @@ OPT             ::= options VALS:v colon M:m1 {:
                                 }else{
                                         RESULT.listasig = fusiona(RESULT.listaf, n.listasig);
                                 }
-                        :};
-OPT2            ::= 
-                OPT:optexp {: 
-                        RESULT = new Expresion();
-                        RESULT.listasig = optexp.listasig;
-                        RESULT.listav = optexp.listav;
-                :}
+                        :}
+                ;
 
+OPT2            ::= OPT:optexp 
+                        {: 
+                                RESULT = new Expresion();
+                                RESULT.listasig = optexp.listasig;
+                                RESULT.listav = optexp.listav;
+                        :}
                 | 
-                {: RESULT = null; :} ;
+                        {: RESULT = null; :} ;
         
 //Condiciones negadas, normales, con OR o AND
 // COND            ::= opNot COND2 
@@ -717,71 +777,149 @@ COND ::=
                         RESULT = new Expresion();
                         RESULT.listav = cond.listav;
                         RESULT.listaf = cond.listaf;
-                :} COND2
+                :} 
+                COND2:cond2
+                {:
+                        if(cond2 != null){
+                                Expresion temp = RESULT;
+                                if(cond2.or){
+                                        completa(temp.listaf, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                        RESULT.listaf = cond2.listaf;
+                                }else{
+                                        completa(temp.listav, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                        RESULT.listav = cond2.listav;
+                                }
+                        }
+                :}
 
-        | opNot COND:c 
+        | opNot COND:cond 
                 {:
                         RESULT = new Expresion(); 
-                        RESULT.listav = c.listaf; 
-                        RESULT.listaf = c.listav; 
+                        RESULT.listav = cond.listaf; 
+                        RESULT.listaf = cond.listav; 
                 :} 
-                COND2
+                COND2:cond2
+                {:
+                        if(cond2 != null){
+                                Expresion temp = RESULT;
+                                if(cond2.or){
+                                        completa(temp.listaf, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                        RESULT.listaf = cond2.listaf;
+                                }else{
+                                        completa(temp.listav, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                        RESULT.listav = cond2.listav;
+                                }
+                        }
+                :}
 
-        | id:i1 opRel:opr id:i2 
+        | VALS:i1 opRel:opr VALS:i2 
                 {:      
-                        RESULT = new Expresion();
-                        RESULT.listav.add(cuadruplos.size());
-                        RESULT.listaf.add(cuadruplos.size()+1);
-                        gen("IF"+opr, i1, i2, "");
-                        gen("GOTO", "");
+                        boolean isID1 = isID(i1);
+                        boolean isID2 = isID(i2);
+
+                        if(isID1 && isID2){
+                                int index_id1 = tabla.contains(i1.val, currAmbito);
+                                int index_id2 = tabla.contains(i2.val, currAmbito);
+                                if(index_id1 > -1 && index_id2 > -1){
+                                        RESULT = new Expresion();
+                                        RESULT.listav.add(cuadruplos.size());
+                                        RESULT.listaf.add(cuadruplos.size()+1);
+                                        gen("IF"+opr, i1.val, i2.val, "");
+                                        gen("GOTO", "");
+                                }else{
+                                        if(index_id1 == -1){
+                                                printError(i1left, i1right, "en la condicion", "", "notDeclared");
+                                        }
+                                        if(index_id2 == -1){
+                                                printError(i2left, i2right, "en la condicion", "", "notDeclared");                                        
+                                        }
+                                        RESULT = new Expresion();
+                                }
+                        }else if((isID1 && !isID2) || (!isID1 && isID2)){
+                                int validate = 3;
+                                if(isID1){
+                                        int index_id1 = tabla.contains(i1.val, currAmbito);
+                                        if(index_id1 > -1){
+                                                validate = 1;
+                                        }else{
+                                                validate = 3;
+                                        }
+                                }else if(isID2){
+                                        int index_id2 = tabla.contains(i2.val, currAmbito);
+                                        if(index_id2 > -1){
+                                                validate = 2;
+                                        }else{
+                                                validate = 4;
+                                        }
+                                }
+
+                                RESULT = new Expresion();
+
+                                if(validate < 3){
+                                        if((i1.tipo.equals("bool") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("bool"))
+                                        ||(i1.tipo.equals("num") && i2.tipo.equals("num"))
+                                        ||(i1.tipo.equals("char") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("char"))){
+                                                RESULT.listav.add(cuadruplos.size());
+                                                RESULT.listaf.add(cuadruplos.size()+1);
+                                                gen("IF"+opr, i1.val, i2.val, "");
+                                                gen("GOTO", "");
+                                        }else{
+                                                //printerror tipos incopatibles u operador inorrecto
+                                                System.err.println("Tipos incopatibles en condicion");
+                                                
+                                        }
+                                }else{
+                                        if(validate == 3){
+                                                //printerror i1 no encontrada
+                                                printError(i1left, i1right, i1.val, "", "notDeclared");
+
+                                        }else if(validate == 4){
+                                                //printerror i2 no encontrada
+                                                printError(i2left, i2right, i2.val, "", "notDeclared");
+                                                
+                                        }
+                                }
+                        }else if(!isID1 && !isID2){
+                                        if((i1.tipo.equals("bool") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("bool"))
+                                         ||(i1.tipo.equals("num") && i2.tipo.equals("num"))
+                                         ||(i1.tipo.equals("char") && (opr.equals("==") || opr.equals("!=")) && i2.tipo.equals("char"))){
+                                                RESULT.listav.add(cuadruplos.size());
+                                                RESULT.listaf.add(cuadruplos.size()+1);
+                                                gen("IF"+opr, i1.val, i2.val, "");
+                                                gen("GOTO", "");
+                                        }else{
+                                                //printerror tipos incopatibles u operador inorrecto
+                                                System.err.println("Tipos incopatibles en condicion");
+                                        }                                
+                        }
                         
                 :} 
                 COND2:cond2 
                 {:
-                        int index_id1 = tabla.contains(i1, currAmbito);
-                        int index_id2 = tabla.contains(i2, currAmbito);
-                        if(index_id1 > -1 && index_id2 > -1){
-                                
-                                if(cond2 != null){
-                                        Expresion temp = RESULT;
-                                        if(cond2.or){
-                                                completa(temp.listaf, cond2.cuad);
-                                                RESULT = new Expresion();
-                                                System.out.println("Listas a fusionar:\ntemp.listav\n-----------");
-                                                
-                                                for(Integer ctlv : temp.listav){
-                                                        System.out.println(ctlv.intValue());
-                                                }
-                                                System.out.println("cond2.listav\n-----------");
-                                                
-                                                for(Integer cclv : cond2.listav){
-                                                        System.out.println(cclv.intValue());
-                                                }
-
-                                                ArrayList<Integer> lvfusion = fusiona(temp.listav, cond2.listav);
-                                                System.out.println("Lista fusionada:\n-----------");
-                                                
-                                                for(Integer clvf : lvfusion){
-                                                        System.out.println(clvf.intValue());
-                                                }
-
-                                                RESULT.listav = fusiona(temp.listav, cond2.listav);
-                                                RESULT.listaf = cond2.listaf;
-
-                                                System.out.println("Lista Falsa:\n------------");
-                                                for(Integer crlf : RESULT.listaf){
-                                                        System.out.println(crlf.intValue());
-                                                }
-                                        }else{
-                                                completa(temp.listav, cond2.cuad);
-                                                RESULT = new Expresion();
-                                                RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
-                                                RESULT.listav = cond2.listav;
-                                        }
+                        if(cond2 != null){
+                                Expresion temp = RESULT;
+                                if(cond2.or){
+                                        completa(temp.listaf, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                        RESULT.listaf = cond2.listaf;
+                                }else{
+                                        completa(temp.listav, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                        RESULT.listav = cond2.listav;
                                 }
-                        }else{
-                                //error var(s) no encontrada(s)
                         }
+                                
+                        
                 :}
 
         | booleano:boolval 
@@ -794,9 +932,25 @@ COND ::=
                         }
                         gen("GOTO", "");
                 :} 
-                COND2;
+                COND2:cond2 
+                {:
+                      if(cond2 != null){
+                                Expresion temp = RESULT;
+                                if(cond2.or){
+                                        completa(temp.listaf, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listav = fusiona(temp.listav, cond2.listav);
+                                        RESULT.listaf = cond2.listaf;
+                                }else{
+                                        completa(temp.listav, cond2.cuad);
+                                        RESULT = new Expresion();
+                                        RESULT.listaf = fusiona(temp.listaf, cond2.listaf);
+                                        RESULT.listav = cond2.listav;
+                                }
+                        }  
+                :};
 
-COND2 ::= opOr {: System.out.println("operador OR"); :} 
+COND2 ::= opOr
           M:m 
           COND:cond
           {:
@@ -807,7 +961,7 @@ COND2 ::= opOr {: System.out.println("operador OR"); :}
                 
           :}
         | 
-          opAnd {: System.out.println("operador AND"); :} 
+          opAnd
           M:m 
           COND:cond 
           {:
@@ -817,7 +971,7 @@ COND2 ::= opOr {: System.out.println("operador OR"); :}
                 RESULT.listaf = cond.listaf;
                 
           :}
-        | {: RESULT = null; System.out.println(""); :};
+        | {: RESULT = null; :};
 
 M ::= {: RESULT = new Integer(cuadruplos.size()); :} ;
 
@@ -934,69 +1088,122 @@ F               ::=
 
 
 //Funcion con retorno
-RETFUNC         ::= TIPO:t id:val {: currAmbito = val; calls.clear(); :} parIzq ARGS:args parDer
-                cbOpen RETFUNCBODY {:
-                        // boolean rec = false;
-                        // for(int i = 0; i < calls.size(); i++){
-                        //         if(calls.get(i).equals(val)){
-                        //                 rec = true;
-                        //                 break;
-                        //         }
-                        // }
-                        // if(rec){
-                        //         System.out.println("La funcion "+val+" es recursiva");
-                        // }
-                        int index = tabla.contains(val, currAmbito);
+RETFUNC         ::= 
+                TIPO:t id:val {: currAmbito = val; offset = 0; calls.clear(); :} parIzq ARGS:args 
+                        {:
+                                int index = tabla.contains(val, "global");
+                                if(index >= 0){
+                                        Simbolo funcion = tabla.getSymbol(val, currAmbito);
+                                        String argType = "";
+                                        if(args != null){
+                                                for(int i = 0; i < args.tipos.size(); i++){
+                                                        argType += args.tipos.get(i);
+                                                        if(i < args.tipos.size() - 1){
+                                                                argType += "x";
+                                                        }
+                                                }
+                                        }else{
+                                                argType = "void";
+                                        }
+                                        argType += "->"+t;
+                                        if(!funcion.tipo.equals(argType)){
+                                                printError(argsleft, argsright, argType, "Funcion "+val+" de tipo "+funcion.tipo+" ha sido utilizada como ","DetailVariable");
+                                        }
+                                }else{
+                                        printError(valleft, valright, val, "No ha sido declarada la función ","DetailVariable");
+                                }
+                        :} 
+                parDer cbOpen LISTEXP:exp cbClose;
+
+
+//Funcion void
+VOIDFUNC        ::= voidType id:val {: currAmbito = val; contArgs = 0; offset = 0; calls.clear(); :} parIzq ARGS:args 
+                {:
+                        
+                        int index = tabla.contains(val, "global");
                         if(index >= 0){
                                 Simbolo funcion = tabla.getSymbol(val, currAmbito);
-                                if(funcion.tipo.equals(args+"->"+t)){
-                                        System.out.println("Funcion "+val+", tipo: "+args+"->"+t);
+                                String argType = "";
+                                if(args != null){
+                                        for(int i = 0; i < args.tipos.size(); i++){
+                                                argType += args.tipos.get(i);
+                                                if(i < args.tipos.size() - 1){
+                                                        argType += "x";
+                                                }
+                                        }
                                 }else{
-                                        printError(argsleft, argsright, (args+"->"+t), "Funcion "+val+" de tipo "+funcion.tipo+" ha sido utilizada como ","DetailVariable");
+                                        argType = "void";
+                                }
+                                argType += "->void";
+                                if(!funcion.tipo.equals(argType)){
+                                        printError(argsleft, argsright, argType, "Funcion "+val+" de tipo "+funcion.tipo+" ha sido utilizada como ","DetailVariable");
                                 }
                         }else{
                                 printError(valleft, valright, val, "No ha sido declarada la función ","DetailVariable");
                         }
-                :} cbClose 
-                ;
-RETFUNCBODY     ::= LISTEXP:exp ret RETVAL;
-RETVAL          ::= VALS:retVal ;
-
-//Funcion void
-VOIDFUNC        ::= voidType id:val {: currAmbito = val; System.out.println("VOID FUNCTION "+val+" START"); calls.clear(); :} parIzq ARGS:args parDer
-                cbOpen EXP {: 
-                        // boolean rec = false;
-                        // for(int i = 0; i < calls.size(); i++){
-                        //         if(calls.get(i).equals(val)){
-                        //                 rec = true;
-                        //                 break;
-                        //         }
-                        // }
-                        // if(rec){
-                        //         System.out.println("La funcion "+val+" es recursiva");
-                        // }
-                        int index = tabla.contains(val, currAmbito);
-                        if(index >= 0){
-                                Simbolo funcion = tabla.getSymbol(val, currAmbito);
-                                if(funcion.tipo.equals(args+"->void")){
-                                        System.out.println("FIN FUNCTION");
-                                }else{
-                                        printError(argsleft, argsright, funcion.tipo, "Error en funcion de tipo "+args+"->VOID como ","DetailVariable");
-                                }
-                        }else{
-                                printError(valleft, valright, val, "Funcion no declarada ","DetailVariable");
-                        }
-                :} cbClose ;
+                :}
+                parDer cbOpen LISTEXP:exp cbClose ;
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO:t id:i ARGS2:arg2       
-                        {: RESULT = t+arg2; :} 
-                | ;
-ARGS2           ::=  coma TIPO:t id:i ARGS2:arg2 
-                        {: RESULT = "x"+t+arg2; :}
+ARGS            ::= TIPO:tipo id:ident ARGS2:arg2       
+                        {: 
+                                int index = tabla.contains(ident, currAmbito);
+                                if(index == -1){
+                                        contArgs = 1;
+                                        RESULT = new Parametros();
+                                        if(arg2 != null){
+                                                RESULT.ids = arg2.ids;
+                                                RESULT.tipos = arg2.tipos;
+                                        }
+                                        RESULT.ids.add(ident);
+                                        RESULT.tipos.add(tipo);
+                                }else{
+                                        //printerror argumento ya declarado
+                                        RESULT = arg2;
+                                }
+                                if(RESULT.ids.size() > 1){
+                                        Collections.reverse(RESULT.ids);
+                                        Collections.reverse(RESULT.tipos);
+                                        for(int i = 0; i <RESULT.ids.size(); i++){
+                                                String currTipo = RESULT.tipos.get(i);
+                                                if(i < 4){
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
+                                                }else{
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));
+                                                        if(currTipo.equals("char") || currTipo.equals("bool")){
+                                                                offset+=1;
+                                                        }else if(currTipo.equals("num")){
+                                                                offset+=4;
+                                                        }
+                                                }
+                                        }
+                                }
+
+                        :} 
+                | 
+                {:
+                        RESULT = null;
+                :};
+
+ARGS2           ::=  coma TIPO:tipo id:ident ARGS2:arg2 
+                        {: 
+                                int index = tabla.contains(ident, currAmbito);
+                                if(index == -1){
+                                        RESULT = new Parametros();
+                                        if(arg2 != null){
+                                                RESULT.ids = arg2.ids;
+                                                RESULT.tipos = arg2.tipos;
+                                        }
+                                        RESULT.ids.add(ident);
+                                        RESULT.tipos.add(tipo);
+                                }else{
+                                        //printerror argumento ya declarado
+                                        RESULT = arg2;
+                                }
+                        :}
                 |                                        
-                        {: RESULT = ""; :};
+                        {: RESULT = null; :};
 
 //Tipos, falta array
 TIPO            ::=
@@ -1019,7 +1226,7 @@ VALS            ::=
                         {: RESULT = new Value("bool", val); :}
                 |
                 charval:ch      
-                        {: RESULT = new Value("char", ch.charAt(1)+""); :}
+                        {: RESULT = new Value("char", ch); :}
                 |
                 S:val           
                         {: RESULT = val; :}

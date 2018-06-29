@@ -37,6 +37,7 @@ end = "end"
 void = "void"
 main = "Main"
 write = "write"
+read = "read"
 for = "for"
 select = "select"
 option = "option"
@@ -77,6 +78,7 @@ id = {letra}({letra}|{digit})*
   {whitespace}  {}
   {cont} {return new Symbol(Amuse.contador, yyline, yycolumn);}
   {write} {return new Symbol(Amuse.writestart, yyline, yycolumn);}
+  {read}  {return new Symbol(Amuse.readstart, yyline ,yycolumn);}
   {if}  {return new Symbol(Amuse.ifstart, yyline, yycolumn);}
   {then} {return new Symbol(Amuse.ifthen, yyline, yycolumn);}
   {else}  {return new Symbol(Amuse.elseclause, yyline, yycolumn);}
