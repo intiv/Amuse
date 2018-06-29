@@ -5,6 +5,16 @@
  */
 package amuse;
 
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java_cup.runtime.Symbol;
 /**
  *
  * @author juany
@@ -17,7 +27,9 @@ public class GUI extends javax.swing.JFrame {
     public GUI() {
         initComponents();
     }
-
+    public File file = null;
+    Sintactico sint = null;
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -27,10 +39,10 @@ public class GUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jFrame1 = new javax.swing.JFrame();
+        jf_codigoIntermedio = new javax.swing.JFrame();
         lb_titulo1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
+        ta_codigoIntermedio = new javax.swing.JTextArea();
         btn_fileChooser = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
@@ -38,36 +50,37 @@ public class GUI extends javax.swing.JFrame {
         lb_titulo = new javax.swing.JLabel();
         btn_compilar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        ta_archivo = new javax.swing.JTextArea();
         lb_codigoFinal = new javax.swing.JLabel();
         lb_archivo = new javax.swing.JLabel();
+        btn_compilar1 = new javax.swing.JButton();
         lb_background = new javax.swing.JLabel();
 
-        jFrame1.setMinimumSize(new java.awt.Dimension(600, 600));
-        jFrame1.setPreferredSize(new java.awt.Dimension(600, 600));
+        jf_codigoIntermedio.setMinimumSize(new java.awt.Dimension(600, 600));
+        jf_codigoIntermedio.setPreferredSize(new java.awt.Dimension(600, 600));
 
         lb_titulo1.setBackground(new java.awt.Color(153, 153, 153));
         lb_titulo1.setFont(new java.awt.Font("Rockwell", 1, 60)); // NOI18N
         lb_titulo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lb_titulo1.setText("Codigo Intermedio");
 
-        jTextArea3.setColumns(20);
-        jTextArea3.setRows(5);
-        jScrollPane3.setViewportView(jTextArea3);
+        ta_codigoIntermedio.setColumns(20);
+        ta_codigoIntermedio.setRows(5);
+        jScrollPane3.setViewportView(ta_codigoIntermedio);
 
-        javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
-        jFrame1.getContentPane().setLayout(jFrame1Layout);
-        jFrame1Layout.setHorizontalGroup(
-            jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jf_codigoIntermedioLayout = new javax.swing.GroupLayout(jf_codigoIntermedio.getContentPane());
+        jf_codigoIntermedio.getContentPane().setLayout(jf_codigoIntermedioLayout);
+        jf_codigoIntermedioLayout.setHorizontalGroup(
+            jf_codigoIntermedioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(lb_titulo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jFrame1Layout.createSequentialGroup()
+            .addGroup(jf_codigoIntermedioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(27, Short.MAX_VALUE))
         );
-        jFrame1Layout.setVerticalGroup(
-            jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jFrame1Layout.createSequentialGroup()
+        jf_codigoIntermedioLayout.setVerticalGroup(
+            jf_codigoIntermedioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jf_codigoIntermedioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lb_titulo1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -86,12 +99,12 @@ public class GUI extends javax.swing.JFrame {
         btn_fileChooser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/saa.png"))); // NOI18N
         btn_fileChooser.setText("Ingresar Archivo");
         btn_fileChooser.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btn_fileChooser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_fileChooserActionPerformed(evt);
+        btn_fileChooser.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_fileChooserMouseClicked(evt);
             }
         });
-        getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, 300, 80));
+        getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 300, 80));
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -104,7 +117,12 @@ public class GUI extends javax.swing.JFrame {
         btn_codigoInt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/dss.png"))); // NOI18N
         btn_codigoInt.setText("Codigo Intermedio");
         btn_codigoInt.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        getContentPane().add(btn_codigoInt, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 420, 300, 80));
+        btn_codigoInt.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_codigoIntMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btn_codigoInt, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 440, 300, 80));
 
         lb_titulo.setFont(new java.awt.Font("Rockwell", 1, 60)); // NOI18N
         lb_titulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -114,13 +132,18 @@ public class GUI extends javax.swing.JFrame {
         btn_compilar.setBackground(new java.awt.Color(153, 153, 153));
         btn_compilar.setFont(new java.awt.Font("Rockwell Condensed", 0, 24)); // NOI18N
         btn_compilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/556.png"))); // NOI18N
-        btn_compilar.setText("Compilar");
+        btn_compilar.setText("Build");
         btn_compilar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        getContentPane().add(btn_compilar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 300, 80));
+        btn_compilar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_compilarMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btn_compilar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 300, 80));
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane2.setViewportView(jTextArea2);
+        ta_archivo.setColumns(20);
+        ta_archivo.setRows(5);
+        jScrollPane2.setViewportView(ta_archivo);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 110, 420, 550));
 
@@ -134,15 +157,86 @@ public class GUI extends javax.swing.JFrame {
         lb_archivo.setText("Archivo");
         getContentPane().add(lb_archivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 670, 200, -1));
 
+        btn_compilar1.setBackground(new java.awt.Color(153, 153, 153));
+        btn_compilar1.setFont(new java.awt.Font("Rockwell Condensed", 0, 24)); // NOI18N
+        btn_compilar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/556.png"))); // NOI18N
+        btn_compilar1.setText("Compilar");
+        btn_compilar1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btn_compilar1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_compilar1MouseClicked(evt);
+            }
+        });
+        getContentPane().add(btn_compilar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 300, 80));
+
         lb_background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/Cadet-Grey-Solid-Color-Background-Wallpaper-5120x2880.png"))); // NOI18N
         getContentPane().add(lb_background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1470, 840));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btn_fileChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_fileChooserActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_fileChooserActionPerformed
+    private void btn_fileChooserMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_fileChooserMouseClicked
+        ta_archivo.setText("");
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+        fileChooser.setFileFilter(filter);
+
+        int Okoption;
+
+        Okoption = fileChooser.showOpenDialog(this);
+        String texto = "";
+        if (Okoption == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+            try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    texto+="\t"+line+"\n";
+                }
+                ta_archivo.setText(texto);
+             }catch(IOException e){
+                 e.printStackTrace();
+             }
+            
+        }
+    }//GEN-LAST:event_btn_fileChooserMouseClicked
+
+    private void btn_compilarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_compilarMouseClicked
+       String params[] = new String[7];
+
+       params[0] = "-destdir";
+       params[1] = "src/amuse/";
+       params[2] = "-parser";
+       params[3] = "Sintactico";
+       params[4] = "-symbols";
+       params[5] = "Amuse";
+       
+       params[6] = "src/amuse/AmuseSyntactic.cup";
+       try {
+           java_cup.Main.main(params);
+       } catch (Exception ex) {
+           Logger.getLogger(Amuse.class.getName()).log(Level.SEVERE, null, ex);
+       }
+      
+    }//GEN-LAST:event_btn_compilarMouseClicked
+
+    private void btn_compilar1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_compilar1MouseClicked
+        try{
+            FileReader fr = new FileReader(file);
+            scanner lex = new scanner(fr);
+            sint = new Sintactico(lex);
+            Symbol simbolo = sint.parse();
+            System.out.println(simbolo);
+        } catch (Exception ex) {
+            Logger.getLogger(AmuseMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btn_compilar1MouseClicked
+
+    private void btn_codigoIntMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_codigoIntMouseClicked
+        jf_codigoIntermedio.pack();
+        jf_codigoIntermedio.show(true);
+        ta_codigoIntermedio.setText("");
+        ta_codigoIntermedio.setText("");
+    }//GEN-LAST:event_btn_codigoIntMouseClicked
 
     /**
      * @param args the command line arguments
@@ -182,18 +276,19 @@ public class GUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_codigoInt;
     private javax.swing.JButton btn_compilar;
+    private javax.swing.JButton btn_compilar1;
     private javax.swing.JButton btn_fileChooser;
-    private javax.swing.JFrame jFrame1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextArea jTextArea3;
+    private javax.swing.JFrame jf_codigoIntermedio;
     private javax.swing.JLabel lb_archivo;
     private javax.swing.JLabel lb_background;
     private javax.swing.JLabel lb_codigoFinal;
     private javax.swing.JLabel lb_titulo;
     private javax.swing.JLabel lb_titulo1;
+    private javax.swing.JTextArea ta_archivo;
+    private javax.swing.JTextArea ta_codigoIntermedio;
     // End of variables declaration//GEN-END:variables
 }
