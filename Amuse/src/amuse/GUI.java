@@ -175,7 +175,7 @@ public class GUI extends javax.swing.JFrame {
 
     public String genSUMA(Cuadruplo cuad){
         String retVal = "";
-
+        //add $t2, $t2, 1
         return retVal;
     }
 
@@ -346,7 +346,9 @@ public class GUI extends javax.swing.JFrame {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
         fileChooser.setFileFilter(filter);
-
+        
+        File workingDirectory = new File(System.getProperty("user.dir"));
+        fileChooser.setCurrentDirectory(workingDirectory);
         int Okoption;
 
         Okoption = fileChooser.showOpenDialog(this);
@@ -355,8 +357,10 @@ public class GUI extends javax.swing.JFrame {
             file = fileChooser.getSelectedFile();
             try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
                 String line = null;
+                int cont = 1;
                 while ((line = br.readLine()) != null) {
-                    texto+=line+"\n";
+                    texto+=cont+".     "+line+"\n";
+                    cont++;
                 }
                 ta_archivo.setText(texto);
              }catch(IOException e){
