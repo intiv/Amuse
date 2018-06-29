@@ -36,7 +36,10 @@ public class GUI extends javax.swing.JFrame {
         int operation = 10;
         int maxoffset = amuse.tabla.getMaxOffset("Main");
         String code = ".text\n.globl main\nmain:\n\tmove $fp, $sp\n\tsub $sp, $sp, "+maxoffset+"\n";
+        boolean cambioAmbito = false;
+        String ambito = "Main";
         for(Cuadruplo cuad : amuse.cuadruplos){
+            
             code+= "_etiq"+cont+":\n";
             if(cuad.operator.equals("READ")){
                 code += genREAD(cuad);
@@ -48,14 +51,6 @@ public class GUI extends javax.swing.JFrame {
                 code += genIF(cuad);
             }else if(cuad.operator.equals(":=")){
                 code += genASIG(cuad);
-                
-                // if(cuad.arg1.contains("$t") || cuad.arg2.contains("$t")){
-                    
-                //     //obtener valor de temporal adecuado 
-                // }else{
-
-                // }
-
             }else if(cuad.operator.equals("+")){
                 code += genSUMA(cuad);
             }else if(cuad.operator.equals("*")){
