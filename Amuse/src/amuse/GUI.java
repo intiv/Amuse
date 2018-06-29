@@ -29,14 +29,17 @@ public class GUI extends javax.swing.JFrame {
     }
     public File file = null;
     Sintactico amuse = null;
+    DescriptorRegistros desc = new DescriptorRegistros();
 
     public String CodigoFinal(){
         int cont = 0;
         int operation = 10;
         int maxoffset = amuse.tabla.getMaxOffset("Main");
-
         String code = ".text\n.globl main\nmain:\n\tmove $fp, $sp\n\tsub $sp, $sp, "+maxoffset+"\n";
+        boolean cambioAmbito = false;
+        String ambito = "Main";
         for(Cuadruplo cuad : amuse.cuadruplos){
+            
             code+= "_etiq"+cont+":\n";
             if(cuad.operator.equals("READ")){
                 code += genREAD(cuad);
@@ -47,15 +50,7 @@ public class GUI extends javax.swing.JFrame {
             }else if(cuad.operator.contains("IF")){
                 code += genIF(cuad);
             }else if(cuad.operator.equals(":=")){
-                
-                
-                // if(cuad.arg1.contains("$t") || cuad.arg2.contains("$t")){
-                    
-                //     //obtener valor de temporal adecuado 
-                // }else{
-
-                // }
-
+                code += genASIG(cuad);
             }else if(cuad.operator.equals("+")){
                 code += genSUMA(cuad);
             }else if(cuad.operator.equals("*")){
@@ -104,49 +99,66 @@ public class GUI extends javax.swing.JFrame {
         String retVal = "";
         boolean isid1 = amuse.isID(cuad.arg1);
         boolean isid2 = amuse.isID(cuad.arg2);
+        int temp1 = desc.getFreeT();
+        if(temp1 > -1){
+            desc.ts[temp1] = " ";
+        }else{
+            temp1 = 0;
+            desc.ts[0] = " ";
+        }
         if(isid1){
             Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, "Main");
             if(id1.tipo.equals("num") || id1.tipo.equals("bool")){
-                retVal += line("lw $t0, -"+id1.offset+"($fp)");
+                retVal += line("lw $t"+temp1+", -"+id1.offset+"($fp)");
             }
             //else if tipo.equals("char") cargar asciiz
         }else{
-            retVal += line("li $t0, "+cuad.arg1); //Se asume que es numero/bool, falta char
+            retVal += line("li $t"+temp1+", "+cuad.arg1); //Se asume que es numero/bool, falta char
+        }
+        int temp2 = desc.getFreeT();
+        if(temp2 > -1){
+            desc.ts[temp2] = " ";
+        }else{
+            temp2 = 1;
+            desc.ts[1] = " ";
         }
         if(isid2){
             Simbolo id2 = amuse.tabla.getSymbol(cuad.arg2, "Main");
             if(id2.tipo.equals("num") || id2.tipo.equals("bool")){
-                retVal += line("lw $t1, -"+id2.offset+"($fp)");
+                retVal += line("lw $t"+temp2+", -"+id2.offset+"($fp)");
             }
             //else if tipo.equals("char") cargar asciiz
         }else{
-            retVal += line("li $t1, "+cuad.arg2);
+            retVal += line("li $t"+temp2+", "+cuad.arg2);
         } 
         String tipoIf = cuad.operator.substring(2, cuad.operator.length());
         if(tipoIf.equals("<")){
-            retVal += line("blt $t0, $t1, _etiq"+cuad.result);
+            retVal += line("blt $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
         }else if(tipoIf.equals("<=")){
-            retVal += line("ble $t0, $t1, _etiq"+cuad.result);
+            retVal += line("ble $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
         }else if(tipoIf.equals(">")){
-            retVal += line("bgt $t0, $t1, _etiq"+cuad.result);
+            retVal += line("bgt $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
         }else if(tipoIf.equals(">=")){
-            retVal += line("bge $t0, $t1, _etiq"+cuad.result);
+            retVal += line("bge $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
         }else if(tipoIf.equals(":=")){
-            retVal += line("beq $t0, $t1, _etiq"+cuad.result);
+            retVal += line("beq $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
         }else if(tipoIf.equals("!=")){
-            retVal += line("bne $t0, $t1, _etiq"+cuad.result);
+            retVal += line("bne $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
         }
+        desc.freeTS();
         return retVal;
     }
 
     public String genASIG(Cuadruplo cuad){
         String retVal = "";
-        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
-        if(cuad.arg1.contains("$t")){
+        Simbolo sym = amuse.isID(cuad.result) ? amuse.tabla.getSymbol(cuad.result, "Main") : null;
+        if(cuad.arg1.contains("$t") && sym != null){
             retVal = line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
-        }else{
+        }else if(sym != null){
             if(amuse.isID(cuad.arg1)){
-
+                Simbolo sym2 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+                retVal = line("lw $t0, -"+sym2.offset+"($fp)") +
+                        line("sw $t0, -"+sym.offset+"($fp)");
             }else{
                 retVal = line("li $t0, "+cuad.arg1) +
                         line("sw $t0, -"+sym.offset+"($fp)");
