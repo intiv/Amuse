@@ -140,14 +140,13 @@ public class AmuseMain {
                 if(cuad.arg1.contains("$t")){
                     code += line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
                 }else{
-                    if(isID(cuad.arg1)){
+                    if(amuse.isID(cuad.arg1)){
 
                     }else{
                         code += line("li $t0, "+cuad.arg1) +
                                 line("sw $t0, -"+sym.offset+"($fp)");
                     }
                     //se asume es numero, falta char
-                    
                 }
                 
                 // if(cuad.arg1.contains("$t") || cuad.arg2.contains("$t")){

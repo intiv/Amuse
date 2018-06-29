@@ -28,8 +28,157 @@ public class GUI extends javax.swing.JFrame {
         initComponents();
     }
     public File file = null;
-    Sintactico sint = null;
+    Sintactico amuse = null;
+
+    public String CodigoFinal(){
+        int cont = 0;
+        int operation = 10;
+        int maxoffset = amuse.tabla.getMaxOffset("Main");
+
+        String code = ".text\n.globl main\nmain:\n\tmove $fp, $sp\n\tsub $sp, $sp, "+maxoffset+"\n";
+        for(Cuadruplo cuad : amuse.cuadruplos){
+            code+= "_etiq"+cont+":\n";
+            if(cuad.operator.equals("READ")){
+                code += genREAD(cuad);
+            }else if(cuad.operator.equals("WRITE")){
+                code += genWRITE(cuad);
+            }else if(cuad.operator.equals("GOTO")){
+                code += line("b _etiq"+cuad.result);
+            }else if(cuad.operator.contains("IF")){
+                code += genIF(cuad);
+            }else if(cuad.operator.equals(":=")){
+                
+                
+                // if(cuad.arg1.contains("$t") || cuad.arg2.contains("$t")){
+                    
+                //     //obtener valor de temporal adecuado 
+                // }else{
+
+                // }
+
+            }else if(cuad.operator.equals("+")){
+                code += genSUMA(cuad);
+            }else if(cuad.operator.equals("*")){
+                code += genMULT(cuad);
+            }else if(cuad.operator.equals("/")){
+                code += genDIV(cuad);
+            }else if(cuad.operator.equals("-")){
+                code += genRESTA(cuad);
+            }
+            cont++;
+        }
+        code += ".data\n_bufferChars:\t.space\t1\n";
+        return code;
+
+    }
+
+    public String line(String code){
+        return "\t"+code+"\n";
+    }
     
+    public String genREAD(Cuadruplo cuad){
+        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+        String retVal = "";
+        if(sym.tipo.equals("num") || sym.tipo.equals("bool")){
+            retVal = line("li $v0, 5") +
+                    line("syscall") +
+                    line("sw $v0, -"+sym.offset+"($fp)");
+        }else if(sym.tipo.equals("char")){
+            // 
+        }
+        return retVal;
+    }
+
+    public String genWRITE(Cuadruplo cuad){
+        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+        String retVal = "";
+        if(sym.tipo.equals("num") || sym.tipo.equals("bool")){
+            retVal = line("lw $a0, -"+sym.offset+"($fp)") +
+                    line("li $v0, 1") +
+                    line("syscall");
+        }
+        return retVal;
+    }
+
+    public String genIF(Cuadruplo cuad){
+        String retVal = "";
+        boolean isid1 = amuse.isID(cuad.arg1);
+        boolean isid2 = amuse.isID(cuad.arg2);
+        if(isid1){
+            Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+            if(id1.tipo.equals("num") || id1.tipo.equals("bool")){
+                retVal += line("lw $t0, -"+id1.offset+"($fp)");
+            }
+            //else if tipo.equals("char") cargar asciiz
+        }else{
+            retVal += line("li $t0, "+cuad.arg1); //Se asume que es numero/bool, falta char
+        }
+        if(isid2){
+            Simbolo id2 = amuse.tabla.getSymbol(cuad.arg2, "Main");
+            if(id2.tipo.equals("num") || id2.tipo.equals("bool")){
+                retVal += line("lw $t1, -"+id2.offset+"($fp)");
+            }
+            //else if tipo.equals("char") cargar asciiz
+        }else{
+            retVal += line("li $t1, "+cuad.arg2);
+        } 
+        String tipoIf = cuad.operator.substring(2, cuad.operator.length());
+        if(tipoIf.equals("<")){
+            retVal += line("blt $t0, $t1, _etiq"+cuad.result);
+        }else if(tipoIf.equals("<=")){
+            retVal += line("ble $t0, $t1, _etiq"+cuad.result);
+        }else if(tipoIf.equals(">")){
+            retVal += line("bgt $t0, $t1, _etiq"+cuad.result);
+        }else if(tipoIf.equals(">=")){
+            retVal += line("bge $t0, $t1, _etiq"+cuad.result);
+        }else if(tipoIf.equals(":=")){
+            retVal += line("beq $t0, $t1, _etiq"+cuad.result);
+        }else if(tipoIf.equals("!=")){
+            retVal += line("bne $t0, $t1, _etiq"+cuad.result);
+        }
+        return retVal;
+    }
+
+    public String genASIG(Cuadruplo cuad){
+        String retVal = "";
+        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+        if(cuad.arg1.contains("$t")){
+            retVal = line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
+        }else{
+            if(amuse.isID(cuad.arg1)){
+
+            }else{
+                retVal = line("li $t0, "+cuad.arg1) +
+                        line("sw $t0, -"+sym.offset+"($fp)");
+            }
+            //se asume es numero, falta char
+        }
+        return retVal;
+    }   
+
+    public String genSUMA(Cuadruplo cuad){
+        String retVal = "";
+
+        return retVal;
+    }
+
+    public String genRESTA(Cuadruplo cuad){
+        String retVal = "";
+
+        return retVal;
+    }
+
+    public String genMULT(Cuadruplo cuad){
+        String retVal = "";
+    
+        return retVal;
+    }
+
+    public String genDIV(Cuadruplo cuad){
+        String retVal = "";
+
+        return retVal;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,7 +194,7 @@ public class GUI extends javax.swing.JFrame {
         ta_codigoIntermedio = new javax.swing.JTextArea();
         btn_fileChooser = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        ta_codigoFinal = new javax.swing.JTextArea();
         btn_codigoInt = new javax.swing.JButton();
         lb_titulo = new javax.swing.JLabel();
         btn_compilar = new javax.swing.JButton();
@@ -57,7 +206,6 @@ public class GUI extends javax.swing.JFrame {
         lb_background = new javax.swing.JLabel();
 
         jf_codigoIntermedio.setMinimumSize(new java.awt.Dimension(600, 600));
-        jf_codigoIntermedio.setPreferredSize(new java.awt.Dimension(600, 600));
 
         lb_titulo1.setBackground(new java.awt.Color(153, 153, 153));
         lb_titulo1.setFont(new java.awt.Font("Rockwell", 1, 60)); // NOI18N
@@ -106,9 +254,9 @@ public class GUI extends javax.swing.JFrame {
         });
         getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 300, 80));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        ta_codigoFinal.setColumns(20);
+        ta_codigoFinal.setRows(5);
+        jScrollPane1.setViewportView(ta_codigoFinal);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 110, 420, 550));
 
@@ -141,6 +289,7 @@ public class GUI extends javax.swing.JFrame {
         });
         getContentPane().add(btn_compilar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 300, 80));
 
+        ta_archivo.setEditable(false);
         ta_archivo.setColumns(20);
         ta_archivo.setRows(5);
         jScrollPane2.setViewportView(ta_archivo);
@@ -190,7 +339,7 @@ public class GUI extends javax.swing.JFrame {
             try (BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
                 String line = null;
                 while ((line = br.readLine()) != null) {
-                    texto+="\t"+line+"\n";
+                    texto+=line+"\n";
                 }
                 ta_archivo.setText(texto);
              }catch(IOException e){
@@ -223,9 +372,14 @@ public class GUI extends javax.swing.JFrame {
         try{
             FileReader fr = new FileReader(file);
             scanner lex = new scanner(fr);
-            sint = new Sintactico(lex);
-            Symbol simbolo = sint.parse();
-            System.out.println(simbolo);
+            amuse = new Sintactico(lex);
+            Symbol simbolo = amuse.parse();
+            if(!amuse.hayErrores){
+                ta_codigoFinal.setText(CodigoFinal());
+            }else{
+                ta_codigoFinal.setText(amuse.Errores);
+            }
+            // System.out.println(simbolo);
         } catch (Exception ex) {
             Logger.getLogger(AmuseMain.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -236,6 +390,9 @@ public class GUI extends javax.swing.JFrame {
         jf_codigoIntermedio.show(true);
         ta_codigoIntermedio.setText("");
         ta_codigoIntermedio.setText("");
+        if(amuse != null){
+            ta_codigoIntermedio.setText(amuse.tabla.toString()+"\n"+amuse.printCuadruplos());
+        }
     }//GEN-LAST:event_btn_codigoIntMouseClicked
 
     /**
@@ -273,6 +430,8 @@ public class GUI extends javax.swing.JFrame {
         });
     }
 
+    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_codigoInt;
     private javax.swing.JButton btn_compilar;
@@ -281,7 +440,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JFrame jf_codigoIntermedio;
     private javax.swing.JLabel lb_archivo;
     private javax.swing.JLabel lb_background;
@@ -289,6 +447,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel lb_titulo;
     private javax.swing.JLabel lb_titulo1;
     private javax.swing.JTextArea ta_archivo;
+    private javax.swing.JTextArea ta_codigoFinal;
     private javax.swing.JTextArea ta_codigoIntermedio;
     // End of variables declaration//GEN-END:variables
 }
