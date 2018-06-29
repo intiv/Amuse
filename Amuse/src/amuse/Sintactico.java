@@ -652,7 +652,7 @@ public class Sintactico extends java_cup.runtime.lr_parser {
         }
 
         public String nuevoTemp(){
-                String tempRet = "t"+contadorTemporales;
+                String tempRet = "$t"+contadorTemporales;
                 contadorTemporales++;
                 return tempRet;
         }
@@ -718,12 +718,12 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                 }
         }
 
-        public boolean isID(Value value){
-                if(value.val.length() == 3 && value.val.charAt(0) == '\'' && value.val.charAt(2) == '\''){
+        public boolean isID(String value){
+                if(value.length() == 3 && value.charAt(0) == '\'' && value.charAt(2) == '\''){
                         return false;
-                }else if(value.val.matches("\\d+")){
+                }else if(value.matches("\\d+")){
                         return false;
-                }else if(value.val.equals("true") || value.val.equals("false")){
+                }else if(value.equals("true") || value.equals("false")){
                         return false;
                 }
 
@@ -826,7 +826,7 @@ class CUP$Sintactico$actions {
               // propagate RESULT from NT$0
                 RESULT = (Expresion) ((java_cup.runtime.Symbol) CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-3)).value;
 		 
-                                printCuadruplos();
+                                //printCuadruplos();
                                 System.out.println(tabla.toString()); 
                         
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("START",1, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-8)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -1081,6 +1081,7 @@ class CUP$Sintactico$actions {
                                                         RESULT = sym.valor;
                                                 }else{
                                                         RESULT = new Value("error", "notInitialized");
+                                                        RESULT.id = ident;
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
@@ -1103,6 +1104,7 @@ class CUP$Sintactico$actions {
                                                                 RESULT = arrayValue;
                                                         }else{
                                                                 RESULT = new Value("error", "notInitialized");
+                                                                RESULT.id = ident;
                                                         }
                                                 }else{ 
                                                         RESULT = new Value("error", "out of bounds");
@@ -1386,12 +1388,13 @@ class CUP$Sintactico$actions {
                                 if(ind==-1){
                                         if(asig2==-1){
                                                 Value v = new Value(t, "");
-                                                tabla.addVar(t, i, v, currAmbito, new Integer(offset));
                                                 if(t.equals("char") || t.equals("bool")){
                                                         offset+=1;
                                                 }else if(t.equals("num")){
                                                         offset+=4;
                                                 }
+                                                tabla.addVar(t, i, v, currAmbito, new Integer(offset));
+                                                
                                                 RESULT = i;
                                         }else{
                                                 Array m = new Array(0,asig2-1,t);
@@ -1478,8 +1481,6 @@ class CUP$Sintactico$actions {
                                                 }
                                         }else{
                                                 if(v.tipo.equals(t)){
-                                                        tabla.addVar(t, i, v, currAmbito, new Integer(offset));
-                                                        gen(":=", v.val, "", i);
                                                         if(t.equals("char")){
                                                                 offset+=1;
                                                         }else if(t.equals("num")){
@@ -1487,6 +1488,9 @@ class CUP$Sintactico$actions {
                                                         }else if(t.equals("bool")){
                                                                 offset+=1;
                                                         }
+                                                        tabla.addVar(t, i, v, currAmbito, new Integer(offset));
+                                                        gen(":=", v.val, "", i);
+                                                        
                                                         // System.out.println("\tInicializacion: id: "+i+", tipo: "+t+", valor: "+v.val);
                                                         RESULT = i;
                                                 }else{
@@ -1754,9 +1758,17 @@ class CUP$Sintactico$actions {
 		int valueright = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)).right;
 		Value value = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-1)).value;
 		
-                        if(!value.val.equals("notfound")){
+                        System.out.println("Aqui estooooy!");
+                        if(value.val.equals("notInitialized")){
+                                int index = tabla.contains(value.id, currAmbito);
+                                Simbolo sym = tabla.getSymbol(value.id, currAmbito);
+                                sym.valor.val = " ";
+                                tabla.assignValue(index, sym.valor);
+                                gen("READ", "", "", value.id);
+                        }else if(!value.val.equals("notfound")){
+                                
                                 gen("READ", "", "", value.val); 
-                        }else{
+                        }else {
                                 printError(valueleft, valueright, value.id, "", "notDeclared");
                         }
                 
@@ -2055,8 +2067,8 @@ class CUP$Sintactico$actions {
 		int i2right = ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()).right;
 		Value i2 = (Value)((java_cup.runtime.Symbol) CUP$Sintactico$stack.peek()).value;
       
-                        boolean isID1 = isID(i1);
-                        boolean isID2 = isID(i2);
+                        boolean isID1 = isID(i1.val);
+                        boolean isID2 = isID(i2.val);
 
                         if(isID1 && isID2){
                                 int index_id1 = tabla.contains(i1.val, currAmbito);
@@ -2675,12 +2687,13 @@ class CUP$Sintactico$actions {
                                                 if(i < 4){
                                                         tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
                                                 }else{
-                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));
                                                         if(currTipo.equals("char") || currTipo.equals("bool")){
                                                                 offset+=1;
                                                         }else if(currTipo.equals("num")){
                                                                 offset+=4;
                                                         }
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));
+
                                                 }
                                         }
                                 }

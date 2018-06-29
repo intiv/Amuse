@@ -1,16 +1,18 @@
+
 num arielito(num, num, char, char, bool, num)
 void hola(num, char, bool, num, char, num, bool)
-
 Main(){
     D num
+    read(D)
+    write(D)
     c num 
     c := 10
     arit num := (1+2)*(4/(7-2*3))
     asd num := 0 + 5 / (7)
-    asd := D
+    asd := c
     juany num := 33
 
-    if((c < d || c>asd) && (arit == c || arit == asd)) then
+    if(c < asd) then
         juany := 0
     endif
 
@@ -27,16 +29,19 @@ Main(){
         break
     end
     prueba bool := true
+    /#
+    num arielito(num inti, num juany, char pity, char ricardo, bool aceituno, num vallejo){
+        agni char := 'd'
+        asd num := 7
+        return asd
+    }
+
+    void hola(num a, char b, bool c, num d, char e, num f, bool g){
+        jeje bool := true
+        
+    }#/
 }
 
-num arielito(num inti, num juany, char pity, char ricardo, bool aceituno, num vallejo){
-    agni char := 'd'
-    asd num := 7
-    return asd
-}
 
-void hola(num a, char b, bool c, num d, char e, num f, bool g){
-    jeje bool := true
-    
-}
+
 
