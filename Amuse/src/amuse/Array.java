@@ -13,49 +13,49 @@ public class Array {
     int inicio, fin;
     String tipo;
     public Value[] tabla;
-    
+
     public Array(int inicio, int fin, String tipo) {
         this.inicio = inicio;
         this.fin = fin;
         this.tipo = tipo;
-        if(this.tipo.equals("num")){
-            this.tabla= new Value[fin+1];
-        }else if(this.tipo.equals("char")){
-            this.tabla= new Value[fin+1];
-        }else if(this.tipo.equals("bool")){
-            this.tabla= new Value[fin+1];
+        if (this.tipo.equals("num")) {
+            this.tabla = new Value[fin + 1];
+        } else if (this.tipo.equals("char")) {
+            this.tabla = new Value[fin + 1];
+        } else if (this.tipo.equals("bool")) {
+            this.tabla = new Value[fin + 1];
         }
     }
 
-    public boolean contains(int index){
-        if(tabla[index]!=null){
+    public boolean contains(int index) {
+        if (tabla[index] != null) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    public void addInt(int index, int value){
-        tabla[index] = new Value("num", value+"");
+    public void addInt(int index, int value) {
+        tabla[index] = new Value("num", value + "");
     }
 
-    public void addChar(int index, char value){
-        tabla[index] = new Value("char", value+"");
+    public void addChar(int index, char value) {
+        tabla[index] = new Value("char", value + "");
     }
 
-    public void addBool(int index, String value){
+    public void addBool(int index, String value) {
         tabla[index] = new Value("bool", value);
     }
 
-    public Value getValue(int index){
-        if(index>=0 && index<fin){
+    public Value getValue(int index) {
+        if (index >= 0 && index < fin) {
             return tabla[index];
         }
         return null;
     }
 
-    public boolean assignValue(int index, String value){
-        if(index>=0 && index<fin){
+    public boolean assignValue(int index, String value) {
+        if (index >= 0 && index < fin) {
             tabla[index] = new Value("bool", value);
             return true;
         }
@@ -67,12 +67,12 @@ public class Array {
         return "Array{" + "inicio=" + inicio + ", fin=" + fin + ", tipo=" + tipo + ", tabla=" + toStringVals() + '}';
     }
 
-    public String toStringVals(){
+    public String toStringVals() {
         String contenido = "";
-        for(int i=0; i<tabla.length-1; i++){
-            contenido+= tabla[i].val+",";
+        for (int i = 0; i < tabla.length - 1; i++) {
+            contenido += tabla[i].val + ",";
         }
-        contenido += tabla[tabla.length-1].val;
+        contenido += tabla[tabla.length - 1].val;
         return contenido;
     }
 
@@ -107,6 +107,5 @@ public class Array {
     public void setTabla(Value[] tabla) {
         this.tabla = tabla;
     }
-    
-    
+
 }
