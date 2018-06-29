@@ -35,14 +35,17 @@ public class AmuseMain {
             File file = new File("./src/amuse/in.txt");
             FileReader fr = new FileReader(file);
             scanner lex = new scanner(fr);
-            Sintactico sint = new Sintactico(lex);
-            Symbol simbolo = sint.parse();
-//            if(sint.hayErrores==0){
-//                System.out.println("No hubieron errores");
-//                Nodo raiz = sint.padre;
-//                Graficar(recorrido1(raiz),"Amuse Tree");
-//            }
-            System.out.println(simbolo);
+            Sintactico amuse = new Sintactico(lex);
+            Symbol simbolo = amuse.parse();
+            amuse.printCuadruplos();
+            CodigoFinal(amuse);
+
+        //    if(sint.hayErrores==0){
+        //        System.out.println("No hubieron errores");
+        //        Nodo raiz = sint.padre;
+        //        Graficar(recorrido1(raiz),"Amuse Tree");
+        //    }
+            // System.out.println(simbolo);
         } catch (Exception ex) {
             Logger.getLogger(AmuseMain.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -67,6 +70,102 @@ public class AmuseMain {
             texto ="";
         }
         return texto;
+    }
+
+    public static void CodigoFinal(Sintactico amuse){
+        int cont = 0;
+        int operation = 10;
+        int maxoffset = amuse.tabla.getMaxOffset("Main");
+
+        String code = ".text\n.globl main\nmain:\n\tmove $fp, $sp\n\tsub $sp, $sp, "+maxoffset+"\n";
+        for(Cuadruplo cuad : amuse.cuadruplos){
+            code+= "_etiq"+cont+":\n";
+            if(cuad.operator.equals("READ")){
+                Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+
+                if(sym.tipo.equals("num") || sym.tipo.equals("bool")){
+                    code += line("li $v0, 5") +
+                            line("syscall") +
+                            line("sw $v0, -"+sym.offset+"($fp)");
+                }else if(sym.tipo.equals("char")){
+                    // 
+                }
+                
+            }else if(cuad.operator.equals("WRITE")){
+                Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+                if(sym.tipo.equals("num") || sym.tipo.equals("bool")){
+                    code += line("lw $a0, -"+sym.offset+"($fp)") +
+                            line("li $v0, 1") +
+                            line("syscall");
+                }
+            }else if(cuad.operator.equals("GOTO")){
+                code += line("b _etiq"+cuad.result);
+            }else if(cuad.operator.contains("IF")){
+                boolean isid1 = amuse.isID(cuad.arg1);
+                boolean isid2 = amuse.isID(cuad.arg2);
+                if(isid1){
+                    Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+                    if(id1.tipo.equals("num") || id1.tipo.equals("bool")){
+                        code += line("lw $t0, -"+id1.offset+"($fp)");
+                    }
+                    //else if tipo.equals("char") cargar asciiz
+                }else{
+                    code += line("li $t0, "+cuad.arg1); //Se asume que es numero/bool, falta char
+                }
+                if(isid2){
+                    Simbolo id2 = amuse.tabla.getSymbol(cuad.arg2, "Main");
+                    if(id2.tipo.equals("num") || id2.tipo.equals("bool")){
+                        code += line("lw $t1, -"+id2.offset+"($fp)");
+                    }
+                    //else if tipo.equals("char") cargar asciiz
+                }else{
+                    code += line("li $t1, "+cuad.arg2);
+                } 
+                String tipoIf = cuad.operator.substring(2, cuad.operator.length());
+                if(tipoIf.equals("<")){
+                    code += line("blt $t0, $t1, _etiq"+cuad.result);
+                }else if(tipoIf.equals("<=")){
+                    code += line("ble $t0, $t1, _etiq"+cuad.result);
+                }else if(tipoIf.equals(">")){
+                    code += line("bgt $t0, $t1, _etiq"+cuad.result);
+                }else if(tipoIf.equals(">=")){
+                    code += line("bge $t0, $t1, _etiq"+cuad.result);
+                }else if(tipoIf.equals(":=")){
+                    code += line("beq $t0, $t1, _etiq"+cuad.result);
+                }else if(tipoIf.equals("!=")){
+                    code += line("bne $t0, $t1, _etiq"+cuad.result);
+                }
+            }else if(cuad.operator.equals(":=")){
+                Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
+                if(cuad.arg1.contains("$t")){
+                    code += line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
+                }else{
+                    if(isID(cuad.arg1)){
+
+                    }else{
+                        code += line("li $t0, "+cuad.arg1) +
+                                line("sw $t0, -"+sym.offset+"($fp)");
+                    }
+                    //se asume es numero, falta char
+                    
+                }
+                
+                // if(cuad.arg1.contains("$t") || cuad.arg2.contains("$t")){
+                    
+                //     //obtener valor de temporal adecuado 
+                // }else{
+
+                // }
+
+            }
+            cont++;
+        }
+        System.out.println(code);
+
+    }
+
+    public static String line(String code){
+        return "\t"+code+"\n";
     }
     
     public static void Graficar(String cadena, String cad){

@@ -45,6 +45,16 @@ public class TablaSimbolos{
         return null;
     }
 
+    public int getMaxOffset(String ambito){
+        int retVal = 0;
+        for(int i = 0; i < simbolos.size() ; i++){
+            if(simbolos.get(i).ambito.equals(ambito)){
+                retVal = simbolos.get(i).offset;
+            }
+        }
+        return retVal;
+    }
+
     public int getIndexVal(String id, String ambito){
         try {
             int index = this.contains(id, ambito);
