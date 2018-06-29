@@ -47,7 +47,7 @@ public class GUI extends javax.swing.JFrame {
             }else if(cuad.operator.contains("IF")){
                 code += genIF(cuad);
             }else if(cuad.operator.equals(":=")){
-                
+                code += genASIG(cuad);
                 
                 // if(cuad.arg1.contains("$t") || cuad.arg2.contains("$t")){
                     
@@ -141,12 +141,14 @@ public class GUI extends javax.swing.JFrame {
 
     public String genASIG(Cuadruplo cuad){
         String retVal = "";
-        Simbolo sym = amuse.tabla.getSymbol(cuad.result, "Main");
-        if(cuad.arg1.contains("$t")){
+        Simbolo sym = amuse.isID(cuad.result) ? amuse.tabla.getSymbol(cuad.result, "Main") : null;
+        if(cuad.arg1.contains("$t") && sym != null){
             retVal = line("sw "+cuad.arg1+", -"+sym.offset+"($fp)");
-        }else{
+        }else if(sym != null){
             if(amuse.isID(cuad.arg1)){
-
+                Simbolo sym2 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+                retVal = line("lw $t0, -"+sym2.offset+"($fp)") +
+                        line("sw $t0, -"+sym.offset+"($fp)");
             }else{
                 retVal = line("li $t0, "+cuad.arg1) +
                         line("sw $t0, -"+sym.offset+"($fp)");
