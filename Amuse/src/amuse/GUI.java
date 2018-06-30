@@ -239,7 +239,7 @@ public class GUI extends javax.swing.JFrame {
         }else if(tipoIf.equals(":=")){
             retVal += line("beq "+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals("!=")){
-            retVal += line("bne $t"+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
+            retVal += line("bne "+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }
         desc.freeTS();
         return retVal;
@@ -266,8 +266,13 @@ public class GUI extends javax.swing.JFrame {
                 }
             }else{
                 String arg1 = cuad.arg1.equals("true") ? "1" : (cuad.arg1.equals("false")? "0" : cuad.arg1);
+                if(!sym.param){
                 retVal = line("li $t0, "+arg1) +
                         line("sw $t0, -"+sym.offset+"($fp)");
+                }else{
+                    int s_ind = desc.getS(sym.id);
+                    retVal = line("li $s"+s_ind+", "+arg1);
+                }
             }
             //se asume es numero, falta char
         }
