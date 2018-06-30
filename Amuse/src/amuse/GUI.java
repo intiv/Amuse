@@ -42,7 +42,10 @@ public class GUI extends javax.swing.JFrame {
         boolean finMain = false;
         boolean writeFinFunc = true;
         boolean lastFunc = false;
-
+        boolean writeFinMain = false;
+        if(amuse.funciones.size() == 0){
+            writeFinMain = true;
+        }
         for(Cuadruplo cuad : amuse.cuadruplos){
             if(amuse.cuadFuncs.size() > 0 && amuse.cuadFuncs.size() == amuse.funciones.size()){
                 if((!finMain &&amuse.cuadFuncs.contains(new Integer(cont)))|| (finMain && amuse.cuadFuncs.contains(new Integer(cont-1))) ){
@@ -123,6 +126,9 @@ public class GUI extends javax.swing.JFrame {
             }
             cont++;
         }
+        if(writeFinMain){
+            code+= "_etiq"+cont+":\n" + line("li $v0, 10\n\tsyscall\n");
+        }
         if(funCont > 1 || lastFunc){
             funCont--;
             code += "_FIN_FUN_"+currAmbito+":\n"+line("add $sp, $sp, "+maxoffset);
@@ -191,6 +197,9 @@ public class GUI extends javax.swing.JFrame {
         }
         if(isid1){
             Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, currAmbito);
+            if(id1 == null){
+                System.out.println("id1 null en cuad: "+amuse.cuadruplos.indexOf(cuad));
+            }
             if(id1.tipo.equals("num") || id1.tipo.equals("bool")){
                 if(!id1.param){
                     retVal += line("lw $t"+temp1+", -"+id1.offset+"($fp)");
@@ -226,6 +235,7 @@ public class GUI extends javax.swing.JFrame {
             //else if tipo.equals("char") cargar asciiz
         }else{
             retVal += line("li $t"+temp2+", "+cuad.arg2);
+            ifArg2 = "$t"+temp2;
         } 
         String tipoIf = cuad.operator.substring(2, cuad.operator.length());
         if(tipoIf.equals("<")){
@@ -236,7 +246,7 @@ public class GUI extends javax.swing.JFrame {
             retVal += line("bgt "+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals(">=")){
             retVal += line("bge "+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
-        }else if(tipoIf.equals(":=")){
+        }else if(tipoIf.equals("==")||tipoIf.equals(":=")){
             retVal += line("beq "+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));
         }else if(tipoIf.equals("!=")){
             retVal += line("bne "+ifArg1+", "+ifArg2+", _etiq"+(Integer.parseInt(cuad.result)+inc));

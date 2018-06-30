@@ -1,0 +1,19 @@
+void EscribirParam(num)
+
+Main(){
+    a num
+    read(a)
+    b num
+    read(b)
+    ##EscribirParam(a)
+    if(((a < 5 && b > a)||(b < a && b < 3) ) && (b != a))then
+        write(b)
+    else then
+        write(a)    
+    endif
+
+}
+
+void EscribirParam(param num){
+    write(param)
+}

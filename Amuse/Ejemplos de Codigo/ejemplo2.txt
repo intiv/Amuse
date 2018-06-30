@@ -1,6 +1,5 @@
-num mayor(num, num, num)
-void ciclo(num, num)
 
+num mayor(num, num, num)
 
 Main(){
     a num
@@ -18,22 +17,4 @@ num mayor(a num, b num, c num){
         return b
     endif
     return c
-}
-
-void ciclo(inicio num, fin num){
-    a num
-    b num
-    read(a)
-    read(b)
-
-    while(inicio != fin)
-        if(inicio == a)then
-            inicio := 2
-        elseif(inicio == b)then
-            inicio := 1
-        else then
-            inicio := fin
-        endif
-    end
-    write(inicio)
 }

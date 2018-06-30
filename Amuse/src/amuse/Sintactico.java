@@ -1854,7 +1854,7 @@ class CUP$Sintactico$actions {
                         completa(cond.listav, m3.intValue());
                         RESULT = new Expresion();
                         RESULT.listasig = cond.listaf;
-                        tabla.removeVar(id, currAmbito);  
+                        // tabla.removeVar(id, currAmbito);  
                         //System.out.println("TABLA SIMBOLOS DESPUES DE FOR: "+tabla.toString()); 
                 
               CUP$Sintactico$result = parser.getSymbolFactory().newSymbol("FOR",9, ((java_cup.runtime.Symbol)CUP$Sintactico$stack.elementAt(CUP$Sintactico$top-14)), ((java_cup.runtime.Symbol)CUP$Sintactico$stack.peek()), RESULT);
@@ -2727,7 +2727,7 @@ class CUP$Sintactico$actions {
                                         //printerror argumento ya declarado
                                         RESULT = arg2;
                                 }
-                                if(RESULT.ids.size() > 1){
+                                if(RESULT.ids.size() > 0){
                                         Collections.reverse(RESULT.ids);
                                         Collections.reverse(RESULT.tipos);
 

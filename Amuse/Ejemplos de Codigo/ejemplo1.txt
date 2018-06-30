@@ -1,20 +1,26 @@
-
-num mayor(num, num, num)
-
 Main(){
-    a num
-    b num
-    c num
-    read(a)
-    read(b)
-    read(c)
-}
-
-num mayor(a num, b num, c num){
-    if(a >= b && a>= c) then
-        return a
-    elseif(b >= a && b >= c) then
-        return b
+    primero num
+    read(primero)
+    write(primero)
+    segundo num := primero
+    if(primero == segundo) then
+        segundo := 0
     endif
-    return c
+    write(segundo)
+
+    opt num
+    cond num := 0
+    while(cond != 1)
+        read(opt)
+        select(opt)
+            option 1:
+                cond := 1
+                break
+            option 2:
+                read(opt)
+                write(opt)
+                break
+        end
+    end
+    
 }

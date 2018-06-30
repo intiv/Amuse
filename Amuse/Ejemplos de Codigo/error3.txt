@@ -1,15 +1,26 @@
 Main(){
     ##Error 3 - Caracteres invalidos
-    prueb`a char := 'a'
-    test2 num := `1
+    prueba char := 'a'
+    prueba2 char := 'b'
+    opt num 
+    if(prueba != prueba2)then
+        read(opt)
+    else then
+        opt := 0
+    endif
+    contador num := 0    
+    for(i num := 0; i < opt; i++)
+        contador := contador + ((5 + 3)*8)/7
+    end
+    mayorCien bool := false
+
+    if(contador > 100) then
+        mayorCien := true
+    endif
+
+    if(mayorCien == true) then
+        opt := 1
+        write(opt)
+    endif
     
-}
-
-num as`(){
-    return 1
-}
-
-
-bool hol`a(){
-    return 'c'
 }
