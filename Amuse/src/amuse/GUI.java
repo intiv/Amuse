@@ -337,7 +337,6 @@ public class GUI extends javax.swing.JFrame {
         ta_codigoFinal = new javax.swing.JTextArea();
         btn_codigoInt = new javax.swing.JButton();
         lb_titulo = new javax.swing.JLabel();
-        btn_compilar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         ta_archivo = new javax.swing.JTextArea();
         lb_codigoFinal = new javax.swing.JLabel();
@@ -415,17 +414,6 @@ public class GUI extends javax.swing.JFrame {
         lb_titulo.setText("AMUSE");
         getContentPane().add(lb_titulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 20, 870, 70));
 
-        btn_compilar.setBackground(new java.awt.Color(153, 153, 153));
-        btn_compilar.setFont(new java.awt.Font("Rockwell Condensed", 0, 28)); // NOI18N
-        btn_compilar.setText("Build");
-        btn_compilar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btn_compilar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn_compilarMouseClicked(evt);
-            }
-        });
-        getContentPane().add(btn_compilar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 300, 80));
-
         ta_archivo.setEditable(false);
         ta_archivo.setColumns(20);
         ta_archivo.setRows(5);
@@ -488,25 +476,6 @@ public class GUI extends javax.swing.JFrame {
             
         }
     }//GEN-LAST:event_btn_fileChooserMouseClicked
-
-    private void btn_compilarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_compilarMouseClicked
-       String params[] = new String[7];
-
-       params[0] = "-destdir";
-       params[1] = "src/amuse/";
-       params[2] = "-parser";
-       params[3] = "Sintactico";
-       params[4] = "-symbols";
-       params[5] = "Amuse";
-       
-       params[6] = "src/amuse/AmuseSyntactic.cup";
-       try {
-           java_cup.Main.main(params);
-       } catch (Exception ex) {
-           Logger.getLogger(Amuse.class.getName()).log(Level.SEVERE, null, ex);
-       }
-      
-    }//GEN-LAST:event_btn_compilarMouseClicked
 
     private void btn_compilar1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_compilar1MouseClicked
         try{
@@ -575,7 +544,6 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_codigoInt;
-    private javax.swing.JButton btn_compilar;
     private javax.swing.JButton btn_compilar1;
     private javax.swing.JButton btn_fileChooser;
     private javax.swing.JScrollPane jScrollPane1;

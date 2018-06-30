@@ -854,10 +854,10 @@ COND ::=
                                         gen("GOTO", "");
                                 }else{
                                         if(index_id1 == -1){
-                                                printError(i1left, i1right, "en la condicion", "", "notDeclared");
+                                                printError(i1left, i1right, "en la condicion", i1.id, "notDeclared");
                                         }
                                         if(index_id2 == -1){
-                                                printError(i2left, i2right, "en la condicion", "", "notDeclared");                                        
+                                                printError(i2left, i2right, "en la condicion", i2.id, "notDeclared");                                        
                                         }
                                         RESULT = new Expresion();
                                 }
@@ -897,11 +897,11 @@ COND ::=
                                 }else{
                                         if(validate == 3){
                                                 //printerror i1 no encontrada
-                                                printError(i1left, i1right, i1.val, "", "notDeclared");
+                                                printError(i2left, i2right, "en la condicion", i1.id, "notDeclared");
 
                                         }else if(validate == 4){
                                                 //printerror i2 no encontrada
-                                                printError(i2left, i2right, i2.val, "", "notDeclared");
+                                                printError(i2left, i2right, "en la condicion", i2.id, "notDeclared");
                                                 
                                         }
                                 }

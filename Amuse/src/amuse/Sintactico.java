@@ -745,10 +745,10 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t"+val2+" "+val1+"\n";
                                 break;
                         case "notfound":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val1+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val2+"\n";
                                 break;
                         case "out of bounds":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Indice "+val2+" fuera de alcance del arreglo"+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Indice "+val1+" fuera de alcance del arreglo "+val2+"\n";
                                 break;
                         case "incompatible":
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t Asignacion de variable "+val1+" con operacion aritmetica con tipos incompatibles"+"\n";
@@ -766,7 +766,7 @@ public class Sintactico extends java_cup.runtime.lr_parser {
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t Expresion incompleta"+"\n";
                                 break;
                         case "notInitialized":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable no inicializada"+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable "+val2+"no inicializada"+"\n";
                                 break;
                         default:
                                 Errores += "Error en linea "+linea+", columna "+columna+"\n"; 
@@ -1118,6 +1118,7 @@ class CUP$Sintactico$actions {
                                                         }
                                                 }else{ 
                                                         RESULT = new Value("error", "out of bounds");
+                                                        RESULT.id = val+"";
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
@@ -1482,7 +1483,7 @@ class CUP$Sintactico$actions {
                         if(index == -1){
                                 //si no existe la variable revisa si el valor tiene error
                                 if(v.tipo.equals("error")){
-                                        printError(vleft,vright,i,"",v.val);
+                                        printError(vleft,vright,i,v.id,v.val);
                                 }else{
                                         int ind = t.indexOf("array");
                                         if(ind!=-1){
@@ -1569,7 +1570,7 @@ class CUP$Sintactico$actions {
                         int index = tabla.contains(i, currAmbito);
                         if(index>=0){
                                 if(v.tipo.equals("error")){
-                                        printError(vleft+1,vright,i,"",v.val);
+                                        printError(vleft+1,vright,i,v.id,v.val);
                                 }else{ 
                                         if(asig2 == -1){
                                                 Simbolo sym = tabla.getSymbol(i, currAmbito);
@@ -1592,7 +1593,7 @@ class CUP$Sintactico$actions {
                                                                 printError((vleft+1),vright,v.tipo,arreglos.get(arrayIndex).tipo,"tipos");
                                                         }
                                                 }else{ 
-                                                        printError(vleft+1, vright, i, asig2+"", "out of bounds");
+                                                        printError(vleft+1, vright, asig2+"", i, "out of bounds");
                                                 }
                                         }
                                 }
@@ -2124,10 +2125,10 @@ class CUP$Sintactico$actions {
                                         gen("GOTO", "");
                                 }else{
                                         if(index_id1 == -1){
-                                                printError(i1left, i1right, "en la condicion", "", "notDeclared");
+                                                printError(i1left, i1right, "en la condicion", i1.id, "notDeclared");
                                         }
                                         if(index_id2 == -1){
-                                                printError(i2left, i2right, "en la condicion", "", "notDeclared");                                        
+                                                printError(i2left, i2right, "en la condicion", i2.id, "notDeclared");                                        
                                         }
                                         RESULT = new Expresion();
                                 }
@@ -2167,11 +2168,11 @@ class CUP$Sintactico$actions {
                                 }else{
                                         if(validate == 3){
                                                 //printerror i1 no encontrada
-                                                printError(i1left, i1right, i1.val, "", "notDeclared");
+                                                printError(i2left, i2right, "en la condicion", i1.id, "notDeclared");
 
                                         }else if(validate == 4){
                                                 //printerror i2 no encontrada
-                                                printError(i2left, i2right, i2.val, "", "notDeclared");
+                                                printError(i2left, i2right, "en la condicion", i2.id, "notDeclared");
                                                 
                                         }
                                 }

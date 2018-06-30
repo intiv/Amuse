@@ -1,0 +1,22 @@
+bool hola()
+
+Main(){
+    ##Errores en operadores
+    
+    booleano bool := true
+    numero num := 'g'
+
+
+    if(variable<5) then
+        
+    endif
+}
+
+
+bool hola(){
+    a num := 0
+    if(a>5) then
+        write(booleano)
+    endif
+    return booleano
+}

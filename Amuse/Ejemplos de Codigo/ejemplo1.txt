@@ -1,0 +1,20 @@
+
+num mayor(num, num, num)
+
+Main(){
+    a num
+    b num
+    c num
+    read(a)
+    read(b)
+    read(c)
+}
+
+num mayor(a num, b num, c num){
+    if(a >= b && a>= c) then
+        return a
+    elseif(b >= a && b >= c) then
+        return b
+    endif
+    return c
+}
