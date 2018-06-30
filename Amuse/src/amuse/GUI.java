@@ -170,7 +170,82 @@ public class GUI extends javax.swing.JFrame {
 
     public String genSUMA(Cuadruplo cuad){
         String retVal = "";
+        /*
+        
+        
+        boolean isid1 = amuse.isID(cuad.arg1);
+        boolean isid2 = amuse.isID(cuad.arg2);
+        int temp1 = desc.getFreeT();
+        if(temp1 > -1){
+            desc.ts[temp1] = " ";
+        }else{
+            temp1 = 0;
+            desc.ts[0] = " ";
+        }
+        if(isid1){
+            Simbolo id1 = amuse.tabla.getSymbol(cuad.arg1, "Main");
+            if(id1.tipo.equals("num") || id1.tipo.equals("bool")){
+                retVal += line("lw $t"+temp1+", -"+id1.offset+"($fp)");
+            }
+            //else if tipo.equals("char") cargar asciiz
+        }else{
+            retVal += line("li $t"+temp1+", "+cuad.arg1); //Se asume que es numero/bool, falta char
+        }
+        int temp2 = desc.getFreeT();
+        if(temp2 > -1){
+            desc.ts[temp2] = " ";
+        }else{
+            temp2 = 1;
+            desc.ts[1] = " ";
+        }
+        if(isid2){
+            Simbolo id2 = amuse.tabla.getSymbol(cuad.arg2, "Main");
+            if(id2.tipo.equals("num") || id2.tipo.equals("bool")){
+                retVal += line("lw $t"+temp2+", -"+id2.offset+"($fp)");
+            }
+            //else if tipo.equals("char") cargar asciiz
+        }else{
+            retVal += line("li $t"+temp2+", "+cuad.arg2);
+        } 
+        String tipoIf = cuad.operator.substring(2, cuad.operator.length());
+        if(tipoIf.equals("<")){
+            retVal += line("blt $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+        }else if(tipoIf.equals("<=")){
+            retVal += line("ble $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+        }else if(tipoIf.equals(">")){
+            retVal += line("bgt $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+        }else if(tipoIf.equals(">=")){
+            retVal += line("bge $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+        }else if(tipoIf.equals(":=")){
+            retVal += line("beq $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+        }else if(tipoIf.equals("!=")){
+            retVal += line("bne $t"+temp1+", $t"+temp2+", _etiq"+cuad.result);
+        }
+        desc.freeTS();
+        //add i, i, i
+        //add i, $t2, 1
+        //add $t2, i, 1
         //add $t2, $t2, 1
+        // si esto es un temporal?
+        // si si entonces agregar sino reviso si es un id del main porque solo eso manejamos
+        //null si no es ninguno de los dos
+        Simbolo var = amuse.isID(cuad.arg1) ? amuse.tabla.getSymbol(cuad.arg1, "Main") : null;
+        Simbolo sym1 = amuse.isID(cuad.arg2) ? amuse.tabla.getSymbol(cuad.arg2, "Main") : null;
+        Simbolo sym2 = amuse.isID(cuad.result) ? amuse.tabla.getSymbol(cuad.result, "Main") : null;
+        String arg1 ="",arg2="",arg3 ="";
+        if(cuad.arg1.contains("$t") && var != null){
+            retVal = line("add "+cuad.arg1+", -"+var.offset+"($fp)");
+        }else if(var != null){
+            if(amuse.isID(cuad.arg1)){
+                Simbolo sym = amuse.tabla.getSymbol(cuad.arg1, "Main");
+                retVal = line("lw $t0, -"+sym.offset+"($fp)") +
+                        line("sw $t0, -"+sym1.offset+"($fp)");
+            }else{
+                retVal = line("li $t0, "+cuad.arg1) +
+                        line("sw $t0, -"+sym1.offset+"($fp)");
+            }
+            //se asume es numero, falta char
+        }*/
         return retVal;
     }
 
@@ -264,7 +339,7 @@ public class GUI extends javax.swing.JFrame {
                 btn_fileChooserMouseClicked(evt);
             }
         });
-        getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 300, 80));
+        getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 300, 80));
 
         ta_codigoFinal.setColumns(20);
         ta_codigoFinal.setRows(5);
@@ -328,7 +403,7 @@ public class GUI extends javax.swing.JFrame {
                 btn_compilar1MouseClicked(evt);
             }
         });
-        getContentPane().add(btn_compilar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 300, 80));
+        getContentPane().add(btn_compilar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 300, 80));
 
         lb_background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/Cadet-Grey-Solid-Color-Background-Wallpaper-5120x2880.png"))); // NOI18N
         getContentPane().add(lb_background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1470, 840));
@@ -404,7 +479,6 @@ public class GUI extends javax.swing.JFrame {
     private void btn_codigoIntMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_codigoIntMouseClicked
         jf_codigoIntermedio.pack();
         jf_codigoIntermedio.show(true);
-        ta_codigoIntermedio.setText("");
         ta_codigoIntermedio.setText("");
         if(amuse != null){
             ta_codigoIntermedio.setText(amuse.tabla.toString()+"\n"+amuse.printCuadruplos());

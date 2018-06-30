@@ -148,7 +148,7 @@ parser code {:
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t"+val2+" "+val1+"\n";
                                 break;
                         case "notfound":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val1+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val2+"\n";
                                 break;
                         case "out of bounds":
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t Indice "+val2+" fuera de alcance del arreglo"+"\n";
@@ -169,7 +169,7 @@ parser code {:
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t Expresion incompleta"+"\n";
                                 break;
                         case "notInitialized":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable no inicializada"+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable "+val2+" no inicializada"+"\n";
                                 break;
                         default:
                                 Errores += "Error en linea "+linea+", columna "+columna+"\n"; 
@@ -415,6 +415,7 @@ IdF ::= id:ident TypeIdF:val {:
                                                         }
                                                 }else{ 
                                                         RESULT = new Value("error", "out of bounds");
+                                                        RESULT.id = val+"";
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
@@ -427,9 +428,9 @@ TypeIdF ::=
         openBrk number:n closeBrk      
                                         {: 
                                                 if(Integer.parseInt(n)>=0){
-                                                        RESULT = Integer.parseInt(n); 
+                                                        RESULT = Integer.parseInt(n);
                                                 }else{
-                                                        RESULT = -1; 
+                                                        RESULT = -1;
                                                 }
 
                                         :}
@@ -511,7 +512,7 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                         if(index == -1){
                                 //si no existe la variable revisa si el valor tiene error
                                 if(v.tipo.equals("error")){
-                                        printError(vleft,vright,i,"",v.val);
+                                        printError(vleft,vright,i,v.id,v.val);
                                 }else{
                                         int ind = t.indexOf("array");
                                         if(ind!=-1){
@@ -583,7 +584,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                         int index = tabla.contains(i, currAmbito);
                         if(index>=0){
                                 if(v.tipo.equals("error")){
-                                        printError(vleft+1,vright,i,"",v.val);
+                                        printError(vleft+1,vright,i,v.id,v.val);
                                 }else{ 
                                         if(asig2 == -1){
                                                 Simbolo sym = tabla.getSymbol(i, currAmbito);
@@ -720,7 +721,15 @@ FOR             ::=
                 :};
 
 CONTADOR        ::= 
-                id:i contador:cont {: gen("+", "1", i, i); :}; 
+                id:i contador:cont 
+                        {:
+                                int index = tabla.contains(i, currAmbito);
+                                if(index!=-1){
+                                        gen("+", "1", i, i); 
+                                }else{
+                                        printError(ileft, iright, i, "", "notDeclared");
+                                } 
+                        :}; 
 
 //Select
 SELECT          ::= 
@@ -1161,7 +1170,7 @@ VOIDFUNC        ::= voidType id:val {: currAmbito = val; contArgs = 0; offset = 
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO:tipo id:ident ARGS2:arg2       
+ARGS            ::= id:ident TIPO:tipo ARGS2:arg2       
                         {: 
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){
@@ -1202,7 +1211,7 @@ ARGS            ::= TIPO:tipo id:ident ARGS2:arg2
                         RESULT = null;
                 :};
 
-ARGS2           ::=  coma TIPO:tipo id:ident ARGS2:arg2 
+ARGS2           ::=  coma id:ident TIPO:tipo  ARGS2:arg2 
                         {: 
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){

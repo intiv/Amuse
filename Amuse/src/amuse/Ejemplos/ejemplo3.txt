@@ -34,17 +34,3 @@ Main(){
         break
     end
 }
-
-num[] getNumbers(){
-    numbers num[] := {1,2,3,4,5}
-    return numbers
-}
-
-
-void printChar(char c){
-    write(c)
-}
-
-bool uselessFunc(){
-    return false
-}

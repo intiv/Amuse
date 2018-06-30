@@ -1,3 +1,5 @@
+num mayor(num, num)
+
 Main(){
     ##Ejemplo 1 - for, llamado de funciones, funcion con retorno e if
    

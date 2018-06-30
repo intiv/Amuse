@@ -10,6 +10,7 @@ Main(){
     arit num := (1+2)*(4/(7-2*3))
     asd num := 0 + 5 / (7)
     asd := c
+
     juany num := 33
 
     if(c < asd) then

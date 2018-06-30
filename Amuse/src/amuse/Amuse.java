@@ -33,10 +33,10 @@ public class Amuse {
   public static final int opSuma = 27;
   public static final int colon = 43;
   public static final int forstart = 37;
-  public static final int endif = 6;
   public static final int parIzq = 9;
-  public static final int ret = 13;
+  public static final int endif = 6;
   public static final int opOr = 23;
+  public static final int ret = 13;
   public static final int cbOpen = 11;
   public static final int openBrk = 16;
   public static final int comment = 44;
