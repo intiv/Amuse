@@ -47,10 +47,11 @@ public class GUI extends javax.swing.JFrame {
                 if((!finMain &&amuse.cuadFuncs.contains(new Integer(cont)))|| (finMain && amuse.cuadFuncs.contains(new Integer(cont-1))) ){
                     
                     if(!currAmbito.equals("Main") && writeFinFunc ){
+                        System.out.println("Funcion "+currAmbito+" tiene que recuperar "+amuse.funciones.get(funCont).params.ids.size()+" parametros");
                         code += "_FIN_FUN_"+currAmbito+"\n"+line("add $sp, $sp, "+maxoffset);
-                        for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
-                            if(i < 4){
-                                code += line("lw $s"+i+", "+((i+1)*4+8)+"($fp)");
+                        for (int i = 0; i < amuse.funciones.get(funCont-1).params.ids.size(); i++) {
+                            if(i<8){
+                                code += line("lw $s"+i+", -"+((i+1)*4+8)+"($fp)");
                             }
                         }
                         code += line("lw $ra, -8($fp)") + line("lw $fp, -4($fp)") + line("jr $ra\n");
@@ -116,7 +117,7 @@ public class GUI extends javax.swing.JFrame {
             funCont--;
             code += "_FIN_FUN_"+currAmbito+"\n"+line("add $sp, $sp, "+maxoffset);
             for (int i = 0; i < amuse.funciones.get(funCont).params.ids.size(); i++) {
-                if(i < 4){
+                if(i < 8){
                     code += line("lw $s"+i+", "+((i+1)*4+8)+"($fp)");
                 }
             }
