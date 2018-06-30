@@ -29,6 +29,15 @@ public class DescriptorRegistros{
         }
         return -1;
     }
+    
+    public int getT(String id){
+        for(int i = 0; i < 10; i++){
+            if(ts[i].equals(id)){
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public void freeTS(){
         for(int i = 0; i < 10; i++){
@@ -45,6 +54,15 @@ public class DescriptorRegistros{
         return -1;
     }
 
+    public int getA(String id){
+        for(int i = 0; i < 4; i++){
+            if(as[i].equals(id)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void freeAS(){
         for(int i = 0; i < 4; i++){
             as[i] = "";
@@ -54,6 +72,15 @@ public class DescriptorRegistros{
     public int getFreeS(){
         for(int i = 0; i < 8; i++){
             if(ss[i].equals("")){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int getS(String id){
+        for(int i = 0; i < 8; i++){
+            if(ss[i].equals(id)){
                 return i;
             }
         }

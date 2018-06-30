@@ -1059,6 +1059,7 @@ class CUP$Sintactico$actions {
                                                 }else if(!retType.equals(val.tipo)){
                                                         System.err.println("Error en linea "+(valleft+1)+", columna "+valright+": Return de tipo "+val.tipo+" en funcion de tipo "+retType);
                                                 }else if(retType.equals(val.tipo)){
+                                                        gen("RETURN", "", "", val.val);
                                                         //Cuadruplos de return
                                                 }
                                         }
@@ -2732,7 +2733,7 @@ class CUP$Sintactico$actions {
                                         for(int i = 0; i <RESULT.ids.size(); i++){
                                                 String currTipo = RESULT.tipos.get(i);
                                                 if(i < 4){
-                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, " "), currAmbito);
                                                         if(currTipo.equals("char") || currTipo.equals("bool")){
                                                                 offset+=1;
                                                         }else if(currTipo.equals("num")){
@@ -2744,7 +2745,7 @@ class CUP$Sintactico$actions {
                                                         }else if(currTipo.equals("num")){
                                                                 offset+=4;
                                                         }
-                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo,  ""), currAmbito, new Integer(offset));
 
                                                 }
                                         }
