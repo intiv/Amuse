@@ -21,6 +21,8 @@ parser code {:
         public int offset = 0;
         public int contArgs = 0;
         public String Errores = "";
+        public ArrayList<Integer> cuadFuncs = new ArrayList();
+        public ArrayList<Funcion> funciones = new ArrayList();
 
         public void gen(String op, String arg1, String arg2, String res){
                 cuadruplos.add(new Cuadruplo(op, arg1, arg2, res));
@@ -69,18 +71,17 @@ parser code {:
         }
 
         public void report_error(String message,Object info){
-                StringBuffer m=new StringBuffer("Error ");
+                Errores += "Error ";
                 if(info instanceof Symbol){
                         Symbol s=((Symbol)info);
 
                         if(s.left>=0){
-                                m.append("en linea "+(s.left+1));
+                                Errores+="en linea "+(s.left+1);
                                 if(s.right>=0)
-                                        m.append(", columna "+(s.right+1));
+                                        Errores += ", columna "+(s.right+1);
                         }
                 }
-                m.append(": "+message);
-                System.err.println(m);
+                Errores += ": "+message+"\n";
                 hayErrores = true;
         }
 
@@ -91,8 +92,8 @@ parser code {:
         }
 
         public void unrecovered_syntax_error(Symbol cur_token){
-                System.out.println(cur_token.toString());
-                System.err.println("At line "+(cur_token.left)+", column "+cur_token.right);
+                //System.out.println(cur_token.toString());
+                Errores += "At line "+(cur_token.left)+", column "+cur_token.right+"\n";
                 hayErrores = true;
                 // System.exit(1);
         }
@@ -287,7 +288,7 @@ precedence left opAsig;
 
 start with START;
 
-START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: currAmbito = "Main"; :} LISTEXP cbClose 
+START           ::= FUNC_HEAD MainProgram parIzq parDer cbOpen {: currAmbito = "Main"; :} LISTEXP cbClose
                     FUNC {: 
                                 //printCuadruplos();
                                 //System.out.println(tabla.toString()); 
@@ -368,6 +369,7 @@ EXP             ::= error {: RESULT = new Expresion(); hayErrores = true; :}
                                                 }else if(!retType.equals(val.tipo)){
                                                         System.err.println("Error en linea "+(valleft+1)+", columna "+valright+": Return de tipo "+val.tipo+" en funcion de tipo "+retType);
                                                 }else if(retType.equals(val.tipo)){
+                                                        gen("RETURN", "", "", val.val);
                                                         //Cuadruplos de return
                                                 }
                                         }
@@ -442,8 +444,8 @@ FCALLARGS ::= VALS:arg FCALLARGS2 | ;
 FCALLARGS2 ::= coma VALS:arg FCALLARGS2 | ; 
 
 //No terminal que maneja todas las funciones despues del main
-FUNC            ::= RETFUNC FUNC
-                | VOIDFUNC FUNC
+FUNC            ::= M:m1 {: cuadFuncs.add(m1); :} RETFUNC FUNC
+                | M:m1 {: cuadFuncs.add(m1); :} VOIDFUNC FUNC
                 | ;
 
 FUNC_HEAD       ::= TIPO:fun_type id:fun_name parIzq TYPE_LIST:args parDer {:
@@ -1104,7 +1106,7 @@ F               ::=
 
 //Funcion con retorno
 RETFUNC         ::= 
-                TIPO:t id:val {: currAmbito = val; offset = 0; calls.clear(); :} parIzq ARGS:args 
+                TIPO:t id:val {: currAmbito = val; offset = 8; calls.clear(); :} parIzq ARGS:args 
                         {:
                                 int index = tabla.contains(val, "global");
                                 if(index >= 0){
@@ -1117,7 +1119,9 @@ RETFUNC         ::=
                                                                 argType += "x";
                                                         }
                                                 }
+                                                funciones.add(new Funcion(val, args));
                                         }else{
+                                                funciones.add(new Funcion(val, new Parametros()));
                                                 argType = "void";
                                         }
                                         argType += "->"+t;
@@ -1132,7 +1136,7 @@ RETFUNC         ::=
 
 
 //Funcion void
-VOIDFUNC        ::= voidType id:val {: currAmbito = val; contArgs = 0; offset = 0; calls.clear(); :} parIzq ARGS:args 
+VOIDFUNC        ::= voidType id:val {: currAmbito = val; contArgs = 0; offset = 8; calls.clear(); :} parIzq ARGS:args 
                 {:
                         
                         int index = tabla.contains(val, "global");
@@ -1146,7 +1150,9 @@ VOIDFUNC        ::= voidType id:val {: currAmbito = val; contArgs = 0; offset = 
                                                         argType += "x";
                                                 }
                                         }
+                                        funciones.add(new Funcion(val, args));
                                 }else{
+                                        funciones.add(new Funcion(val, new Parametros()));
                                         argType = "void";
                                 }
                                 argType += "->void";
@@ -1161,7 +1167,7 @@ VOIDFUNC        ::= voidType id:val {: currAmbito = val; contArgs = 0; offset = 
 
 
 //Argumentos para funciones
-ARGS            ::= TIPO:tipo id:ident ARGS2:arg2       
+ARGS            ::= id:ident TIPO:tipo ARGS2:arg2       
                         {: 
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){
@@ -1180,17 +1186,23 @@ ARGS            ::= TIPO:tipo id:ident ARGS2:arg2
                                 if(RESULT.ids.size() > 1){
                                         Collections.reverse(RESULT.ids);
                                         Collections.reverse(RESULT.tipos);
+
                                         for(int i = 0; i <RESULT.ids.size(); i++){
                                                 String currTipo = RESULT.tipos.get(i);
                                                 if(i < 4){
-                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito);
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, " "), currAmbito);
+                                                        if(currTipo.equals("char") || currTipo.equals("bool")){
+                                                                offset+=1;
+                                                        }else if(currTipo.equals("num")){
+                                                                offset+=4;
+                                                        }
                                                 }else{
                                                         if(currTipo.equals("char") || currTipo.equals("bool")){
                                                                 offset+=1;
                                                         }else if(currTipo.equals("num")){
                                                                 offset+=4;
                                                         }
-                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo, ""), currAmbito, new Integer(offset));
+                                                        tabla.addParam(currTipo, RESULT.ids.get(i), new Value(currTipo,  ""), currAmbito, new Integer(offset));
 
                                                 }
                                         }
@@ -1202,7 +1214,7 @@ ARGS            ::= TIPO:tipo id:ident ARGS2:arg2
                         RESULT = null;
                 :};
 
-ARGS2           ::=  coma TIPO:tipo id:ident ARGS2:arg2 
+ARGS2           ::=  coma id:ident TIPO:tipo ARGS2:arg2 
                         {: 
                                 int index = tabla.contains(ident, currAmbito);
                                 if(index == -1){
