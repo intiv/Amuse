@@ -11,6 +11,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -493,11 +494,19 @@ public class GUI extends javax.swing.JFrame {
             scanner lex = new scanner(fr);
             amuse = new Sintactico(lex);
             Symbol simbolo = amuse.parse();
+            
             if(!amuse.hayErrores){
-                ta_codigoFinal.setText(CodigoFinal());
+               String cf = CodigoFinal();
+                ta_codigoFinal.setText(cf);
+                try (PrintWriter out = new PrintWriter("Amuse.asm")) {
+                    out.println(cf);
+                }catch(IOException ioex){
+                    System.err.println("Error generando archivo asm");
+                }
             }else{
                 ta_codigoFinal.setText(amuse.Errores);
             }
+            
             
             // System.out.println(simbolo);
         } catch (Exception ex) {
