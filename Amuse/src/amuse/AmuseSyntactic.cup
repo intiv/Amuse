@@ -149,10 +149,10 @@ parser code {:
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t"+val2+" "+val1+"\n";
                                 break;
                         case "notfound":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val1+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Variable no declarada asignada a "+val2+"\n";
                                 break;
                         case "out of bounds":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Indice "+val2+" fuera de alcance del arreglo"+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Indice "+val1+" fuera de alcance del arreglo "+val2+"\n";
                                 break;
                         case "incompatible":
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t Asignacion de variable "+val1+" con operacion aritmetica con tipos incompatibles"+"\n";
@@ -170,7 +170,7 @@ parser code {:
                                 Errores += "Error en linea "+linea+", columna "+columna+":\t Expresion incompleta"+"\n";
                                 break;
                         case "notInitialized":
-                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable no inicializada"+"\n";
+                                Errores += "Error en linea "+linea+", columna "+columna+":\t Uso de variable "+val2+"no inicializada"+"\n";
                                 break;
                         default:
                                 Errores += "Error en linea "+linea+", columna "+columna+"\n"; 
@@ -417,6 +417,7 @@ IdF ::= id:ident TypeIdF:val {:
                                                         }
                                                 }else{ 
                                                         RESULT = new Value("error", "out of bounds");
+                                                        RESULT.id = val+"";
                                                 }
                                         }else{
                                                 RESULT = new Value("error", "notfound");
@@ -513,7 +514,7 @@ INIT            ::= id:i TIPO:t opAsig VALS:v {:
                         if(index == -1){
                                 //si no existe la variable revisa si el valor tiene error
                                 if(v.tipo.equals("error")){
-                                        printError(vleft,vright,i,"",v.val);
+                                        printError(vleft,vright,i,v.id,v.val);
                                 }else{
                                         int ind = t.indexOf("array");
                                         if(ind!=-1){
@@ -585,7 +586,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                         int index = tabla.contains(i, currAmbito);
                         if(index>=0){
                                 if(v.tipo.equals("error")){
-                                        printError(vleft+1,vright,i,"",v.val);
+                                        printError(vleft+1,vright,i,v.id,v.val);
                                 }else{ 
                                         if(asig2 == -1){
                                                 Simbolo sym = tabla.getSymbol(i, currAmbito);
@@ -608,7 +609,7 @@ ASIG            ::= id:i ASIG2:asig2 opAsig VALS:v {:
                                                                 printError((vleft+1),vright,v.tipo,arreglos.get(arrayIndex).tipo,"tipos");
                                                         }
                                                 }else{ 
-                                                        printError(vleft+1, vright, i, asig2+"", "out of bounds");
+                                                        printError(vleft+1, vright, asig2+"", i, "out of bounds");
                                                 }
                                         }
                                 }

@@ -378,8 +378,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btn_fileChooser.setBackground(new java.awt.Color(153, 153, 153));
-        btn_fileChooser.setFont(new java.awt.Font("Rockwell Condensed", 0, 24)); // NOI18N
-        btn_fileChooser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/saa.png"))); // NOI18N
+        btn_fileChooser.setFont(new java.awt.Font("Rockwell Condensed", 0, 28)); // NOI18N
         btn_fileChooser.setText("Ingresar Archivo");
         btn_fileChooser.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btn_fileChooser.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -387,7 +386,7 @@ public class GUI extends javax.swing.JFrame {
                 btn_fileChooserMouseClicked(evt);
             }
         });
-        getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 300, 80));
+        getContentPane().add(btn_fileChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 300, 80));
 
         ta_codigoFinal.setColumns(20);
         ta_codigoFinal.setRows(5);
@@ -396,8 +395,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 110, 420, 550));
 
         btn_codigoInt.setBackground(new java.awt.Color(153, 153, 153));
-        btn_codigoInt.setFont(new java.awt.Font("Rockwell Condensed", 0, 24)); // NOI18N
-        btn_codigoInt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/dss.png"))); // NOI18N
+        btn_codigoInt.setFont(new java.awt.Font("Rockwell Condensed", 0, 28)); // NOI18N
         btn_codigoInt.setText("Codigo Intermedio");
         btn_codigoInt.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btn_codigoInt.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -413,8 +411,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().add(lb_titulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 20, 870, 70));
 
         btn_compilar.setBackground(new java.awt.Color(153, 153, 153));
-        btn_compilar.setFont(new java.awt.Font("Rockwell Condensed", 0, 24)); // NOI18N
-        btn_compilar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/556.png"))); // NOI18N
+        btn_compilar.setFont(new java.awt.Font("Rockwell Condensed", 0, 28)); // NOI18N
         btn_compilar.setText("Build");
         btn_compilar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btn_compilar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -442,8 +439,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().add(lb_archivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 670, 200, -1));
 
         btn_compilar1.setBackground(new java.awt.Color(153, 153, 153));
-        btn_compilar1.setFont(new java.awt.Font("Rockwell Condensed", 0, 24)); // NOI18N
-        btn_compilar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/556.png"))); // NOI18N
+        btn_compilar1.setFont(new java.awt.Font("Rockwell Condensed", 0, 28)); // NOI18N
         btn_compilar1.setText("Compilar");
         btn_compilar1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btn_compilar1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -451,9 +447,9 @@ public class GUI extends javax.swing.JFrame {
                 btn_compilar1MouseClicked(evt);
             }
         });
-        getContentPane().add(btn_compilar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 300, 80));
+        getContentPane().add(btn_compilar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 340, 300, 80));
 
-        lb_background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imgs/Cadet-Grey-Solid-Color-Background-Wallpaper-5120x2880.png"))); // NOI18N
+        lb_background.setBackground(new java.awt.Color(124, 167, 167));
         getContentPane().add(lb_background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1470, 840));
 
         pack();
